@@ -1,1 +1,1 @@
-print("smart house project")
+print("test")
