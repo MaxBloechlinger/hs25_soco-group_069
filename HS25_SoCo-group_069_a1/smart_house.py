@@ -28,3 +28,12 @@ Device = {
     "description": describe_device,
     "toggle_status": toggle_status,
 }
+
+
+def light(brightness: int, base_power: int, name: str, location: str):
+
+    def get_power_consumption():
+        return round(base_power * brightness/ 100)
+    
+    def describe_device():
+        return f" My name is {name}. I am a light. My location is {location}. My brightness is {brightness}%."
