@@ -1,4 +1,3 @@
-<<<<<<< HS25_SoCo-group_069_a1/smart_house.py
 #Abstract Device Methods
 def get_power_consumption(thing, weight):
     pass
@@ -65,4 +64,3 @@ def light(brightness: int, base_power: int, name: str, location: str):
     
     def describe_device():
         return f" My name is {name}. I am a light. My location is {location}. My brightness is {brightness}%."
->>>>>>> HS25_SoCo-group_069_a1/smart_house.py
