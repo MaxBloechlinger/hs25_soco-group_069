@@ -57,3 +57,19 @@ Connectable = {
 }
 
 
+def new_light():
+    pass
+
+
+#light Inheritance
+Light = {
+    "_classname": "Light",
+    "_parent": Device,
+    "_new": new_light,
+    "power_consumtion": "implement",
+    "description": "implement",
+    "toggle_status": "implement"
+}
+
+
+
