@@ -40,7 +40,7 @@ def disconnect(thing):
 def is_connected(thing):
     return thing["connected"]
 
-def new_connectable(connected: bool, ip: str):
+def connectable_new(connected: bool, ip: str):
     return {
         connected: connected,
         ip: ip
@@ -50,7 +50,7 @@ def new_connectable(connected: bool, ip: str):
 Connectable = {
     "_classname": "Connectable",
     "_parent": None,
-    "_new": new_connectable,
+    "_new": connectable_new,
     "connect": connect,
     "disconnect": disconnect,
     "is_connected": is_connected,
@@ -73,3 +73,20 @@ Light = {
 
 
 
+#camera inheritence
+
+# def camera_new(resolution_factor):
+#     d = make(Device, name)
+#     c = make(Connectable, name)
+#     return d | c | {
+#         "resolution_factor": resolution_factor
+#     }
+
+def camera_new():
+    pass 
+
+Camera = {
+    "_classname": "Camera",
+    "_parent": [Device, Connectable],
+    "_new": camera_new
+}
