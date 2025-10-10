@@ -101,6 +101,10 @@ Light = {
 
 
 
+#ab da hani glaubi feini shisi gmacht. Stimmt eh nöd. Thanapong muss luege
+
+
+
 #camera inheritence
 
 # def camera_new(resolution_factor):
@@ -150,10 +154,69 @@ Camera = {
     "_classname": "Camera",
     "_parent": [Device, Connectable],
     "_new": camera_new,
-    "power_consumtion": camera_get_power_consumption,
+    "power_consumption": camera_get_power_consumption,
     "description": camera_describe_device,
     "toggle_status": toggle_status,
     "connect": connect,
     "disconnect": disconnect,
     "is_connected": is_connected,
 }
+
+
+
+#Thermostat Contructor
+def thermostat_new(room_temperature: int, target_temperature: int, name: str, location: str, base_power: float, status: str, connected: bool, ip: str):
+    thermostat_inheritance_device = device_new(name, location, base_power, status)
+    thermostat_inheritance_connectable = connectable_new(connected, ip)
+    thermostat_inheritance = thermostat_inheritance_device | thermostat_inheritance_connectable
+    thermostat_inheritance["_classname"] = "Thermostat"
+
+   
+    thermostat_inheritance["room_temperature"] = room_temperature
+    thermostat_inheritance["target_temperature"] = target_temperature
+
+
+    return thermostat_inheritance
+
+
+def thermostat_get_power_consumption(thing):
+    if thing["status"] != "on":
+        return "Device is currently turned off, thus not consuming any power."
+    
+    return round(thing["base_power"] * (thing["target_temperature"] - thing["room_temperature"]))
+
+def thermostat_describe_device(thing):
+    name = thing["name"]
+    location = thing["location"]
+    device_type = thing["_classname"]
+    status = thing["status"]
+    room_temp = thing["room_temperature"]
+    target_temp = thing["target_temperature"]
+    address = thing["ip"]
+
+    return f"The {name} {device_type} is located in the {location}, is currently {status}, and is currently set to {target_temp} degrees Celcius in an {room_temp} degrees room. It is currently connected to server {address}"
+
+def set_target_temperature(thing, new_temperature: int):
+    thing["target_temperature"] = new_temperature
+
+def get_target_temperatur(thing):
+    return thing["target_temperature"]
+
+
+Thermostat = {
+    "_classname": "Thermostat",
+    "_parent": [Device, Connectable],
+    "_new": thermostat_new,
+    "power_consumption": thermostat_get_power_consumption,
+    "description": thermostat_describe_device,
+    "toggle_status": toggle_status,
+    "connect": connect,
+    "disconnect": disconnect,
+    "is_connected": is_connected,
+    "set_target_temperature": set_target_temperature,
+    "get_target_temperature": get_target_temperatur
+}
+
+
+
+
