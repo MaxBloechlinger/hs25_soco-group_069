@@ -59,7 +59,7 @@ Connectable = {
 
 
 #light constructor
-def new_light(brightness: int,name: str, location: str, base_power: float, status: str):
+def light_new(brightness: int,name: str, location: str, base_power: float, status: str):
     light_inheritance = device_new(name, location, base_power, status)
     light_inheritance["_classname"] = "Light"
     
@@ -93,7 +93,7 @@ def light_get_power_consumption(thing):
 Light = {
     "_classname": "Light",
     "_parent": Device,
-    "_new": new_light(),
+    "_new": light_new,
     "power_consumtion": light_get_power_consumption,
     "description": light_describe_device,
     "toggle_status": toggle_status
@@ -110,11 +110,50 @@ Light = {
 #         "resolution_factor": resolution_factor
 #     }
 
-def camera_new():
-    pass 
+#Camera Constructor
+def camera_new(resolution_factor: int, name: str, location: str, base_power: float, status: str, connected: bool, ip: str):
+    camera_inheritance_device = device_new(name, location, base_power, status)
+    camera_inheritance_connectable = connectable_new(connected, ip)
+    camera_inheritance = camera_inheritance_device | camera_inheritance_connectable
+    camera_inheritance["_classname"] = "Camera"
+
+    #assumtion that resolution factor is between 1 and 100
+
+    if resolution_factor >= 10:
+        camera_inheritance["resolution_factor"] = "high"
+    elif resolution_factor <= 5:
+        camera_inheritance["resolution_factor"] = "low"
+    else:
+        camera_inheritance["resolution_factor"] = "medium"
+
+    return camera_inheritance
+
+
+def camera_get_power_consumption(thing):
+    if thing["status"] != "on":
+        return "Device is currently turned off, thus not consuming any power."
+    
+    return round(thing["base_power"] * thing["resolution_factor"])
+
+def camera_describe_device(thing):
+    name = thing["name"]
+    location = thing["location"]
+    connection = thing["connected"]
+    device_type = thing["_classname"]
+    status = thing["status"]
+    resolution = thing["resolution_factor"]
+
+    return f"The {name} {device_type} is located in the {location}, is currently {status}, and is a {resolution} resolution sensor. It is currently {connection}"
+
 
 Camera = {
     "_classname": "Camera",
     "_parent": [Device, Connectable],
-    "_new": camera_new
+    "_new": camera_new,
+    "power_consumtion": camera_get_power_consumption,
+    "description": camera_describe_device,
+    "toggle_status": toggle_status,
+    "connect": connect,
+    "disconnect": disconnect,
+    "is_connected": is_connected,
 }
