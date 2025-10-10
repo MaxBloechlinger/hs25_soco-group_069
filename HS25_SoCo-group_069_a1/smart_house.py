@@ -1,8 +1,8 @@
 #Abstract Device Methods
-def get_power_consumption(thing, weight):
+def get_power_consumption(thing):
     pass
 
-def describe_device():
+def describe_device(thing):
     print("no description func yet")
 
 def toggle_status(thing):
@@ -61,7 +61,7 @@ Connectable = {
 #light constructor
 def new_light(brightness: int,name: str, location: str, base_power: float, status: str):
     light_inheritance = device_new(name, location, base_power, status)
-    light_inheritance["__classname"] = "Light"
+    light_inheritance["_classname"] = "Light"
     
     if brightness > 100:
         light_inheritance["brightness"] = 100
@@ -69,29 +69,31 @@ def new_light(brightness: int,name: str, location: str, base_power: float, statu
         light_inheritance["brightness"] = 0
     else:
         light_inheritance["brightness"] = brightness
+
+    return light_inheritance
    
 
 def light_describe_device(thing):
-    name = thing.get("name", "")
-    location = thing.get("location", "")
-    brightness = thing.get("brightness", 0)
-    device_type = thing.get("_classname", "")
-    status = thing.get("status", "")
+    name = thing["name"]
+    location = thing["location"]
+    brightness = thing["brightness"]
+    device_type = thing["_classname"]
+    status = thing["status"]
     return f"The {name} {device_type} is located in the {location}, is currently {status}, and is currently set to {brightness}% brightness."
     
     
 #Should round to closest integer. Thana
 def light_get_power_consumption(thing):
-    if thing.get("status", "") is not "on":
+    if thing["status"] != "on":
         return "Device is currently turned off, thus not consuming any power."
-    
-    return round( thing.get("base power", 0) * (thing.get("brightness", 0) / 100))
+
+    return round(thing["base_power"] * (thing["brightness"] / 100))
 
 #light Inheritance
 Light = {
     "_classname": "Light",
     "_parent": Device,
-    "_new": new_light,
+    "_new": new_light(),
     "power_consumtion": light_get_power_consumption,
     "description": light_describe_device,
     "toggle_status": toggle_status
