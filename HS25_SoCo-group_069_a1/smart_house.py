@@ -1,3 +1,19 @@
+
+def find(cls, method_name):
+    if cls is None:
+        raise NotImplementedError("method_name")
+    if method_name in cls:
+        return cls[method_name]
+    return find(cls["_parent"], method_name)
+
+def call(thing, method_name, *args):
+    method = find(thing["_class"], method_name)
+    return method(thing, *args)
+
+def make(cls, *args):
+    return cls["_new"](*args)
+
+
 #Abstract Device Methods
 def get_power_consumption(thing):
     pass
@@ -7,6 +23,7 @@ def describe_device(thing):
 
 def toggle_status(thing):
     pass
+
 
 
 #Device Constructor
