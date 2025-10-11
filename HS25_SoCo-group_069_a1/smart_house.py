@@ -30,14 +30,10 @@ def make(cls, *args):
 
 #Abstract "Device" Methods
 def get_power_consumption(thing):
-    if thing["status"] != "on":
-        return "Device is currently turned off, thus not consuming any power."
-    
-    return round(thing["base_power"] * (thing["target_temperature"] - thing["room_temperature"]))
-
+    raise NotImplemented("get_power_consumption not implemented")
 
 def describe_device(thing):
-    raise NotImplemented("describe func not implemented yet")
+    raise NotImplemented("describe_device not implemented")
 
 def toggle_status(thing):
     if thing["status"] == "on":
@@ -137,6 +133,23 @@ Light = {
 
 #---------------------[THERMOSTAT CLASS]---------------------
 
+#Abstract Methods for "Thermostat"
+def thermostat_get_power_consumption(thing):
+    if thing["status"] != "on":
+        return "Device is currently turned off, thus not consuming any power."
+    
+    return round(thing["base_power"] * (thing["target_temperature"] - thing["room_temperature"]))
+
+def thermostat_describe_device(thing):
+    name = thing["name"]
+    location = thing["location"]
+    status = thing["status"]
+    target_temperature = thing["target_temperature"]
+    room_temperature = thing["room_temperature"]
+    ip = thing["ip"]
+
+    return f"The {name} is located in the {location}, is currently {status}, and is currently set to {target_temperature} degrees Celsius in an {room_temperature} degree room. It is currently connected to server {ip}."
+
 #"Thermostat" Methods
 def set_target_temperature(thing, new_temperature: int):
     thing["target_temperature"] = new_temperature
@@ -167,8 +180,7 @@ example = make(Thermostat, "test_thermostat", "bedroom", 10.0, "on", True, "0.0.
 name = example["name"]
 
 print(f"{name}")
-
-
+print(thermostat_describe_device(example))
 
 
 #camera inheritence
