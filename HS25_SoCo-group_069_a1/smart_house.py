@@ -40,8 +40,10 @@ def describe_device(thing):
     raise NotImplemented("describe func not implemented yet")
 
 def toggle_status(thing):
-    pass
-
+    if thing["status"] == "on":
+        thing["status"] = "off"
+    else:
+        thing["status"] = "on"
 
 #"Device" Constructor
 def device_new(name: str, location: str, base_power: float, status: str):
@@ -78,8 +80,8 @@ def is_connected(thing):
 #"Connectable" Constructor
 def connectable_new(connected: bool, ip: str):
     return {
-        connected: connected,
-        ip: ip
+        "connected": connected,
+        "ip": ip
     }
     
 #Parent Class "Connectable"
@@ -115,9 +117,7 @@ def light_describe_device(thing):
     device_type = thing["_classname"]
     status = thing["status"]
     return f"The {name} {device_type} is located in the {location}, is currently {status}, and is currently set to {brightness}% brightness."
-    
-    
-#Should round to closest integer. Thana
+
 def light_get_power_consumption(thing):
     if thing["status"] != "on":
         return "Device is currently turned off, thus not consuming any power."
@@ -163,11 +163,10 @@ Thermostat = {
 
 
 #Thermostat test
-examples = [make(Thermostat, "sq", 3), make(Thermostat, "ci", 2)]
-for ex in examples:
-    n = ex["name"]
-    d = call(ex, "density", 5)
-    print(f"{n}: {d:.2f}")
+example = make(Thermostat, "test_thermostat", "bedroom", 10.0, "on", True, "0.0.0.0", 20, 25)
+name = example["name"]
+
+print(f"{name}")
 
 
 
