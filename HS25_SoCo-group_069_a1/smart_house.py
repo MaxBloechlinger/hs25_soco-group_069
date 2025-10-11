@@ -92,21 +92,16 @@ Connectable = {
 
 #---------------------[Light CLASS]---------------------
 
-#Abstract Methods for "Light"
-def light_new(brightness: int,name: str, location: str, base_power: float, status: str):
-    light_inheritance = device_new(name, location, base_power, status)
-    light_inheritance["_classname"] = "Light"
+#"Light" Constructor
+def light_new(
+    name: str, location: str, base_power: float, status: str,
+    brightness: int,):
+    return make(Device, name, location, base_power, status) | {
+        "brightness": brightness
+    }
     
-    if brightness > 100:
-        light_inheritance["brightness"] = 100
-    elif brightness < 0:
-        light_inheritance["brightness"] = 0
-    else:
-        light_inheritance["brightness"] = brightness
-
-    return light_inheritance
-   
-
+    
+    #Abstract Methods for "Light"
 def light_describe_device(thing):
     name = thing["name"]
     location = thing["location"]
@@ -120,6 +115,7 @@ def light_get_power_consumption(thing):
         return "Device is currently turned off, thus not consuming any power."
 
     return round(thing["base_power"] * (thing["brightness"] / 100))
+
 
 #light Inheritance
 Light = {
