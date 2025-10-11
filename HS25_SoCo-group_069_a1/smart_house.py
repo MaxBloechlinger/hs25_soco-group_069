@@ -1,9 +1,21 @@
 
+#---------------------[CALL & CONSTRUCTOR FUNCTIONS]---------------------
 def find(cls, method_name):
     if cls is None:
-        raise NotImplementedError("method_name")
+        raise NotImplementedError(method_name)
     if method_name in cls:
         return cls[method_name]
+    
+    #double parents
+    if len(cls["_parent"]) == 2:
+        for parent in cls["_parent"]:
+            try: 
+                return find(parent, method_name)
+            except NotImplementedError: 
+                return find(parent, method_name)
+        raise NotImplementedError(method_name)
+        
+    #single parent
     return find(cls["_parent"], method_name)
 
 def call(thing, method_name, *args):
@@ -14,19 +26,22 @@ def make(cls, *args):
     return cls["_new"](*args)
 
 
-#Abstract Device Methods
+#---------------------[DEVICE PARENT CLASS]---------------------
+
+#Abstract "Device" Methods
 def get_power_consumption(thing):
-    pass
+    raise NotImplemented("get_power_consumption not implemented")
 
 def describe_device(thing):
-    print("no description func yet")
+    raise NotImplemented("describe_device not implemented")
 
 def toggle_status(thing):
-    pass
+    if thing["status"] == "on":
+        thing["status"] = "off"
+    else:
+        thing["status"] = "on"
 
-
-
-#Device Constructor
+#"Device" Constructor
 def device_new(name: str, location: str, base_power: float, status: str):
     return {
         "name": name,
@@ -35,8 +50,7 @@ def device_new(name: str, location: str, base_power: float, status: str):
         "status": status
     }
 
-
-#Parent Class Device
+#Parent Class "Device"
 Device = {
     "_classname": "Device",
     "_parent": None,
@@ -46,7 +60,9 @@ Device = {
     "toggle_status": toggle_status,
 }
 
-#methods "Connectable"
+#---------------------[CONNECTABLE PARENT CLASS]---------------------
+
+#Abstract "Connectable" Methods
 def connect(thing, ip):
     thing["ip"]  = ip
     thing["connected"] = True
@@ -57,13 +73,14 @@ def disconnect(thing):
 def is_connected(thing):
     return thing["connected"]
 
+#"Connectable" Constructor
 def connectable_new(connected: bool, ip: str):
     return {
-        connected: connected,
-        ip: ip
+        "connected": connected,
+        "ip": ip
     }
     
-#parent class "Connectable"
+#Parent Class "Connectable"
 Connectable = {
     "_classname": "Connectable",
     "_parent": None,
@@ -72,7 +89,6 @@ Connectable = {
     "disconnect": disconnect,
     "is_connected": is_connected,
 }
-
 
 
 #light constructor
@@ -97,9 +113,7 @@ def light_describe_device(thing):
     device_type = thing["_classname"]
     status = thing["status"]
     return f"The {name} {device_type} is located in the {location}, is currently {status}, and is currently set to {brightness}% brightness."
-    
-    
-#Should round to closest integer. Thana
+
 def light_get_power_consumption(thing):
     if thing["status"] != "on":
         return "Device is currently turned off, thus not consuming any power."
@@ -117,9 +131,56 @@ Light = {
 }
 
 
+#---------------------[THERMOSTAT CLASS]---------------------
 
-#ab da hani glaubi feini shisi gmacht. Stimmt eh nöd. Thanapong muss luege
+#Abstract Methods for "Thermostat"
+def thermostat_get_power_consumption(thing):
+    if thing["status"] != "on":
+        return "Device is currently turned off, thus not consuming any power."
+    
+    return round(thing["base_power"] * (thing["target_temperature"] - thing["room_temperature"]))
 
+def thermostat_describe_device(thing):
+    name = thing["name"]
+    location = thing["location"]
+    status = thing["status"]
+    target_temperature = thing["target_temperature"]
+    room_temperature = thing["room_temperature"]
+    ip = thing["ip"]
+
+    return f"The {name} is located in the {location}, is currently {status}, and is currently set to {target_temperature} degrees Celsius in an {room_temperature} degree room. It is currently connected to server {ip}."
+
+#"Thermostat" Methods
+def set_target_temperature(thing, new_temperature: int):
+    thing["target_temperature"] = new_temperature
+
+def get_target_temperatur(thing):
+    return thing["target_temperature"]
+
+#"Thermostat" Constructor
+def thermostat_new(
+        name:str, location:str, base_power:float, status:str,
+        connected:bool, ip: str,
+        room_temperature:int, target_temperature:int,):
+    return make(Device,name,location,base_power,status) | make(Connectable,connected,ip) | {
+        "room_temperature": room_temperature,
+        "target_temperature": target_temperature
+    }
+
+
+Thermostat = {
+    "_classname": "Thermostat",
+    "_parent": [Device, Connectable],
+    "_new": thermostat_new
+}
+
+
+#Thermostat test
+example = make(Thermostat, "test_thermostat", "bedroom", 10.0, "on", True, "0.0.0.0", 20, 25)
+name = example["name"]
+
+print(f"{name}")
+print(thermostat_describe_device(example))
 
 
 #camera inheritence
@@ -178,62 +239,6 @@ Camera = {
     "disconnect": disconnect,
     "is_connected": is_connected,
 }
-
-
-
-#Thermostat Contructor
-def thermostat_new(room_temperature: int, target_temperature: int, name: str, location: str, base_power: float, status: str, connected: bool, ip: str):
-    thermostat_inheritance_device = device_new(name, location, base_power, status)
-    thermostat_inheritance_connectable = connectable_new(connected, ip)
-    thermostat_inheritance = thermostat_inheritance_device | thermostat_inheritance_connectable
-    thermostat_inheritance["_classname"] = "Thermostat"
-
-   
-    thermostat_inheritance["room_temperature"] = room_temperature
-    thermostat_inheritance["target_temperature"] = target_temperature
-
-
-    return thermostat_inheritance
-
-
-def thermostat_get_power_consumption(thing):
-    if thing["status"] != "on":
-        return "Device is currently turned off, thus not consuming any power."
-    
-    return round(thing["base_power"] * (thing["target_temperature"] - thing["room_temperature"]))
-
-def thermostat_describe_device(thing):
-    name = thing["name"]
-    location = thing["location"]
-    device_type = thing["_classname"]
-    status = thing["status"]
-    room_temp = thing["room_temperature"]
-    target_temp = thing["target_temperature"]
-    address = thing["ip"]
-
-    return f"The {name} {device_type} is located in the {location}, is currently {status}, and is currently set to {target_temp} degrees Celcius in an {room_temp} degrees room. It is currently connected to server {address}"
-
-def set_target_temperature(thing, new_temperature: int):
-    thing["target_temperature"] = new_temperature
-
-def get_target_temperatur(thing):
-    return thing["target_temperature"]
-
-
-Thermostat = {
-    "_classname": "Thermostat",
-    "_parent": [Device, Connectable],
-    "_new": thermostat_new,
-    "power_consumption": thermostat_get_power_consumption,
-    "description": thermostat_describe_device,
-    "toggle_status": toggle_status,
-    "connect": connect,
-    "disconnect": disconnect,
-    "is_connected": is_connected,
-    "set_target_temperature": set_target_temperature,
-    "get_target_temperature": get_target_temperatur
-}
-
 
 
 
