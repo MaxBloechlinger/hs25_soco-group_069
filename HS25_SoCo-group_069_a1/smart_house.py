@@ -90,8 +90,9 @@ Connectable = {
     "is_connected": is_connected,
 }
 
+#---------------------[Light CLASS]---------------------
 
-#light constructor
+#Abstract Methods for "Light"
 def light_new(brightness: int,name: str, location: str, base_power: float, status: str):
     light_inheritance = device_new(name, location, base_power, status)
     light_inheritance["_classname"] = "Light"
@@ -125,9 +126,6 @@ Light = {
     "_classname": "Light",
     "_parent": Device,
     "_new": light_new,
-    "power_consumtion": light_get_power_consumption,
-    "description": light_describe_device,
-    "toggle_status": toggle_status
 }
 
 
