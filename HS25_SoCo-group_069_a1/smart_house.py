@@ -148,8 +148,9 @@ def thermostat_describe_device(thing):
     ip = thing["ip"]
     connected = thing["connected"]
 
+    connected_string = f"connected to server {ip}" if connected else "disconnected"
     return (
-    f"The {name} is located in the {location}, is currently {status}, and is currently set to {target_temperature} degrees Celsius in a {room_temperature} degree room. It is currently {f'connected to server {ip}' if connected else 'disconnected'}."
+    f"The {name} is located in the {location}, is currently {status}, and is currently set to {target_temperature} degrees Celsius in a {room_temperature} degree room. It is currently {connected_string}."
 )
 
 #"Thermostat" Methods
@@ -220,7 +221,8 @@ def camera_describe_device(thing):
     resolution = thing["resolution"]
     ip = thing["ip"]
 
-    return f"The {name} is located in the {location}, is currently {status}, and is a {resolution} resolution sensor. It is currently {f"connected to server {ip}" if connected else "disconnected"}."
+    connected_string = f"connected to server {ip}" if connected else "disconnected"
+    return f"The {name} is located in the {location}, is currently {status}, and is a {resolution} resolution sensor. It is currently {connected_string}."
 
 
 
