@@ -162,8 +162,8 @@ def get_target_temperatur(thing):
 #"Thermostat" Constructor
 def thermostat_new(
         name:str, location:str, base_power:float, status:str,
-        connected:bool, ip: str,
-        room_temperature:int, target_temperature:int,):
+        room_temperature:int, target_temperature:int,
+        connected:bool=False, ip: str=None):
     return make(Device,name,location,base_power,status) | make(Connectable,connected,ip) | {
         "room_temperature": room_temperature,
         "target_temperature": target_temperature
@@ -178,7 +178,7 @@ Thermostat = {
 
 
 #Thermostat test
-example = make(Thermostat, "test_thermostat", "bedroom", 10.0, "on", True, "0.0.0.0", 20, 25)
+example = make(Thermostat, "test_thermostat", "bedroom", 10.0, "on", 20, 25)
 name = example["name"]
 print("Thermostat test")
 print(f"{name}")
@@ -194,7 +194,7 @@ print("\n")
 #Camera Constructor
 def camera_new(name:str, location:str, base_power:float, status:str,
                resolution_factor: int,
-               connected:bool, ip: str):
+               connected:bool=False, ip: str=None):
     if (resolution_factor < 5):
         resolution = "low"
     elif(5<=resolution_factor<10):
@@ -234,18 +234,7 @@ Camera = {
 
 #Camera test
 print("Camera test")
-living_room_camera = make(Camera, "New RGB Camera", "Living Room", 500, "on", 8, True, "10.12.234.5")
+living_room_camera = make(Camera, "New RGB Camera", "Living Room", 500, "on", 8, )
 print(camera_describe_device(living_room_camera))
 
-
-#---------------------[SMARTHOUSEMANAGEMENT CLASS]---------------------
-
-SmartHouseManagement = {
-    "_classname": "SmartHouseManagement",
-    "_parent": None,
-    "calculate_total_power_consumption": calculate_total_power_consumption,
-    "get_all_device_description": get_all_device_description,
-    "get_all_connected_devices": get_all_connected_devices,
-
-}
 
