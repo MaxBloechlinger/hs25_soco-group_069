@@ -106,9 +106,8 @@ def light_describe_device(thing):
     name = thing["name"]
     location = thing["location"]
     brightness = thing["brightness"]
-    device_type = thing["_classname"]
     status = thing["status"]
-    return f"The {name} {device_type} is located in the {location}, is currently {status}, and is currently set to {brightness}% brightness."
+    return f"The {name} is located in the {location}, is currently {status}, and is currently set to {brightness}% brightness."
 
 def light_get_power_consumption(thing):
     if thing["status"] != "on":
@@ -123,6 +122,11 @@ Light = {
     "_parent": Device,
     "_new": light_new,
 }
+
+#light test
+bedroom_light = make(Light, "Bedtable Light", "Bedroom", 300, "off", 70)
+print(light_describe_device(bedroom_light))
+print("\n")
 
 
 #---------------------[THERMOSTAT CLASS]---------------------
