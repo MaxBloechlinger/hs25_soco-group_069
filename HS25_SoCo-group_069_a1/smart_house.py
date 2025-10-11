@@ -74,7 +74,7 @@ def is_connected(thing):
     return thing["connected"]
 
 #"Connectable" Constructor
-def connectable_new(connected: bool, ip: str):
+def connectable_new(connected: bool = False, ip: str= None):
     return {
         "connected": connected,
         "ip": ip
@@ -124,6 +124,7 @@ Light = {
 }
 
 #light test
+print("Light test")
 bedroom_light = make(Light, "Bedtable Light", "Bedroom", 300, "off", 70)
 print(light_describe_device(bedroom_light))
 print("\n")
@@ -145,8 +146,11 @@ def thermostat_describe_device(thing):
     target_temperature = thing["target_temperature"]
     room_temperature = thing["room_temperature"]
     ip = thing["ip"]
+    connected = thing["connected"]
 
-    return f"The {name} is located in the {location}, is currently {status}, and is currently set to {target_temperature} degrees Celsius in an {room_temperature} degree room. It is currently connected to server {ip}."
+    return (
+    f"The {name} is located in the {location}, is currently {status}, and is currently set to {target_temperature} degrees Celsius in a {room_temperature} degree room. It is currently {f'connected to server {ip}' if connected else 'disconnected'}."
+)
 
 #"Thermostat" Methods
 def set_target_temperature(thing, new_temperature: int):
@@ -176,10 +180,10 @@ Thermostat = {
 #Thermostat test
 example = make(Thermostat, "test_thermostat", "bedroom", 10.0, "on", True, "0.0.0.0", 20, 25)
 name = example["name"]
-
+print("Thermostat test")
 print(f"{name}")
 print(thermostat_describe_device(example))
-
+print("\n")
 
 #---------------------[CAMERA CLASS]---------------------
 
@@ -189,9 +193,16 @@ print(thermostat_describe_device(example))
 
 #Camera Constructor
 def camera_new(name:str, location:str, base_power:float, status:str,
-        connected:bool, ip: str,resolution_factor: int):
+               resolution_factor: int,
+               connected:bool, ip: str):
+    if (resolution_factor < 5):
+        resolution = "low"
+    elif(5<=resolution_factor<10):
+        resolution = "medium"
+    else:
+        resolution = "high"
     return make(Device,name,location,base_power,status) | make(Connectable,connected,ip) | {
-        "resolution_factor": resolution_factor
+        "resolution": resolution
     }
 
 
@@ -204,11 +215,13 @@ def camera_get_power_consumption(thing):
 def camera_describe_device(thing):
     name = thing["name"]
     location = thing["location"]
-    connection = thing["connected"]
+    connected = thing["connected"]
     status = thing["status"]
-    resolution = thing["resolution_factor"]
+    resolution = thing["resolution"]
+    ip = thing["ip"]
 
-    return f"The {name} is located in the {location}, is currently {status}, and is a {resolution} resolution sensor. It is currently {connection}"
+    return f"The {name} is located in the {location}, is currently {status}, and is a {resolution} resolution sensor. It is currently {f"connected to server {ip}" if connected else "disconnected"}."
+
 
 
 Camera = {
@@ -220,5 +233,6 @@ Camera = {
 
 
 #Camera test
+print("Camera test")
 living_room_camera = make(Camera, "New RGB Camera", "Living Room", 500, "on", 8, True, "10.12.234.5")
 print(camera_describe_device(living_room_camera))
