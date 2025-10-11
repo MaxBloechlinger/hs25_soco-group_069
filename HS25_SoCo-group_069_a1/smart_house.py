@@ -181,32 +181,18 @@ print(f"{name}")
 print(thermostat_describe_device(example))
 
 
+#---------------------[CAMERA CLASS]---------------------
+
 #camera inheritence
 
-# def camera_new(resolution_factor):
-#     d = make(Device, name)
-#     c = make(Connectable, name)
-#     return d | c | {
-#         "resolution_factor": resolution_factor
-#     }
+
 
 #Camera Constructor
-def camera_new(resolution_factor: int, name: str, location: str, base_power: float, status: str, connected: bool, ip: str):
-    camera_inheritance_device = device_new(name, location, base_power, status)
-    camera_inheritance_connectable = connectable_new(connected, ip)
-    camera_inheritance = camera_inheritance_device | camera_inheritance_connectable
-    camera_inheritance["_classname"] = "Camera"
-
-    #assumtion that resolution factor is between 1 and 100
-
-    if resolution_factor >= 10:
-        camera_inheritance["resolution_factor"] = "high"
-    elif resolution_factor <= 5:
-        camera_inheritance["resolution_factor"] = "low"
-    else:
-        camera_inheritance["resolution_factor"] = "medium"
-
-    return camera_inheritance
+def camera_new(name:str, location:str, base_power:float, status:str,
+        connected:bool, ip: str,resolution_factor: int):
+    return make(Device,name,location,base_power,status) | make(Connectable,connected,ip) | {
+        "resolution_factor": resolution_factor
+    }
 
 
 def camera_get_power_consumption(thing):
@@ -219,24 +205,20 @@ def camera_describe_device(thing):
     name = thing["name"]
     location = thing["location"]
     connection = thing["connected"]
-    device_type = thing["_classname"]
     status = thing["status"]
     resolution = thing["resolution_factor"]
 
-    return f"The {name} {device_type} is located in the {location}, is currently {status}, and is a {resolution} resolution sensor. It is currently {connection}"
+    return f"The {name} is located in the {location}, is currently {status}, and is a {resolution} resolution sensor. It is currently {connection}"
 
 
 Camera = {
     "_classname": "Camera",
     "_parent": [Device, Connectable],
-    "_new": camera_new,
-    "power_consumption": camera_get_power_consumption,
-    "description": camera_describe_device,
-    "toggle_status": toggle_status,
-    "connect": connect,
-    "disconnect": disconnect,
-    "is_connected": is_connected,
+    "_new": camera_new
+   
 }
 
 
-
+#Camera test
+living_room_camera = make(Camera, "New RGB Camera", "Living Room", 500, "on", 8, True, "10.12.234.5")
+print(camera_describe_device(living_room_camera))
