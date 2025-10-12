@@ -288,6 +288,11 @@ def calculate_total_power_consumption(search_type=None, search_room=None):
             sum = sum + call(thing, "get_power_consumption")
     return sum
 
+def get_all_device_desription(search_type=None, search_room=None):
+    for thing in ALL_THINGS:
+        print(call(thing,"describe_device"))
+        print("\n")
+
 def get_all_device_description():
     pass
 
@@ -304,3 +309,4 @@ SmartHouseManagement = {
 }
 
 print(f"TOTAL POWER: {calculate_total_power_consumption()}")
+print(f"Device Description: {get_all_device_description()}")
