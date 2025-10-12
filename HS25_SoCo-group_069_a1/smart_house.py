@@ -278,14 +278,29 @@ print(f"POWER: {camera_power}")
 
 #---------------------[Step 2]---------------------
 
+
+ALL_THINGS = [bedroom_light, bathroom_thermostat, living_room_camera]
+
+def calculate_total_power_consumption(search_type=None, search_room=None):
+    sum = 0
+    for thing in ALL_THINGS:
+        if thing["status"] == "on":
+            sum = sum + call(thing, "get_power_consumption")
+    return sum
+
+def get_all_device_description():
+    pass
+
+
+def get_all_connected_devices():
+    pass
+
 SmartHouseManagement = {
     "_classname": "SmartHouseManagement",
     "_parent": None,
     "calculate_total_power_consumption": calculate_total_power_consumption,
     "get_all_device_description": get_all_device_description,
     "get_all_connected_devices": get_all_connected_devices,
-
 }
 
-def search_type(thing):
-    pass
+print(f"TOTAL POWER: {calculate_total_power_consumption()}")
