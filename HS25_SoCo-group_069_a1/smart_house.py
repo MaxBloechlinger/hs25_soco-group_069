@@ -282,11 +282,15 @@ print(f"POWER: {camera_power}")
 ALL_THINGS = [bedroom_light, bathroom_thermostat, living_room_camera]
 
 def calculate_total_power_consumption(search_type=None, search_room=None):
-    sum = 0
+    res = 0
     for thing in ALL_THINGS:
-        if thing["status"] == "on":
-            sum = sum + call(thing, "get_power_consumption")
-    return sum
+        if thing["status"] != "on":
+            continue
+        if ((search_type is not None and thing["_class"] != search_type) or 
+            (search_room is not None and thing["location"] != search_room)):
+            continue
+        res += call(thing, "get_power_consumption")
+    return res
 
 def get_all_device_desription(search_type=None, search_room=None):
     for thing in ALL_THINGS:
