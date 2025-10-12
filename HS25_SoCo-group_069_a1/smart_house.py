@@ -5,14 +5,18 @@ def find(cls, method_name):
         raise NotImplementedError(method_name)
     if method_name in cls:
         return cls[method_name]
-    
+
+    #no parent
+    if cls["_parent"] == None:
+        raise NotImplementedError(f"{method_name} not implemented by {cls}")
+
     #double parents
-    if len(cls["_parent"]) == 2:
+    if isinstance(cls["_parent"],list) and len(cls["_parent"]) == 2:
         for parent in cls["_parent"]:
             try: 
                 return find(parent, method_name)
             except NotImplementedError: 
-                return find(parent, method_name)
+                continue
         raise NotImplementedError(method_name)
         
     #single parent
@@ -30,10 +34,10 @@ def make(cls, *args):
 
 #Abstract "Device" Methods
 def get_power_consumption(thing):
-    raise NotImplemented("get_power_consumption not implemented")
+    raise NotImplementedError("get_power_consumption not implemented")
 
 def describe_device(thing):
-    raise NotImplemented("describe_device not implemented")
+    raise NotImplementedError("describe_device not implemented")
 
 def toggle_status(thing):
     if thing["status"] == "on":
@@ -90,18 +94,18 @@ Connectable = {
     "is_connected": is_connected,
 }
 
-#---------------------[Light CLASS]---------------------
+#---------------------[LIGHT CLASS]---------------------
 
 #"Light" Constructor
 def light_new(
     name: str, location: str, base_power: float, status: str,
     brightness: int,):
     return make(Device, name, location, base_power, status) | {
-        "brightness": brightness
+        "brightness": brightness,
+        "_class": Light
     }
     
-    
-    #Abstract Methods for "Light"
+#Abstract Methods for "Light"
 def light_describe_device(thing):
     name = thing["name"]
     location = thing["location"]
@@ -121,12 +125,20 @@ Light = {
     "_classname": "Light",
     "_parent": Device,
     "_new": light_new,
+    "describe_device": light_describe_device,
+    "get_power_consumption": light_get_power_consumption
 }
 
-#light test
-print("Light test")
+#Light test
+print("======================[Light test]======================")
 bedroom_light = make(Light, "Bedtable Light", "Bedroom", 300, "off", 70)
-print(light_describe_device(bedroom_light))
+light_describe = call(bedroom_light, "describe_device")
+light_power = call(bedroom_light, "get_power_consumption")
+print(f"Description: {light_describe}")
+print(f"POWER: {light_power}")
+call(bedroom_light, "toggle_status")
+light_power = call(bedroom_light, "get_power_consumption")
+print(f"POWER: {light_power}")
 print("\n")
 
 
@@ -137,7 +149,7 @@ def thermostat_get_power_consumption(thing):
     if thing["status"] != "on":
         return "Device is currently turned off, thus not consuming any power."
     
-    return round(thing["base_power"] * (thing["target_temperature"] - thing["room_temperature"]))
+    return round(thing["base_power"] * abs(thing["target_temperature"] - thing["room_temperature"]))
 
 def thermostat_describe_device(thing):
     name = thing["name"]
@@ -157,7 +169,7 @@ def thermostat_describe_device(thing):
 def set_target_temperature(thing, new_temperature: int):
     thing["target_temperature"] = new_temperature
 
-def get_target_temperatur(thing):
+def get_target_temperature(thing):
     return thing["target_temperature"]
 
 #"Thermostat" Constructor
@@ -167,29 +179,38 @@ def thermostat_new(
         connected:bool=False, ip: str=None):
     return make(Device,name,location,base_power,status) | make(Connectable,connected,ip) | {
         "room_temperature": room_temperature,
-        "target_temperature": target_temperature
+        "target_temperature": target_temperature,
+        "_class": Thermostat
     }
 
 
 Thermostat = {
     "_classname": "Thermostat",
     "_parent": [Device, Connectable],
-    "_new": thermostat_new
+    "_new": thermostat_new,
+    "describe_device": thermostat_describe_device,
+    "get_power_consumption": thermostat_get_power_consumption,
+    "set_target_temperature": set_target_temperature,
+    "get_target_temperature": get_target_temperature
 }
 
-
 #Thermostat test
-example = make(Thermostat, "test_thermostat", "bedroom", 10.0, "on", 20, 25)
-name = example["name"]
-print("Thermostat test")
-print(f"{name}")
-print(thermostat_describe_device(example))
+print("======================[Thermostat test]======================")
+bathroom_thermostat = make(Thermostat, "Towel Thermostat", "Bathroom", 1200, "on", 18, 24)
+
+thermostat_describe = call(bathroom_thermostat, "describe_device")
+print(thermostat_describe)
+thermostat_power = call(bathroom_thermostat, "get_power_consumption")
+print(thermostat_power)
+thermostat_get = call(bathroom_thermostat, "get_target_temperature")
+thermostat_set = call(bathroom_thermostat, "set_target_temperature", 10)
+thermostat_describe = call(bathroom_thermostat, "describe_device")
+print(thermostat_describe)
+thermostat_power = call(bathroom_thermostat, "get_power_consumption")
+print(thermostat_power)
 print("\n")
 
 #---------------------[CAMERA CLASS]---------------------
-
-#camera inheritence
-
 
 
 #Camera Constructor
@@ -203,7 +224,9 @@ def camera_new(name:str, location:str, base_power:float, status:str,
     else:
         resolution = "high"
     return make(Device,name,location,base_power,status) | make(Connectable,connected,ip) | {
-        "resolution": resolution
+        "resolution_factor": resolution_factor,
+        "resolution": resolution,
+        "_class": Camera
     }
 
 
@@ -229,14 +252,24 @@ def camera_describe_device(thing):
 Camera = {
     "_classname": "Camera",
     "_parent": [Device, Connectable],
-    "_new": camera_new
+    "_new": camera_new,
+    "describe_device": camera_describe_device,
+    "get_power_consumption": camera_get_power_consumption
    
 }
 
 
 #Camera test
-print("Camera test")
-living_room_camera = make(Camera, "New RGB Camera", "Living Room", 500, "on", 8, )
-print(camera_describe_device(living_room_camera))
+print("======================[Camera test]======================")
+living_room_camera = make(Camera, "New RGB Camera", "Living Room", 500, "on", 8)
+#print(camera_describe_device(living_room_camera))
+camera_describe = call(living_room_camera, "describe_device")
+camera_power = call(living_room_camera, "get_power_consumption")
 
+print(camera_describe)
+print(camera_power)
+camera_power = call(living_room_camera, "get_power_consumption")
 
+call(living_room_camera, "toggle_status")
+camera_power = call(living_room_camera, "get_power_consumption")
+print(f"POWER: {camera_power}")
