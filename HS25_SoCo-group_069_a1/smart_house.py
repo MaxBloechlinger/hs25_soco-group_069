@@ -273,3 +273,19 @@ camera_power = call(living_room_camera, "get_power_consumption")
 call(living_room_camera, "toggle_status")
 camera_power = call(living_room_camera, "get_power_consumption")
 print(f"POWER: {camera_power}")
+
+
+
+#---------------------[Step 2]---------------------
+
+SmartHouseManagement = {
+    "_classname": "SmartHouseManagement",
+    "_parent": None,
+    "calculate_total_power_consumption": calculate_total_power_consumption,
+    "get_all_device_description": get_all_device_description,
+    "get_all_connected_devices": get_all_connected_devices,
+
+}
+
+def search_type(thing):
+    pass
