@@ -300,8 +300,23 @@ def get_all_device_description(search_type=None, search_room=None):
         print(call(thing,"describe_device"))
         print("\n")
 
-def get_all_connected_devices():
-    pass
+def get_all_connected_devices(ip=None):
+    results = []
+    for thing in ALL_THINGS:
+        if thing["_class"] in [Thermostat, Camera]:
+            if thing["status"] == "on" and thing["connected"]:
+                if ip is None or thing["ip"] == ip:
+                    results.append({
+                        "description": call(thing, "describe_device"),
+                        "power": call(thing, "get_power_consumption")
+                    })
+
+    return results
+
+
+
+            
+            
 
 SmartHouseManagement = {
     "_classname": "SmartHouseManagement",
