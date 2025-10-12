@@ -292,14 +292,13 @@ def calculate_total_power_consumption(search_type=None, search_room=None):
         res += call(thing, "get_power_consumption")
     return res
 
-def get_all_device_desription(search_type=None, search_room=None):
+def get_all_device_description(search_type=None, search_room=None):
     for thing in ALL_THINGS:
+        if ((search_type is not None and thing["_class"] != search_type) or 
+            (search_room is not None and thing["location"] != search_room)):
+            continue
         print(call(thing,"describe_device"))
         print("\n")
-
-def get_all_device_description():
-    pass
-
 
 def get_all_connected_devices():
     pass
@@ -313,4 +312,6 @@ SmartHouseManagement = {
 }
 
 print(f"TOTAL POWER: {calculate_total_power_consumption()}")
-print(f"Device Description: {get_all_device_description()}")
+
+print(f"Device Description:")
+get_all_device_description()
