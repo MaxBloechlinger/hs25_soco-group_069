@@ -12,7 +12,17 @@ def test_toggle_status():
     smart_house.toggle_status(device)
     assert device["status"] == "on"
 
+#Abstract "Connectable" Methods tests
 
+def test_connect_ip():
+    connectable = smart_house.connectable_new()
+    smart_house.connect(connectable, "8.8.8.8")
+    assert connectable["ip"] == "8.8.8.8"
+
+def test_connect_status():
+    connectable = smart_house.connectable_new()
+    smart_house.connect(connectable, "8.8.8.8")
+    assert connectable["connected"] == True
 
 def run_tests():
     results = {"pass": 0, "fail": 0, "error": 0}
