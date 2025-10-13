@@ -34,7 +34,10 @@ def make(cls, *args):
 
 #Abstract "Device" Methods
 def get_power_consumption(thing):
+    if thing["status"] == "off":
+        return "0.0, device is turned off"
     raise NotImplementedError("get_power_consumption not implemented")
+
 
 def describe_device(thing):
     raise NotImplementedError("describe_device not implemented")
@@ -63,6 +66,10 @@ Device = {
     "description": describe_device,
     "toggle_status": toggle_status,
 }
+
+device = device_new("Device1", "Garage", 50.0, "off")
+result = get_power_consumption(device)
+print(result)
 
 #---------------------[CONNECTABLE PARENT CLASS]---------------------
 
