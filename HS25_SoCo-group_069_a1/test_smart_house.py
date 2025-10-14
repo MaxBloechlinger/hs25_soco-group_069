@@ -1,3 +1,4 @@
+import time
 import smart_house
 
 #Abstract "Device" Methods tests
@@ -29,6 +30,7 @@ def run_tests():
     for (name, test) in globals().items():
         if not name.startswith("test_"):
             continue
+        start_time = time.perf_counter()
         try:
             test()
             results["pass"] += 1
@@ -36,6 +38,10 @@ def run_tests():
             results["fail"] += 1
         except Exception:
             results["error"] += 1
+        end_time = time.perf_counter()
+        final_time = end_time - start_time
+
+    print(f"All tests were run in: {final_time:.6f}s")
     print(f"pass {results['pass']}")
     print(f"fail {results['fail']}")
     print(f"error {results['error']}")
