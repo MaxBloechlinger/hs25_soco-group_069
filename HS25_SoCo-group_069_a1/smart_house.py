@@ -62,8 +62,8 @@ Device = {
     "_classname": "Device",
     "_parent": None,
     "_new": device_new,
-    "power_consumption": get_power_consumption,
-    "description": describe_device,
+    "get_power_consumption": get_power_consumption,
+    "describe_device": describe_device,
     "toggle_status": toggle_status,
 }
 
@@ -118,7 +118,8 @@ def light_describe_device(thing):
     location = thing["location"]
     brightness = thing["brightness"]
     status = thing["status"]
-    return f"The {name} is located in the {location}, is currently {status}, and is currently set to {brightness}% brightness."
+    type = thing["_class"]["_classname"]
+    return f"The {name} [{type}] is located in the {location}, is currently {status}, and is currently set to {brightness}% brightness."
 
 def light_get_power_consumption(thing):
     if thing["status"] != "on":
@@ -138,7 +139,7 @@ Light = {
 
 #Light test
 print("======================[Light test]======================")
-bedroom_light = make(Light, "Bedtable Light", "Bedroom", 300, "off", 70)
+bedroom_light = make(Light, "Bedtable", "Bedroom", 300, "off", 70)
 light_describe = call(bedroom_light, "describe_device")
 light_power = call(bedroom_light, "get_power_consumption")
 print(f"Description: {light_describe}")
@@ -166,10 +167,11 @@ def thermostat_describe_device(thing):
     room_temperature = thing["room_temperature"]
     ip = thing["ip"]
     connected = thing["connected"]
+    type = thing["_class"]["_classname"]
 
     connected_string = f"connected to server {ip}" if connected else "disconnected"
     return (
-    f"The {name} is located in the {location}, is currently {status}, and is currently set to {target_temperature} degrees Celsius in a {room_temperature} degree room. It is currently {connected_string}."
+    f"The {name} [{type}] is located in the {location}, is currently {status}, and is currently set to {target_temperature} degrees Celsius in a {room_temperature} degree room. It is currently {connected_string}."
 )
 
 #"Thermostat" Methods
@@ -203,7 +205,7 @@ Thermostat = {
 
 #Thermostat test
 print("======================[Thermostat test]======================")
-bathroom_thermostat = make(Thermostat, "Towel Thermostat", "Bathroom", 1200, "on", 18, 24)
+bathroom_thermostat = make(Thermostat, "Towel", "Bathroom", 1200, "on", 18, 24)
 
 thermostat_describe = call(bathroom_thermostat, "describe_device")
 print(thermostat_describe)
@@ -250,9 +252,10 @@ def camera_describe_device(thing):
     status = thing["status"]
     resolution = thing["resolution"]
     ip = thing["ip"]
+    type = thing["_class"]["_classname"]
 
     connected_string = f"connected to server {ip}" if connected else "disconnected"
-    return f"The {name} is located in the {location}, is currently {status}, and is a {resolution} resolution sensor. It is currently {connected_string}."
+    return f"The {name} [{type}] is located in the {location}, is currently {status}, and is a {resolution} resolution sensor. It is currently {connected_string}."
 
 
 
@@ -268,7 +271,7 @@ Camera = {
 
 #Camera test
 print("======================[Camera test]======================")
-living_room_camera = make(Camera, "New RGB Camera", "Living Room", 500, "on", 8)
+living_room_camera = make(Camera, "New RGB", "Living Room", 500, "on", 8)
 #print(camera_describe_device(living_room_camera))
 camera_describe = call(living_room_camera, "describe_device")
 camera_power = call(living_room_camera, "get_power_consumption")
@@ -300,12 +303,13 @@ def calculate_total_power_consumption(search_type=None, search_room=None):
     return res
 
 def get_all_device_description(search_type=None, search_room=None):
+    descriptions = []
     for thing in ALL_THINGS:
         if ((search_type is not None and thing["_class"] != search_type) or 
             (search_room is not None and thing["location"] != search_room)):
             continue
-        print(call(thing,"describe_device"))
-        print("\n")
+        descriptions.append(call(thing,"describe_device"))
+    return descriptions
 
 def get_all_connected_devices(ip=None):
     results = []
