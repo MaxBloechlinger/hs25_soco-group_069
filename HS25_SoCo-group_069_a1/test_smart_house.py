@@ -2,28 +2,36 @@ import time
 from smart_house import *
 
 #Abstract "Device" Methods tests
-def test_get_power_consumption_off():
-    device = smart_house.device_new("Device1", "Garage", 50.0, "off")
-    result = smart_house.get_power_consumption(device)
+def test_get_power_consumption_off(thing):
+    result = call(thing, "get_power_consumption")
     assert result == "0.0, device is turned off"
 
 
-def test_toggle_status():
-    device = smart_house.device_new("Device1", "Garage", 50.0, "off")
-    smart_house.toggle_status(device)
-    assert device["status"] == "on"
+def test_toggle_status(thing):
+    call(thing, "toggle_status")
+    assert thing["status"] == "on"
 
 #Abstract "Connectable" Methods tests
 
-def test_connect_ip():
-    connectable = smart_house.connectable_new()
-    smart_house.connect(connectable, "8.8.8.8")
-    assert connectable["ip"] == "8.8.8.8"
+def test_connect_ip(thing):
+    call(thing, "8.8.8.8")
+    assert thing["ip"] == "8.8.8.8"
 
-def test_connect_status():
-    connectable = smart_house.connectable_new()
-    smart_house.connect(connectable, "8.8.8.8")
-    assert connectable["connected"] == True
+def test_connect_status(thing):
+    call(thing, "8.8.8.8")
+    assert thing["connected"] == True
+
+
+#"find/call" Methods tests
+
+def test_find_unknown_method(thing):
+    try:
+        call(thing, "unknown_method")
+        assert False, "Expected NotImplementedError for unknown method"
+    except NotImplementedError:
+        pass
+
+
 
 #----------------------------[TEST SET]----------------------------
 #Light
