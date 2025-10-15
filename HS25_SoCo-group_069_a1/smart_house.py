@@ -119,7 +119,7 @@ def light_describe_device(thing):
     brightness = thing["brightness"]
     status = thing["status"]
     type = thing["_class"]["_classname"]
-    return f"The {name} {type} is located in the {location}, is currently {status}, and is currently set to {brightness}% brightness."
+    return f"The {name} [{type}] is located in the {location}, is currently {status}, and is currently set to {brightness}% brightness."
 
 def light_get_power_consumption(thing):
     if thing["status"] != "on":
@@ -171,7 +171,7 @@ def thermostat_describe_device(thing):
 
     connected_string = f"connected to server {ip}" if connected else "disconnected"
     return (
-    f"The {name} {type} is located in the {location}, is currently {status}, and is currently set to {target_temperature} degrees Celsius in a {room_temperature} degree room. It is currently {connected_string}."
+    f"The {name} [{type}] is located in the {location}, is currently {status}, and is currently set to {target_temperature} degrees Celsius in a {room_temperature} degree room. It is currently {connected_string}."
 )
 
 #"Thermostat" Methods
@@ -255,7 +255,7 @@ def camera_describe_device(thing):
     type = thing["_class"]["_classname"]
 
     connected_string = f"connected to server {ip}" if connected else "disconnected"
-    return f"The {name} {type} is located in the {location}, is currently {status}, and is a {resolution} resolution sensor. It is currently {connected_string}."
+    return f"The {name} [{type}] is located in the {location}, is currently {status}, and is a {resolution} resolution sensor. It is currently {connected_string}."
 
 
 
