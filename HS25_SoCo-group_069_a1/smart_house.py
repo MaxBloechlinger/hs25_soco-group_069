@@ -205,7 +205,7 @@ Thermostat = {
 
 #Thermostat test
 print("======================[Thermostat test]======================")
-bathroom_thermostat = make(Thermostat, "Towel", "Bathroom", 1200, "on", 18, 24)
+bathroom_thermostat = make(Thermostat, "Towel", "Bathroom", 1200, "on", 18, 24, True, "127.0.0.1")
 
 thermostat_describe = call(bathroom_thermostat, "describe_device")
 print(thermostat_describe)
@@ -271,7 +271,7 @@ Camera = {
 
 #Camera test
 print("======================[Camera test]======================")
-living_room_camera = make(Camera, "New RGB", "Living Room", 500, "on", 8)
+living_room_camera = make(Camera, "New RGB", "Living Room", 500, "on", 8, True, "127.0.0.1")
 #print(camera_describe_device(living_room_camera))
 camera_describe = call(living_room_camera, "describe_device")
 camera_power = call(living_room_camera, "get_power_consumption")
@@ -280,7 +280,7 @@ print(camera_describe)
 print(camera_power)
 camera_power = call(living_room_camera, "get_power_consumption")
 
-call(living_room_camera, "toggle_status")
+#call(living_room_camera, "toggle_status")
 camera_power = call(living_room_camera, "get_power_consumption")
 print(f"POWER: {camera_power}")
 
@@ -288,6 +288,8 @@ print(f"POWER: {camera_power}")
 
 #---------------------[Step 2]---------------------
 
+
+print("======================[Smart House Management test]======================\n")
 
 ALL_THINGS = [bedroom_light, bathroom_thermostat, living_room_camera]
 
@@ -337,7 +339,28 @@ SmartHouseManagement = {
     "get_all_connected_devices": get_all_connected_devices,
 }
 
-print(f"TOTAL POWER: {calculate_total_power_consumption()}")
+#print(f"TOTAL POWER: {calculate_total_power_consumption()}")
 
-print(f"Device Description:")
-get_all_device_description()
+#print(f"Device Description:")
+#get_all_device_description()
+
+
+print("Device Description Test:\n")
+print(get_all_device_description(search_type=None, search_room="Bedroom"))
+print(get_all_device_description(search_type=Light, search_room=None))
+print(get_all_device_description(search_type=None, search_room="Living Room"))
+print(get_all_device_description(search_type=Thermostat, search_room="Bathroom"))
+print("\n")
+
+print("Power Consumption Test\n")
+print("The total power consumption is:", calculate_total_power_consumption())
+print("The total power consumtion in the bedroom is:", calculate_total_power_consumption(search_room="Bedroom"))
+print("The total power consumtion of all Lights are:", calculate_total_power_consumption(search_type=Light)) #Value is correct according to the input variables and formula
+print("\n")
+
+
+
+
+print("All connected devices are:\n", get_all_connected_devices())
+print("All connected devices with correct IP input are:\n", get_all_connected_devices("127.0.0.1"))
+print("All connected devices with wrong IP input are:\n", get_all_connected_devices("123.345.1.100"))
