@@ -76,20 +76,20 @@ def test_describe_thermostat(thing):
 #====================================[CAMERA METHOD TESTS]====================================
         
 def test_describe_camera(thing):
-    if thing["_class"]["_classname"] != "Light":
+    if thing["_class"]["_classname"] != "Camera":
         return
     else:
         name = thing["name"]
         location = thing["location"]
-        brightness = thing["brightness"]
+        connected = thing["connected"]
         status = thing["status"]
-        type = thing["_class"]["_classname"]
-
+        resolution = thing["resolution"]
         ip = thing["ip"]
-        connected = thing["connected"]  
+        type = thing["_class"]["_classname"]
 
         connected_string = f"connected to server {ip}" if connected else "disconnected"
         assert call(thing, "describe_device") == f"The {name} [{type}] is located in the {location}, is currently {status}, and is a {resolution} resolution sensor. It is currently {connected_string}."
+
 
 #====================================[MANAGEMENT METHOD TESTS]====================================
 
