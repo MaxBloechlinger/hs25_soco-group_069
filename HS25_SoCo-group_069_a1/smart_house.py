@@ -334,7 +334,6 @@ SmartHouseManagement = {
     "get_all_connected_devices": get_all_connected_devices,
 }
 
-#should be done in test file i think, walter
 print("Device Description Test:\n")
 print(get_all_device_description(search_type=None, search_room="Bedroom"))
 print(get_all_device_description(search_type=Light, search_room=None))

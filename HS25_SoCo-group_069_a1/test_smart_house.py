@@ -4,12 +4,26 @@ from smart_house import *
 #Abstract "Device" Methods tests
 def test_get_power_consumption_off(thing):
     result = call(thing, "get_power_consumption")
-    assert result == "0.0, device is turned off"
+    if thing["status"] == "off":
+        assert result == "0.0, device is turned off"
+
+    elif thing["_classname"] == "Light":
+        assert result == round(thing["base_power"] * (thing["brightness"] / 100))
+
+    elif thing["_classname"] == "Thermostat":
+        assert result == round(thing["base_power"] * abs(thing["target_temperature"] - thing["room_temperature"]))
+        
+    elif thing["_classname"] == "Camera":
+        assert result == round(thing["base_power"] * thing["resolution_factor"])
 
 
 def test_toggle_status(thing):
-    call(thing, "toggle_status")
-    assert thing["status"] == "on"
+    if thing["status"] == "off":
+        call(thing, "toggle_status")
+        assert thing["status"] == "on"
+    else:
+        call(thing, "toggle_status")
+        assert thing["status"] == "off"
 
 #Abstract "Connectable" Methods tests
 
