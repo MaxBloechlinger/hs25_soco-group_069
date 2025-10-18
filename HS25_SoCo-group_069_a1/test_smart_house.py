@@ -1,9 +1,8 @@
 import time
 from smart_house import *
-import pprint
 
 #====================================[DEVICE METHOD TESTS]====================================
-def test_get_power_consumption_off(thing):
+def test_get_power_consumption(thing):
     result = call(thing, "get_power_consumption")
     if thing["status"] == "off":
         assert result == "Device is currently turned off, thus not consuming any power."
@@ -24,8 +23,7 @@ def test_toggle_status(thing):
     else:
         call(thing, "toggle_status")
         assert thing["status"] == "off"
-
-
+    
 #====================================[CONNECTABLE METHOD TESTS]====================================
 def test_connect_ip(thing):
     if isinstance(thing["_class"]["_parent"], list):
@@ -40,6 +38,63 @@ def test_connect_status(thing):
         call(thing, "connect", ip)
         assert thing["connected"] == True
         assert thing["ip"] == ip
+
+
+#====================================[LIGHT METHOD TESTS]====================================
+def test_describe_light(thing):
+    if thing["_class"]["_classname"] != "Light":
+        return
+    else:
+        name = thing["name"]
+        location = thing["location"]
+        brightness = thing["brightness"]
+        status = thing["status"]
+        type = thing["_class"]["_classname"]
+
+
+        assert call(thing, "describe_device") ==  f"The {name} [{type}] is located in the {location}, is currently {status}, and is currently set to {brightness}% brightness."
+
+#====================================[THERMOSTAT METHOD TESTS]====================================
+
+def test_describe_thermostat(thing):
+    if thing["_class"]["_classname"] != "Thermostat":
+        return
+    else:
+        name = thing["name"]
+        location = thing["location"]
+        status = thing["status"]
+        target_temperature = thing["target_temperature"]
+        room_temperature = thing["room_temperature"]
+        type = thing["_class"]["_classname"]
+
+        ip = thing["ip"]
+        connected = thing["connected"]  
+
+        connected_string = f"connected to server {ip}" if connected else "disconnected"
+        assert call(thing, "describe_device") == f"The {name} [{type}] is located in the {location}, is currently {status}, and is currently set to {target_temperature} degrees Celsius in a {room_temperature} degree room. It is currently {connected_string}."
+
+#====================================[CAMERA METHOD TESTS]====================================
+        
+def test_describe_camera(thing):
+    if thing["_class"]["_classname"] != "Light":
+        return
+    else:
+        name = thing["name"]
+        location = thing["location"]
+        brightness = thing["brightness"]
+        status = thing["status"]
+        type = thing["_class"]["_classname"]
+
+        ip = thing["ip"]
+        connected = thing["connected"]  
+
+        connected_string = f"connected to server {ip}" if connected else "disconnected"
+        assert call(thing, "describe_device") == f"The {name} [{type}] is located in the {location}, is currently {status}, and is a {resolution} resolution sensor. It is currently {connected_string}."
+
+#====================================[MANAGEMENT METHOD TESTS]====================================
+
+
+
 
 
 #"find/call" Methods tests
