@@ -1,4 +1,3 @@
-
 #---------------------[CALL & CONSTRUCTOR FUNCTIONS]---------------------
 def find(cls, method_name):
     if cls is None:
@@ -327,10 +326,6 @@ def get_all_connected_devices(ip=None):
     return results
 
 
-
-            
-            
-
 SmartHouseManagement = {
     "_classname": "SmartHouseManagement",
     "_parent": None,
@@ -339,12 +334,7 @@ SmartHouseManagement = {
     "get_all_connected_devices": get_all_connected_devices,
 }
 
-#print(f"TOTAL POWER: {calculate_total_power_consumption()}")
-
-#print(f"Device Description:")
-#get_all_device_description()
-
-
+#should be done in test file i think, walter
 print("Device Description Test:\n")
 print(get_all_device_description(search_type=None, search_room="Bedroom"))
 print(get_all_device_description(search_type=Light, search_room=None))
@@ -354,12 +344,9 @@ print("\n")
 
 print("Power Consumption Test\n")
 print("The total power consumption is:", calculate_total_power_consumption())
-print("The total power consumtion in the bedroom is:", calculate_total_power_consumption(search_room="Bedroom"))
-print("The total power consumtion of all Lights are:", calculate_total_power_consumption(search_type=Light)) #Value is correct according to the input variables and formula
+print("The total power consumption in the bedroom is:", calculate_total_power_consumption(search_room="Bedroom"))
+print("The total power consumption of all Lights are:", calculate_total_power_consumption(search_type=Light)) #Value is correct according to the input variables and formula
 print("\n")
-
-
-
 
 print("All connected devices are:\n", get_all_connected_devices())
 print("All connected devices with correct IP input are:\n", get_all_connected_devices("127.0.0.1"))

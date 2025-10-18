@@ -31,8 +31,6 @@ def test_find_unknown_method(thing):
     except NotImplementedError:
         pass
 
-
-
 #----------------------------[TEST SET]----------------------------
 #Light
 bedroom_light = make(Light, "Bedtable Light", "Bedroom", 300, "off", 70)
