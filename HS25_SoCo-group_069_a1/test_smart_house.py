@@ -3,19 +3,6 @@ import argparse
 from smart_house import *
 
 #====================================[DEVICE METHOD TESTS]====================================
-def test_get_power_consumption(thing):
-    result = call(thing, "get_power_consumption")
-    if thing["status"] == "off":
-        assert result == "Device is currently turned off, thus not consuming any power."
-
-    elif thing["_class"]["_classname"] == "Light":
-        assert result == round(thing["base_power"] * (thing["brightness"] / 100))
-
-    elif thing["_class"]["_classname"] == "Thermostat":
-        assert result == round(thing["base_power"] * abs(thing["target_temperature"] - thing["room_temperature"]))
-        
-    elif thing["_class"]["_classname"] == "Camera":
-        assert result == round(thing["base_power"] * thing["resolution_factor"])
 
 def test_toggle_status(thing):
     if thing["status"] == "off":
@@ -67,6 +54,22 @@ def test_describe_light(thing):
 
         assert call(thing, "describe_device") ==  f"The {name} [{type}] is located in the {location}, is currently {status}, and is currently set to {brightness}% brightness."
 
+def test_get_power_consumption_light(thing):
+    result = call(thing, "get_power_consumption")
+    if thing["status"] == "off":
+        assert result == "Device is currently turned off, thus not consuming any power."
+
+    elif thing["_class"]["_classname"] == "Light":
+        assert result == round(thing["base_power"] * (thing["brightness"] / 100))
+
+def test_toggle_status_light(thing):
+    if thing["status"] == "off":
+        call(thing, "toggle_status")
+        assert thing["status"] == "on"
+    else:
+        call(thing, "toggle_status")
+        assert thing["status"] == "off"
+
 #====================================[THERMOSTAT METHOD TESTS]====================================
 
 def test_describe_thermostat(thing):
@@ -85,7 +88,23 @@ def test_describe_thermostat(thing):
 
         connected_string = f"connected to server {ip}" if connected else "disconnected"
         assert call(thing, "describe_device") == f"The {name} [{type}] is located in the {location}, is currently {status}, and is currently set to {target_temperature} degrees Celsius in a {room_temperature} degree room. It is currently {connected_string}."
-    
+
+def test_get_power_consumption_thermostat(thing):
+    result = call(thing, "get_power_consumption")
+    if thing["status"] == "off":
+        assert result == "Device is currently turned off, thus not consuming any power."
+
+    elif thing["_class"]["_classname"] == "Thermostat":
+        assert result == round(thing["base_power"] * abs(thing["target_temperature"] - thing["room_temperature"]))
+
+def test_toggle_status_thermostat(thing):
+    if thing["status"] == "off":
+        call(thing, "toggle_status")
+        assert thing["status"] == "on"
+    else:
+        call(thing, "toggle_status")
+        assert thing["status"] == "off"
+
 def test_set_target_temperature_thermostat(thing):
     if thing["_class"]["_classname"] != "Thermostat":
         return
@@ -97,7 +116,7 @@ def test_get_target_temperature_thermostat(thing):
         return
     res = call(thing, "get_target_temperature")
     assert thing["target_temperature"] == res
-    
+
 
 #====================================[CAMERA METHOD TESTS]====================================
         
@@ -115,7 +134,16 @@ def test_describe_camera(thing):
 
         connected_string = f"connected to server {ip}" if connected else "disconnected"
         assert call(thing, "describe_device") == f"The {name} [{type}] is located in the {location}, is currently {status}, and is a {resolution} resolution sensor. It is currently {connected_string}."
-    
+
+def test_get_power_consumption_camera(thing):
+    result = call(thing, "get_power_consumption")
+    if thing["status"] == "off":
+        assert result == "Device is currently turned off, thus not consuming any power."
+ 
+    elif thing["_class"]["_classname"] == "Camera":
+        assert result == round(thing["base_power"] * thing["resolution_factor"])
+
+
 def test_camera_resolution(thing):
     if thing["_class"]["_classname"] != "Camera":
         return
@@ -126,6 +154,13 @@ def test_camera_resolution(thing):
     else:
         assert thing["resolution"] == "high"
 
+def test_toggle_status_camera(thing):
+    if thing["status"] == "off":
+        call(thing, "toggle_status")
+        assert thing["status"] == "on"
+    else:
+        call(thing, "toggle_status")
+        assert thing["status"] == "off"
 
 #====================================[MANAGEMENT METHOD TESTS]====================================
 
@@ -232,6 +267,7 @@ def run_tests(select=None):
     print(f"{results['error']} ERRORS: \n{objects["ERROR"]}")
     
 if __name__ == "__main__":
+    #example usage: python test_smart_house.py --select thermostat
     p = argparse.ArgumentParser()
     p.add_argument("--select", type=str)
     args = p.parse_args()
