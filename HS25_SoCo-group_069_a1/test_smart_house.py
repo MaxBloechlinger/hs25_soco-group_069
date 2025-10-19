@@ -1,4 +1,5 @@
 import time
+import argparse
 from smart_house import *
 
 #====================================[DEVICE METHOD TESTS]====================================
@@ -139,7 +140,7 @@ def tearDown():
     ALL_THINGS = []
 
 
-def run_tests():
+def run_tests(select=None):
     results = {"pass": 0, "fail": 0, "error": 0}
     total_time = 0
     objects = {"PASS": [], "FAIL": [], "ERROR": []}
@@ -147,6 +148,10 @@ def run_tests():
     for (name, test) in globals().items():
         if not name.startswith("test_"):
             continue
+        
+        if select:
+            if select.lower() not in name.lower():
+                continue
 
         start_time = time.perf_counter()
         res = ""
@@ -170,7 +175,7 @@ def run_tests():
                 objects["ERROR"].append(f"{thing["name"]} crashed {name[5:]}")
 
         tearDown()
-        
+
         end_time = time.perf_counter()
         duration = end_time - start_time
         total_time += duration
@@ -184,5 +189,5 @@ def run_tests():
     print(f"{results['fail']} FAILED: \n{objects["FAIL"]}")
     print(f"{results['error']} ERRORS: \n{objects["ERROR"]}")
     
-
-run_tests()
+if __name__ == "__main__":
+    run_tests(select=None)
