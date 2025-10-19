@@ -131,11 +131,14 @@ def run_tests():
     results = {"pass": 0, "fail": 0, "error": 0}
     total_time = 0
     objects = {"PASS": [], "FAIL": [], "ERROR": []}
+
     for (name, test) in globals().items():
         if not name.startswith("test_"):
             continue
+
         start_time = time.perf_counter()
         res = ""
+
         for thing in ALL_THINGS:
             try:
                 test(thing)
@@ -153,13 +156,13 @@ def run_tests():
                 objects["ERROR"].append(f"{thing["name"]} crashed {name[5:]}")
 
         end_time = time.perf_counter()
-        final_time = end_time - start_time
-        total_time += final_time
+        duration = end_time - start_time
+        total_time += duration
         
-        print(f"{name[5:]} {res}, ran in {total_time:.6f}s\n")
+        print(f"{name[5:]} {res}, ran in {duration:.6f}s\n")
         
 
-    print(f"All tests were run in: {total_time:.6f}s\n")
+    print(f"Total Runtime: {total_time:.6f}s\n")
 
     print(f"{results['pass']} PASSED: \n{objects["PASS"]}")
     print(f"{results['fail']} FAILED: \n{objects["FAIL"]}")
