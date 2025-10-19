@@ -27,15 +27,16 @@ def call(thing, method_name, *args, **kwargs):
     return method(thing, *args, **kwargs)
 
 def make(cls, *args, **kwargs):
-    return cls["_new"](*args, **kwargs)
+    obj = cls["_new"](*args, **kwargs)
+    if cls["_classname"] in ["Light", "Camera", "Thermostat"]:
+        ALL_DEVICES.append(obj)
+    return obj
 
 
 #---------------------[DEVICE PARENT CLASS]---------------------
 
 #Abstract "Device" Methods
 def get_power_consumption(thing):
-    if thing["status"] == "off":
-        return "0.0, device is turned off"
     raise NotImplementedError("get_power_consumption not implemented")
 
 
@@ -54,7 +55,8 @@ def device_new(name: str, location: str, base_power: float, status: str):
         "name": name,
         "location": location,
         "base_power": base_power,
-        "status": status
+        "status": status,
+        "_class": Device
     }
 
 #Parent Class "Device"
@@ -84,7 +86,8 @@ def is_connected(thing):
 def connectable_new(connected: bool = False, ip: str= None):
     return {
         "connected": connected,
-        "ip": ip
+        "ip": ip,
+        "_class": Connectable
     }
     
 #Parent Class "Connectable"
@@ -107,6 +110,8 @@ def light_new(
         "brightness": brightness,
         "_class": Light
     }
+    
+
     
 #Abstract Methods for "Light"
 def light_describe_device(thing):
@@ -263,22 +268,18 @@ if __name__ == "__main__":
 
 #---------------------[Step 2]---------------------
 
+
+ALL_DEVICES = []
+
 def smart_house_management_new():
     return {
         "_class": SmartHouseManagement    
     }
     
 
-def get_all_devices():
-    all_devices = []
-    for name, obj in globals().items():
-        if isinstance(obj, dict) and "_class" in obj:
-            all_devices.append(obj)
-    return all_devices
-
-def calculate_total_power_consumption(search_type=None, search_room=None):
+def calculate_total_power_consumption(thing, search_type=None, search_room=None):
     res = 0
-    for thing in get_all_devices():
+    for thing in ALL_DEVICES:
         if thing["status"] != "on":
             continue
         if ((search_type is not None and thing["_class"] != search_type) or 
@@ -287,18 +288,18 @@ def calculate_total_power_consumption(search_type=None, search_room=None):
         res += call(thing, "get_power_consumption")
     return res
 
-def get_all_device_description(search_type=None, search_room=None):
+def get_all_device_description(thing, search_type=None, search_room=None):
     descriptions = []
-    for thing in get_all_devices():
+    for thing in ALL_DEVICES:
         if ((search_type is not None and thing["_class"] != search_type) or 
             (search_room is not None and thing["location"] != search_room)):
             continue
         descriptions.append(call(thing,"describe_device"))
     return descriptions
 
-def get_all_connected_devices(ip=None):
+def get_all_connected_devices(thing, ip=None):
     results = []
-    for thing in get_all_devices():
+    for thing in ALL_DEVICES:
         if thing["_class"] in [Thermostat, Camera]:
             if thing["status"] == "on" and thing["connected"]:
                 if ip is None or thing["ip"] == ip:
