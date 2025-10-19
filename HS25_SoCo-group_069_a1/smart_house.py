@@ -9,8 +9,8 @@ def find(cls, method_name):
     if cls["_parent"] == None:
         raise NotImplementedError(f"{method_name} not implemented by {cls}")
 
-    #double parents
-    if isinstance(cls["_parent"],list) and len(cls["_parent"]) == 2:
+    #multiple parents
+    if isinstance(cls["_parent"],list) and len(cls["_parent"]) >= 2:
         for parent in cls["_parent"]:
             try: 
                 return find(parent, method_name)
