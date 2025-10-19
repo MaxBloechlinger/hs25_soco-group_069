@@ -1,3 +1,4 @@
+
 #---------------------[CALL & CONSTRUCTOR FUNCTIONS]---------------------
 def find(cls, method_name):
     if cls is None:
@@ -21,12 +22,12 @@ def find(cls, method_name):
     #single parent
     return find(cls["_parent"], method_name)
 
-def call(thing, method_name, *args):
+def call(thing, method_name, *args, **kwargs):
     method = find(thing["_class"], method_name)
-    return method(thing, *args)
+    return method(thing, *args, **kwargs)
 
-def make(cls, *args):
-    return cls["_new"](*args)
+def make(cls, *args, **kwargs):
+    return cls["_new"](*args, **kwargs)
 
 
 #---------------------[DEVICE PARENT CLASS]---------------------
@@ -136,19 +137,6 @@ Light = {
     "get_power_consumption": light_get_power_consumption
 }
 
-#Light test
-print("======================[Light test]======================")
-bedroom_light = make(Light, "Bedtable", "Bedroom", 300, "off", 70)
-light_describe = call(bedroom_light, "describe_device")
-light_power = call(bedroom_light, "get_power_consumption")
-print(f"Description: {light_describe}")
-print(f"POWER: {light_power}")
-call(bedroom_light, "toggle_status")
-light_power = call(bedroom_light, "get_power_consumption")
-print(f"POWER: {light_power}")
-print("\n")
-
-
 #---------------------[THERMOSTAT CLASS]---------------------
 
 #Abstract Methods for "Thermostat"
@@ -202,21 +190,6 @@ Thermostat = {
     "get_target_temperature": get_target_temperature
 }
 
-#Thermostat test
-print("======================[Thermostat test]======================")
-bathroom_thermostat = make(Thermostat, "Towel", "Bathroom", 1200, "on", 18, 24, True, "127.0.0.1")
-
-thermostat_describe = call(bathroom_thermostat, "describe_device")
-print(thermostat_describe)
-thermostat_power = call(bathroom_thermostat, "get_power_consumption")
-print(thermostat_power)
-thermostat_get = call(bathroom_thermostat, "get_target_temperature")
-thermostat_set = call(bathroom_thermostat, "set_target_temperature", 10)
-thermostat_describe = call(bathroom_thermostat, "describe_device")
-print(thermostat_describe)
-thermostat_power = call(bathroom_thermostat, "get_power_consumption")
-print(thermostat_power)
-print("\n")
 
 #---------------------[CAMERA CLASS]---------------------
 
@@ -268,28 +241,7 @@ Camera = {
 }
 
 
-#Camera test
-print("======================[Camera test]======================")
-living_room_camera = make(Camera, "New RGB", "Living Room", 500, "on", 8, True, "127.0.0.1")
-#print(camera_describe_device(living_room_camera))
-camera_describe = call(living_room_camera, "describe_device")
-camera_power = call(living_room_camera, "get_power_consumption")
-
-print(camera_describe)
-print(camera_power)
-camera_power = call(living_room_camera, "get_power_consumption")
-
-#call(living_room_camera, "toggle_status")
-camera_power = call(living_room_camera, "get_power_consumption")
-print(f"POWER: {camera_power}")
-
-
-
 #---------------------[Step 2]---------------------
-
-
-print("======================[Smart House Management test]======================\n")
-
 
 
 def get_all_devices():
@@ -341,19 +293,4 @@ SmartHouseManagement = {
     "get_all_connected_devices": get_all_connected_devices,
 }
 
-print("Device Description Test:\n")
-print(get_all_device_description(search_type=None, search_room="Bedroom"))
-print(get_all_device_description(search_type=Light, search_room=None))
-print(get_all_device_description(search_type=None, search_room="Living Room"))
-print(get_all_device_description(search_type=Thermostat, search_room="Bathroom"))
-print("\n")
 
-print("Power Consumption Test\n")
-print("The total power consumption is:", calculate_total_power_consumption())
-print("The total power consumption in the bedroom is:", calculate_total_power_consumption(search_room="Bedroom"))
-print("The total power consumption of all Lights are:", calculate_total_power_consumption(search_type=Light)) #Value is correct according to the input variables and formula
-print("\n")
-
-print("All connected devices are:\n", get_all_connected_devices())
-print("All connected devices with correct IP input are:\n", get_all_connected_devices("127.0.0.1"))
-print("All connected devices with wrong IP input are:\n", get_all_connected_devices("123.345.1.100"))
