@@ -39,6 +39,18 @@ def test_connect_status(thing):
         assert thing["connected"] == True
         assert thing["ip"] == ip
 
+def test_disconnect(thing):
+    if isinstance(thing["_class"]["_parent"], list):
+        call(thing, "disconnect")
+        assert thing["connected"] == False
+        
+def test_connected(thing):
+    if isinstance(thing["_class"]["_parent"], list):
+        call(thing, "connect", "1.2.3.4")
+        assert call(thing, "is_connected") == True
+        call(thing, "disconnect")
+        assert call(thing, "is_connected") == False
+
 
 #====================================[LIGHT METHOD TESTS]====================================
 def test_describe_light(thing):
@@ -72,6 +84,19 @@ def test_describe_thermostat(thing):
 
         connected_string = f"connected to server {ip}" if connected else "disconnected"
         assert call(thing, "describe_device") == f"The {name} [{type}] is located in the {location}, is currently {status}, and is currently set to {target_temperature} degrees Celsius in a {room_temperature} degree room. It is currently {connected_string}."
+    
+def test_target_temp(thing):
+    if thing["_class"]["_classname"] != "Thermostat":
+        return
+    call(thing, "set_target_temperature", 20)
+    assert thing["target_temperature"] == 20
+    
+def test_get_target_temp(thing):
+    if thing["_class"]["_classname"] != "Thermostat":
+        return
+    call(thing, "get_target_temperature") == 21
+    assert call(thing, "target_temperature") == 21
+    
 
 #====================================[CAMERA METHOD TESTS]====================================
         
@@ -89,6 +114,16 @@ def test_describe_camera(thing):
 
         connected_string = f"connected to server {ip}" if connected else "disconnected"
         assert call(thing, "describe_device") == f"The {name} [{type}] is located in the {location}, is currently {status}, and is a {resolution} resolution sensor. It is currently {connected_string}."
+    
+def test_camera_resolution(thing):
+    if thing["_class"]["_classname"] != "Camera":
+        return
+    if thing["resolution_factor"] < 5:
+        assert thing["resolution"] == "low"
+    elif thing["resolution_factor"] < 10:
+        assert thing["resolution"] == "medium"
+    else:
+        assert thing["resolution"] == "high"
 
 
 #====================================[MANAGEMENT METHOD TESTS]====================================
