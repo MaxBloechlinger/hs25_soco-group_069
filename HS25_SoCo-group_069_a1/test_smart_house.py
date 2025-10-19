@@ -95,8 +95,8 @@ def test_target_temp(thing):
 def test_get_target_temp(thing):
     if thing["_class"]["_classname"] != "Thermostat":
         return
-    call(thing, "get_target_temperature") == 21
-    assert call(thing, "target_temperature") == 21
+    res = call(thing, "get_target_temperature")
+    assert thing["target_temperature"] == res
     
 
 #====================================[CAMERA METHOD TESTS]====================================
