@@ -240,6 +240,10 @@ Camera = {
    
 }
 
+livingroomcamera = make(Camera, "New RGB Camera", "Living Room", 500, "on", 8)
+bathroomthermostat = make(Thermostat, "Towel Thermostat", "Bathroom", 1200, "on", 18, 24)
+
+
 
 #---------------------[Step 2]---------------------
 
