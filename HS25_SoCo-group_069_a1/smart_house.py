@@ -263,6 +263,11 @@ if __name__ == "__main__":
 
 #---------------------[Step 2]---------------------
 
+def smart_house_management_new():
+    return {
+        "_class": SmartHouseManagement    
+    }
+    
 
 def get_all_devices():
     all_devices = []
@@ -308,9 +313,9 @@ def get_all_connected_devices(ip=None):
 SmartHouseManagement = {
     "_classname": "SmartHouseManagement",
     "_parent": None,
+    "_new": smart_house_management_new,
     "calculate_total_power_consumption": calculate_total_power_consumption,
     "get_all_device_description": get_all_device_description,
-    "get_all_connected_devices": get_all_connected_devices,
+    "get_all_connected_devices": get_all_connected_devices
 }
-
 
