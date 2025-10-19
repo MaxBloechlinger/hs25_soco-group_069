@@ -1,10 +1,25 @@
 #---------------------[CALL & CONSTRUCTOR FUNCTIONS]---------------------
 def find(cls, method_name):
-    while cls is not None:
-        if method_name in cls:
-            return cls[method_name]
-        cls = cls["_parent"]
-    raise NotImplementedError("method_name")
+    if cls is None:
+        raise NotImplementedError(method_name)
+    if method_name in cls:
+        return cls[method_name]
+
+    #no parent
+    if cls["_parent"] == None:
+        raise NotImplementedError(f"{method_name} not implemented by {cls}")
+
+    #multiple parents
+    if isinstance(cls["_parent"],list) and len(cls["_parent"]) >= 2:
+        for parent in cls["_parent"]:
+            try: 
+                return find(parent, method_name)
+            except NotImplementedError: 
+                continue
+        raise NotImplementedError(method_name)
+        
+    #single parent
+    return find(cls["_parent"], method_name)
 
 def call(thing, method_name, *args):
     method = find(thing["_class"], method_name)
