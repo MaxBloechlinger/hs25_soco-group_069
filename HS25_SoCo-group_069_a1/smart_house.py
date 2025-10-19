@@ -290,11 +290,18 @@ print(f"POWER: {camera_power}")
 
 print("======================[Smart House Management test]======================\n")
 
-ALL_THINGS = [bedroom_light, bathroom_thermostat, living_room_camera]
+
+
+def get_all_devices():
+    all_devices = []
+    for name, obj in globals().items():
+        if isinstance(obj, dict) and "_class" in obj:
+            all_devices.append(obj)
+    return all_devices
 
 def calculate_total_power_consumption(search_type=None, search_room=None):
     res = 0
-    for thing in ALL_THINGS:
+    for thing in get_all_devices():
         if thing["status"] != "on":
             continue
         if ((search_type is not None and thing["_class"] != search_type) or 
@@ -305,7 +312,7 @@ def calculate_total_power_consumption(search_type=None, search_room=None):
 
 def get_all_device_description(search_type=None, search_room=None):
     descriptions = []
-    for thing in ALL_THINGS:
+    for thing in get_all_devices():
         if ((search_type is not None and thing["_class"] != search_type) or 
             (search_room is not None and thing["location"] != search_room)):
             continue
@@ -314,7 +321,7 @@ def get_all_device_description(search_type=None, search_room=None):
 
 def get_all_connected_devices(ip=None):
     results = []
-    for thing in ALL_THINGS:
+    for thing in get_all_devices():
         if thing["_class"] in [Thermostat, Camera]:
             if thing["status"] == "on" and thing["connected"]:
                 if ip is None or thing["ip"] == ip:
