@@ -28,7 +28,7 @@ def test_toggle_status(thing):
 def test_connect_ip(thing):
     if isinstance(thing["_class"]["_parent"], list):
         ip = "8.8.8.8"
-        connect(thing, ip)
+        call(thing, "connect", ip)
         assert thing["ip"] == ip
         assert thing["connected"] == True
 
@@ -106,6 +106,8 @@ def test_find_unknown_method(thing):
         assert False, "Expected NotImplementedError for unknown method"
     except NotImplementedError:
         pass
+    
+
 
 #----------------------------[TEST SET]----------------------------
 #Light
@@ -127,6 +129,15 @@ ALL_THINGS = [
     living_room_camera, garage_camera, kitchen_camera
     ]
 
+
+
+
+def setUp():
+    pass
+
+def tearDown(): #Not used but assignment states possibly should be in the code
+    pass
+
 #setup func
 def run_tests():
     results = {"pass": 0, "fail": 0, "error": 0}
@@ -142,7 +153,7 @@ def run_tests():
                 test(thing)
                 results["pass"] += 1
                 res = "passed"
-                objects["PASS"].append(f"{thing["name"]} passed {name[5:]}")
+                objects["PASS"].append(f"{thing["name"]} passed {name[5:]}") #requires newes python version to run 
             except AssertionError:
                 results["fail"] += 1
                 res = "failed"
