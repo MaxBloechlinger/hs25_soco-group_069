@@ -1,5 +1,7 @@
 
 #---------------------[CALL & CONSTRUCTOR FUNCTIONS]---------------------
+ALL_DEVICES = []
+
 def find(cls, method_name):
     if cls is None:
         raise NotImplementedError(method_name)
@@ -269,7 +271,7 @@ if __name__ == "__main__":
 #---------------------[Step 2]---------------------
 
 
-ALL_DEVICES = []
+
 
 def smart_house_management_new():
     return {
