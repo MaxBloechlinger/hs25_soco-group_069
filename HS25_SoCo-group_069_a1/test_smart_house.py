@@ -110,35 +110,35 @@ def test_find_unknown_method(thing):
 
 
 #----------------------------[TEST SET]----------------------------
-#Light
-bedroom_light = make(Light, "Bedtable Light", "Bedroom", 300, "off", 70)
-basement_lava_lamp = make(Light, "Basement Lava Lamp", "Basement", 100, "on", 10)
-closet_light = make(Light, "Closet Light", "Closet", 20, "on", 50) #light class inherits only from device, so no ip tests neccessary
-#Thermostat
-bathroom_thermostat = make(Thermostat, "Towel Thermostat", "Bathroom", 1200, "on", 18, 24)
-sauna_thermostat = make(Thermostat, "Sauna Thermostat", "Sauna", 500, "on", 20, 80)
-office_thermostat = make(Thermostat, "Office Heater", "Office", 100, "on", 17, 23, True, "192.168.1.1")
-#Camera
-living_room_camera = make(Camera, "Livingroom Camera", "Living Room", 500, "on", 8)
-garage_camera = make(Camera, "Garage Peeker", "Garage", 200, "on", 20)
-kitchen_camera = make(Camera, "Scooby Cam", "Living Room", 500, "on", 4, True, "192.168.1.1")
 
-ALL_THINGS = [
-    bedroom_light, basement_lava_lamp, closet_light,
-    bathroom_thermostat, sauna_thermostat, office_thermostat,
-    living_room_camera, garage_camera, kitchen_camera
-    ]
-
-
-
+ALL_THINGS = []
 
 def setUp():
-    pass
+    global ALL_THINGS
+    #Light
+    bedroom_light = make(Light, "Bedtable Light", "Bedroom", 300, "off", 70)
+    basement_lava_lamp = make(Light, "Basement Lava Lamp", "Basement", 100, "on", 10)
+    closet_light = make(Light, "Closet Light", "Closet", 20, "on", 50) #light class inherits only from device, so no ip tests neccessary
+    #Thermostat
+    bathroom_thermostat = make(Thermostat, "Towel Thermostat", "Bathroom", 1200, "on", 18, 24)
+    sauna_thermostat = make(Thermostat, "Sauna Thermostat", "Sauna", 500, "on", 20, 80)
+    office_thermostat = make(Thermostat, "Office Heater", "Office", 100, "on", 17, 23, True, "192.168.1.1")
+    #Camera
+    living_room_camera = make(Camera, "Livingroom Camera", "Living Room", 500, "on", 8)
+    garage_camera = make(Camera, "Garage Peeker", "Garage", 200, "on", 20)
+    kitchen_camera = make(Camera, "Scooby Cam", "Living Room", 500, "on", 4, True, "192.168.1.1")
 
-def tearDown(): #Not used but assignment states possibly should be in the code
-    pass
+    ALL_THINGS = [
+        bedroom_light, basement_lava_lamp, closet_light,
+        bathroom_thermostat, sauna_thermostat, office_thermostat,
+        living_room_camera, garage_camera, kitchen_camera
+        ]
 
-#setup func
+def tearDown():
+    global ALL_THINGS
+    ALL_THINGS = []
+
+
 def run_tests():
     results = {"pass": 0, "fail": 0, "error": 0}
     total_time = 0
@@ -150,6 +150,8 @@ def run_tests():
 
         start_time = time.perf_counter()
         res = ""
+
+        setUp()
 
         for thing in ALL_THINGS:
             try:
@@ -167,6 +169,8 @@ def run_tests():
                 res = "crashed"
                 objects["ERROR"].append(f"{thing["name"]} crashed {name[5:]}")
 
+        tearDown()
+        
         end_time = time.perf_counter()
         duration = end_time - start_time
         total_time += duration
