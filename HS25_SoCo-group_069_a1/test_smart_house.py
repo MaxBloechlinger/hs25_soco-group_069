@@ -86,13 +86,13 @@ def test_describe_thermostat(thing):
         connected_string = f"connected to server {ip}" if connected else "disconnected"
         assert call(thing, "describe_device") == f"The {name} [{type}] is located in the {location}, is currently {status}, and is currently set to {target_temperature} degrees Celsius in a {room_temperature} degree room. It is currently {connected_string}."
     
-def test_target_temp(thing):
+def test_set_target_temperature_thermostat(thing):
     if thing["_class"]["_classname"] != "Thermostat":
         return
     call(thing, "set_target_temperature", 20)
     assert thing["target_temperature"] == 20
     
-def test_get_target_temp(thing):
+def test_get_target_temperature_thermostat(thing):
     if thing["_class"]["_classname"] != "Thermostat":
         return
     res = call(thing, "get_target_temperature")
@@ -183,10 +183,6 @@ def run_tests(select=None):
     for (name, test) in globals().items():
         if not name.startswith("test_"):
             continue
-        
-        if select:
-            if select.lower() not in name.lower():
-                continue
 
         start_time = time.perf_counter()
         res = ""
@@ -194,20 +190,31 @@ def run_tests(select=None):
         setUp()
 
         for thing in ALL_THINGS:
+            if select:
+                #skip tests that don't match selection
+                if select.lower() not in name.lower():
+                    continue
+                #skip tests that don't match thing
+                if select.lower() == "light" and thing["_class"]["_classname"] != "Light":
+                    continue
+                if select.lower() == "thermostat" and thing["_class"]["_classname"] != "Thermostat":
+                    continue
+                if select.lower() == "camera" and thing["_class"]["_classname"] != "Camera":
+                    continue
             try:
                 test(thing)
                 results["pass"] += 1
                 res = "passed"
-                objects["PASS"].append(f"{thing["name"]} passed {name[5:]}") #requires newes python version to run 
+                objects["PASS"].append(f'{thing["name"]} passed {name[5:]}') 
             except AssertionError:
                 results["fail"] += 1
                 res = "failed"
-                objects["FAIL"].append(f"{thing["name"]} failed {name[5:]}")
+                objects["FAIL"].append(f'{thing["name"]} failed {name[5:]}')
                 
             except Exception:
                 results["error"] += 1
                 res = "crashed"
-                objects["ERROR"].append(f"{thing["name"]} crashed {name[5:]}")
+                objects["ERROR"].append(f'{thing["name"]} crashed {name[5:]}')
 
         tearDown()
 
@@ -225,4 +232,8 @@ def run_tests(select=None):
     print(f"{results['error']} ERRORS: \n{objects["ERROR"]}")
     
 if __name__ == "__main__":
-    run_tests(select=None)
+    p = argparse.ArgumentParser()
+    p.add_argument("--select", type=str)
+    args = p.parse_args()
+
+    run_tests(select=args.select)
