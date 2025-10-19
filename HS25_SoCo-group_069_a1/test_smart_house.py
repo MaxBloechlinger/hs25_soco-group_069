@@ -93,7 +93,8 @@ def test_describe_camera(thing):
 
 #====================================[MANAGEMENT METHOD TESTS]====================================
 
-
+def test_calculate_total_power_consumption(thing):
+    pass
 
 
 
@@ -156,10 +157,10 @@ def run_tests():
         final_time = end_time - start_time
         total_time += final_time
         
-        print(f"{name[5:]} {res}, ran in {total_time:.6f}s\n")
+        print(f"{name[5:]} {res}, ran in {final_time:.6f}s\n")
         
 
-    print(f"All tests were run in: {total_time:.6f}s\n")
+    print(f"All tests were run in: {final_time:.6f}s\n")
 
     print(f"{results['pass']} PASSED: \n{objects["PASS"]}")
     print(f"{results['fail']} FAILED: \n{objects["FAIL"]}")
