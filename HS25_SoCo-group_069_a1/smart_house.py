@@ -318,4 +318,3 @@ SmartHouseManagement = {
     "get_all_device_description": get_all_device_description,
     "get_all_connected_devices": get_all_connected_devices
 }
-
