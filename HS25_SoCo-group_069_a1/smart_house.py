@@ -249,18 +249,25 @@ def smart_house_management_new(name:str = "manager"):
 
 def calculate_total_power_consumption(thing, search_type=None, search_room=None):
     res = 0
-    for thing in ALL_THINGS:
-        if thing["status"] != "on":
+    for t in ALL_THINGS:
+        if "status" not in t:
             continue
-        if ((search_type is not None and thing["_class"]["_classname"] != search_type) or 
-            (search_room is not None and thing["location"] != search_room)):
+        if t["status"] != "on":
             continue
-        res += call(thing, "get_power_consumption")
+        if ((search_type is not None and t["_class"]["_classname"] != search_type) or 
+            (search_room is not None and t["location"] != search_room)):
+            continue
+        value = call(t, "get_power_consumption")
+        if isinstance(value, (int, float)):
+            res += value
     return res
+
 
 def get_all_device_description(thing, search_type=None, search_room=None):
     descriptions = []
     for thing in ALL_THINGS:
+        if "status" not in thing:
+            continue
         if ((search_type is not None and thing["_class"]["_classname"] != search_type) or 
             (search_room is not None and thing["location"] != search_room)):
             continue
@@ -270,6 +277,8 @@ def get_all_device_description(thing, search_type=None, search_room=None):
 def get_all_connected_devices(thing, ip=None):
     results = []
     for thing in ALL_THINGS:
+        if "status" not in thing:
+            continue
         if thing["_class"]["_classname"] in ["Thermostat", "Camera"]:
             if thing["status"] == "on" and thing["connected"]:
                 if ip is None or thing["ip"] == ip:
