@@ -164,8 +164,16 @@ def test_toggle_status_camera(thing):
 
 #====================================[MANAGEMENT METHOD TESTS]====================================
 
-def test_calculate_total_power_consumption(thing):
-    pass
+def test_calculate_total_power_consumption(thing, search_type=None, search_room=None):
+    res = 0
+    for thing in ALL_DEVICES:
+        if thing["status"] != "on":
+            continue
+        if ((search_type is not None and thing["_class"] != search_type) or 
+            (search_room is not None and thing["location"] != search_room)):
+            continue
+        res += call(thing, "get_power_consumption")
+    assert res == call(thing, "calculate_total_power_consumption", search_type, search_room)
 
 
 
@@ -197,7 +205,8 @@ def setUp():
     garage_camera = make(Camera, "Garage Peeker", "Garage", 200, "on", 20)
     kitchen_camera = make(Camera, "Scooby Cam", "Living Room", 500, "on", 4, True, "192.168.1.1")
 
-    """
+    manager = make(SmartHouseManagement)
+
     ALL_THINGS = [
         bedroom_light, basement_lava_lamp, closet_light,
         bathroom_thermostat, sauna_thermostat, office_thermostat,
