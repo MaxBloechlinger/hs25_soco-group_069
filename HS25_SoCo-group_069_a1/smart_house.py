@@ -30,11 +30,7 @@ def call(thing, method_name, *args, **kwargs):
     return method(thing, *args, **kwargs)
 
 def make(cls, *args, **kwargs):
-    obj = cls["_new"](*args, **kwargs)
-    if cls["_classname"] in ["Light", "Camera", "Thermostat"]:
-        ALL_THINGS.append(obj)
-    return obj
-
+    return cls["_new"](*args, **kwargs)
 
 #---------------------[DEVICE PARENT CLASS]---------------------
 
