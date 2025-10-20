@@ -1,10 +1,13 @@
 import time
 import argparse
 from smart_house import *
+import smart_house
 
 #====================================[DEVICE METHOD TESTS]====================================
 
 def test_toggle_status(thing):
+    if "status" not in thing:
+        return
     if thing["status"] == "off":
         call(thing, "toggle_status")
         assert thing["status"] == "on"
@@ -180,12 +183,11 @@ def test_total_power_consumption_management(thing):
     # case 1: total power
     expected = 0
     for t in ALL_THINGS:
-        if "status" not in t:  # skip manager
+        if "status" not in t:
             continue
         if t["status"] != "on":
             continue
         expected += call(t, "get_power_consumption")
-
     actual = call(thing, "calculate_total_power_consumption")
     assert actual == expected
 
@@ -197,10 +199,9 @@ def test_total_power_consumption_management(thing):
             continue
         if t["status"] != "on":
             continue
-        if t["location"] != search_room:
+        if ((search_room is not None and t["location"] != search_room)):
             continue
         expected += call(t, "get_power_consumption")
-
     actual = call(thing, "calculate_total_power_consumption", search_room=search_room)
     assert actual == expected
 
@@ -215,7 +216,6 @@ def test_total_power_consumption_management(thing):
         if t["_class"]["_classname"] != search_type:
             continue
         expected += call(t, "get_power_consumption")
-
     actual = call(thing, "calculate_total_power_consumption", search_type=search_type)
     assert actual == expected
 
@@ -259,10 +259,12 @@ def setUp():
         manager
         ]
     
+    smart_house.ALL_THINGS = ALL_THINGS #sync lists of both files
 
 def tearDown():
     global ALL_THINGS
     ALL_THINGS = []
+    smart_house.ALL_THINGS = []
 
 
 def run_tests(select=None):
