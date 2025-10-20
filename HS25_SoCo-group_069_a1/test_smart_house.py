@@ -272,10 +272,20 @@ def run_tests(select=None):
     print(f"{results['error']} ERRORS: \n{objects['ERROR']}")
  
  
+ 
 if __name__ == "__main__":
-    #example usage: python test_smart_house.py --select thermostat
+    # Example usage in terminal: 
+    # python test_smart_house.py --select thermostat --verbose
     p = argparse.ArgumentParser()
     p.add_argument("--select", type=str)
+    p.add_argument("--verbose", action="store_true")
     args = p.parse_args()
 
+    if args.verbose:
+        print("\n===[Verbose: listing all variables that start with 'test_']===")
+        for name, obj in list(globals().items()):
+            if name.startswith("test_"):
+                t = "function" if callable(obj) else type(obj).__name__
+                print(f"{name}, type: {t}")
     run_tests(select=args.select)
+
