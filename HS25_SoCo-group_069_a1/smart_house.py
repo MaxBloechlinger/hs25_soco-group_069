@@ -240,42 +240,73 @@ Camera = {
 
 def smart_house_management_new():
     return {
-        "_class": SmartHouseManagement    
+        "_class": SmartHouseManagement
     }
-    
 
 def calculate_total_power_consumption(manager, search_type=None, search_room=None):
-    res = 0
-    for device in ALL_THINGS:
-        if device["status"] != "on":
+    total = 0
+    for name, obj in globals().items():
+        if not isinstance(obj, dict):
             continue
-        if search_type is not None and device["_class"]["_classname"] != search_type:
+        if "_class" not in obj:
             continue
-        if search_room is not None and device["location"] != search_room:
+        if obj["_class"]["_classname"] == "SmartHouseManagement":
             continue
-        res += call(device, "get_power_consumption")
-    return res
+        if obj.get("status") != "on":
+            continue
+        if search_type is not None and obj["_class"]["_classname"] != search_type:
+            continue
+        if search_room is not None and obj.get("location") != search_room:
+            continue
+        try:
+            total += call(obj, "get_power_consumption")
+        except Exception:
+            pass
+    return total
+
 
 def get_all_device_description(manager, search_type=None, search_room=None):
-    descriptions = []
-    for device in ALL_THINGS:
-        if search_type is not None and device["_class"]["_classname"] != search_type:
+    descs = []
+    for name, obj in globals().items():
+        if not isinstance(obj, dict):
             continue
-        if search_room is not None and device["location"] != search_room:
+        if "_class" not in obj:
             continue
-        descriptions.append(call(device, "describe_device"))
-    return descriptions
+        if obj["_class"]["_classname"] == "SmartHouseManagement":
+            continue
+        if search_type is not None and obj["_class"]["_classname"] != search_type:
+            continue
+        if search_room is not None and obj.get("location") != search_room:
+            continue
+        try:
+            descs.append(call(obj, "describe_device"))
+        except Exception:
+            pass
+    return descs
+
 
 def get_all_connected_devices(manager, ip=None):
     results = []
-    for device in ALL_THINGS:
-        if device["_class"] in [Thermostat, Camera]:
-            if device["status"] == "on" and device["connected"]:
-                if ip is None or device["ip"] == ip:
-                    results.append({
-                        "description": call(device, "describe_device"),
-                        "power": call(device, "get_power_consumption")
-                    })
+    for name, obj in globals().items():
+        if not isinstance(obj, dict):
+            continue
+        if "_class" not in obj:
+            continue
+        if obj["_class"]["_classname"] not in ["Thermostat", "Camera"]:
+            continue
+        if obj.get("status") != "on":
+            continue
+        if not obj.get("connected"):
+            continue
+        if ip is not None and obj.get("ip") != ip:
+            continue
+        try:
+            results.append({
+                "description": call(obj, "describe_device"),
+                "power": call(obj, "get_power_consumption")
+            })
+        except Exception:
+            pass
     return results
 
 
@@ -287,7 +318,6 @@ SmartHouseManagement = {
     "get_all_device_description": get_all_device_description,
     "get_all_connected_devices": get_all_connected_devices
 }
-
 
 #---------------------[Step 1.4 & 2.2]---------------------
 
@@ -315,7 +345,6 @@ if __name__ == "__main__":
     call(bathroom_thermostat, "connect", "1.1.1.1")
     print(call(bathroom_thermostat, "is_connected"))
 
-    ALL_THINGS = [living_room_camera, bathroom_thermostat, bedroom_light]
     manager = make(SmartHouseManagement)
     print("\n=========================TOTAL POWER=========================")
     print(call(manager, "calculate_total_power_consumption"))
@@ -332,4 +361,3 @@ if __name__ == "__main__":
     print("\n=========================CONNECTED DEVICES=========================")
     print(call(manager, "get_all_connected_devices"))
 
-    ALL_THINGS = []

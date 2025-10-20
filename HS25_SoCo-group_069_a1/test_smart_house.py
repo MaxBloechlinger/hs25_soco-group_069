@@ -168,9 +168,15 @@ def test_toggle_status_camera(thing):
 
 #====================================[MANAGEMENT METHOD TESTS]====================================
 
-def test_calculate_total_power_consumption(thing):
-    pass
-
+def test_total_power_consumption(manager):
+    expected = 0
+    for dev in ALL_THINGS:
+        if dev["status"] == "on":
+            expected += call(dev, "get_power_consumption")
+    result = call(manager, "calculate_total_power_consumption")
+    print(result)
+    print(expected)
+    assert result == expected
 #"find/call" Methods tests
 
 def test_find_unknown_method(thing):
