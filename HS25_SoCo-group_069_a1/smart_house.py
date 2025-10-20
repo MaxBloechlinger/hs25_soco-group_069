@@ -1,8 +1,4 @@
 #---------------------[CALL & CONSTRUCTOR FUNCTIONS]---------------------
-
-#global device list for all objects
-ALL_THINGS = []
-
 def find(cls, method_name):
     if cls is None:
         raise NotImplementedError(method_name)
@@ -248,37 +244,38 @@ def smart_house_management_new():
     }
     
 
-def calculate_total_power_consumption(thing, search_type=None, search_room=None):
+def calculate_total_power_consumption(manager, search_type=None, search_room=None):
     res = 0
-    for thing in ALL_THINGS:
-        if thing["status"] != "on":
+    for device in ALL_THINGS:
+        if device["status"] != "on":
             continue
-        if ((search_type is not None and thing["_class"] != search_type) or 
-            (search_room is not None and thing["location"] != search_room)):
+        if search_type is not None and device["_class"]["_classname"] != search_type:
             continue
-        res += call(thing, "get_power_consumption")
+        if search_room is not None and device["location"] != search_room:
+            continue
+        res += call(device, "get_power_consumption")
     return res
 
-def get_all_device_description(thing, search_type=None, search_room=None):
+def get_all_device_description(manager, search_type=None, search_room=None):
     descriptions = []
-    for thing in ALL_THINGS:
-        if ((search_type is not None and thing["_class"] != search_type) or 
-            (search_room is not None and thing["location"] != search_room)):
+    for device in ALL_THINGS:
+        if search_type is not None and device["_class"]["_classname"] != search_type:
             continue
-        descriptions.append(call(thing,"describe_device"))
+        if search_room is not None and device["location"] != search_room:
+            continue
+        descriptions.append(call(device, "describe_device"))
     return descriptions
 
-def get_all_connected_devices(thing, ip=None):
+def get_all_connected_devices(manager, ip=None):
     results = []
-    for thing in ALL_THINGS:
-        if thing["_class"] in [Thermostat, Camera]:
-            if thing["status"] == "on" and thing["connected"]:
-                if ip is None or thing["ip"] == ip:
+    for device in ALL_THINGS:
+        if device["_class"] in [Thermostat, Camera]:
+            if device["status"] == "on" and device["connected"]:
+                if ip is None or device["ip"] == ip:
                     results.append({
-                        "description": call(thing, "describe_device"),
-                        "power": call(thing, "get_power_consumption")
+                        "description": call(device, "describe_device"),
+                        "power": call(device, "get_power_consumption")
                     })
-
     return results
 
 
@@ -292,7 +289,7 @@ SmartHouseManagement = {
 }
 
 
-#---------------------[Step 1.4]---------------------
+#---------------------[Step 1.4 & 2.2]---------------------
 
 if __name__ == "__main__":
     print("Example Instances to demonstrate functionality:\n")
@@ -312,9 +309,27 @@ if __name__ == "__main__":
     print("\n=========================Toggle Status Method=========================")
     call(living_room_camera, "toggle_status")
     print(call(living_room_camera, "describe_device"))
+    call(living_room_camera, "toggle_status")
+    print(call(living_room_camera, "describe_device"))
     print("\n=========================Connect / Disconnect=========================")
     call(bathroom_thermostat, "connect", "1.1.1.1")
     print(call(bathroom_thermostat, "is_connected"))
 
-    
+    ALL_THINGS = [living_room_camera, bathroom_thermostat, bedroom_light]
+    manager = make(SmartHouseManagement)
+    print("\n=========================TOTAL POWER=========================")
+    print(call(manager, "calculate_total_power_consumption"))
+    print("\n=========================BATHROOM POWER=========================")
+    print(call(manager, "calculate_total_power_consumption", search_room="Bathroom"))
+    print("\n=========================LIGHT POWER=========================")
+    print(call(manager, "calculate_total_power_consumption", search_type="Light"))
+    print("\n=========================DESCRIPTION ALL=========================")
+    print(call(manager, "get_all_device_description"))
+    print("\n=========================DESCRIPTION CAMERA=========================")
+    print(call(manager, "get_all_device_description", search_type="Camera"))
+    print("\n=========================DESCRIPTION BEDROOM=========================")
+    print(call(manager, "get_all_device_description", search_room="Bedroom"))
+    print("\n=========================CONNECTED DEVICES=========================")
+    print(call(manager, "get_all_connected_devices"))
+
     ALL_THINGS = []
