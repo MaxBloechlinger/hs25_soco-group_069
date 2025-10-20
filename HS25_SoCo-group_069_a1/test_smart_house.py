@@ -14,7 +14,9 @@ def test_toggle_status(thing):
         
 test_variables = "This is a variable which should not run"
 test_variables_list = [1,2,3,4]
-    
+test_string = "not a function"
+test_number = 42
+
 #====================================[CONNECTABLE METHOD TESTS]====================================
 def test_connect_ip(thing):
     if isinstance(thing["_class"]["_parent"], list):
