@@ -268,6 +268,8 @@ def get_all_device_description(thing, search_type=None, search_room=None):
     for thing in ALL_THINGS:
         if "status" not in thing:
             continue
+        if thing["status"] != "on":
+            continue
         if ((search_type is not None and thing["_class"]["_classname"] != search_type) or 
             (search_room is not None and thing["location"] != search_room)):
             continue
