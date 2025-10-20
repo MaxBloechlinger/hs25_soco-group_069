@@ -219,7 +219,7 @@ def test_total_power_consumption_management(thing):
     actual = call(thing, "calculate_total_power_consumption", search_type=search_type)
     assert actual == expected
 
-def test_get_all_device_description(thing):
+def test_get_all_device_description_management(thing):
     if thing["_class"]["_classname"] != "SmartHouseManagement":
         return
 
@@ -266,7 +266,7 @@ def test_get_all_device_description(thing):
     assert "".join(actual) == expected
 
 
-def test_get_all_connected_devices(thing):
+def test_get_all_connected_devices_management(thing):
     if thing["_class"]["_classname"] != "SmartHouseManagement":
         return
 
