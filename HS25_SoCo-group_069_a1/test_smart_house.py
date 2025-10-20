@@ -235,25 +235,23 @@ def run_tests(select=None):
         if not callable(test):
             continue
 
+        if select and select.lower() not in name.lower():
+            continue
+
         start_time = time.perf_counter()
 
         setUp()
 
-        test_passed = True
         test_status = "passed"
         
         for thing in ALL_THINGS:
-            if select:
-                #skip tests that don't match selection
-                if select.lower() not in name.lower():
-                    continue
-                #skip tests that don't match thing
-                if select.lower() == "light" and thing["_class"]["_classname"] != "Light":
-                    continue
-                if select.lower() == "thermostat" and thing["_class"]["_classname"] != "Thermostat":
-                    continue
-                if select.lower() == "camera" and thing["_class"]["_classname"] != "Camera":
-                    continue
+            classname = thing["_class"]["_classname"].lower()
+            if "light" in name and classname != "light":
+                continue
+            if "thermostat" in name and classname != "thermostat":
+                continue
+            if "camera" in name and classname != "camera":
+                continue
             try:
                 test(thing)
                 results["pass"] += 1
