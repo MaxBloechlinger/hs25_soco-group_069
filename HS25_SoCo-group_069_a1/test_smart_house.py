@@ -306,13 +306,11 @@ def run_tests(select=None):
                 objects["PASS"].append(f'{thing["name"]} passed {name[5:]}') 
             except AssertionError:
                 results["fail"] += 1
-                test_passed = False
                 test_status = "failed"
                 objects["FAIL"].append(f'{thing["name"]} failed {name[5:]}')
                 
             except Exception:
                 results["error"] += 1
-                test_passed = False
                 test_status = "crashed"
                 objects["ERROR"].append(f'{thing["name"]} crashed {name[5:]}')
 
