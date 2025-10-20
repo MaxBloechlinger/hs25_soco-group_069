@@ -11,6 +11,9 @@ def test_toggle_status(thing):
     else:
         call(thing, "toggle_status")
         assert thing["status"] == "off"
+        
+test_variables = "This is a variable which should not run"
+test_variables_list = [1,2,3,4]
     
 #====================================[CONNECTABLE METHOD TESTS]====================================
 def test_connect_ip(thing):
@@ -219,6 +222,9 @@ def run_tests(select=None):
 
     for (name, test) in list(globals().items()):
         if not name.startswith("test_"):
+            continue
+        
+        if not callable(test):
             continue
 
         start_time = time.perf_counter()
