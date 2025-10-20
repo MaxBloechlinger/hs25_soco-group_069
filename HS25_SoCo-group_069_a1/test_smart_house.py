@@ -173,15 +173,55 @@ def test_toggle_status_camera(thing):
 
 #====================================[MANAGEMENT METHOD TESTS]====================================
 
-def test_total_power_consumption(manager):
+def test_total_power_consumption_management(thing):
+    if thing["_class"]["_classname"] != "SmartHouseManagement":
+        return
+
+    # case 1: total power
     expected = 0
-    for dev in ALL_THINGS:
-        if dev["status"] == "on":
-            expected += call(dev, "get_power_consumption")
-    result = call(manager, "calculate_total_power_consumption")
-    print(result)
-    print(expected)
-    assert result == expected
+    for t in ALL_THINGS:
+        if "status" not in t:  # skip manager
+            continue
+        if t["status"] != "on":
+            continue
+        expected += call(t, "get_power_consumption")
+
+    actual = call(thing, "calculate_total_power_consumption")
+    assert actual == expected
+
+    # case 2: search_room
+    search_room = "Bathroom"
+    expected = 0
+    for t in ALL_THINGS:
+        if "status" not in t:
+            continue
+        if t["status"] != "on":
+            continue
+        if t["location"] != search_room:
+            continue
+        expected += call(t, "get_power_consumption")
+
+    actual = call(thing, "calculate_total_power_consumption", search_room=search_room)
+    assert actual == expected
+
+    # case 3: search_type
+    search_type = "Light"
+    expected = 0
+    for t in ALL_THINGS:
+        if "status" not in t:
+            continue
+        if t["status"] != "on":
+            continue
+        if t["_class"]["_classname"] != search_type:
+            continue
+        expected += call(t, "get_power_consumption")
+
+    actual = call(thing, "calculate_total_power_consumption", search_type=search_type)
+    assert actual == expected
+
+
+
+
 #"find/call" Methods tests
 
 def test_find_unknown_method(thing):
@@ -209,12 +249,14 @@ def setUp():
     living_room_camera = make(Camera, "Livingroom Camera", "Living Room", 500, "on", 8)
     garage_camera = make(Camera, "Garage Peeker", "Garage", 200, "on", 20)
     kitchen_camera = make(Camera, "Scooby Cam", "Living Room", 500, "on", 4, True, "192.168.1.1")
-
+    #manager
+    manager = make(SmartHouseManagement)
     
     ALL_THINGS = [
         bedroom_light, basement_lava_lamp, closet_light,
         bathroom_thermostat, sauna_thermostat, office_thermostat,
-        living_room_camera, garage_camera, kitchen_camera
+        living_room_camera, garage_camera, kitchen_camera,
+        manager
         ]
     
 
@@ -246,6 +288,10 @@ def run_tests(select=None):
         
         for thing in ALL_THINGS:
             classname = thing["_class"]["_classname"].lower()
+
+            #manager special case:
+            if "management" in name and classname != "smarthousemanagement":
+                continue
             if "light" in name and classname != "light":
                 continue
             if "thermostat" in name and classname != "thermostat":

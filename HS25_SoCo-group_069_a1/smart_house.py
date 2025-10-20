@@ -1,4 +1,8 @@
 #---------------------[CALL & CONSTRUCTOR FUNCTIONS]---------------------
+
+#global device list for all objects
+ALL_THINGS = []
+
 def find(cls, method_name):
     if cls is None:
         raise NotImplementedError(method_name)
@@ -206,7 +210,6 @@ def camera_new(name:str, location:str, base_power:float, status:str,
         "_class": Camera
     }
 
-
 def camera_get_power_consumption(thing):
     if thing["status"] != "on":
         return "Device is currently turned off, thus not consuming any power."
@@ -238,75 +241,43 @@ Camera = {
 
 #---------------------[Step 2]---------------------
 
-def smart_house_management_new():
+def smart_house_management_new(name:str = "manager"):
     return {
-        "_class": SmartHouseManagement
+        "_class": SmartHouseManagement,
+        "name": name
     }
 
-def calculate_total_power_consumption(manager, search_type=None, search_room=None):
-    total = 0
-    for name, obj in globals().items():
-        if not isinstance(obj, dict):
+def calculate_total_power_consumption(thing, search_type=None, search_room=None):
+    res = 0
+    for thing in ALL_THINGS:
+        if thing["status"] != "on":
             continue
-        if "_class" not in obj:
+        if ((search_type is not None and thing["_class"]["_classname"] != search_type) or 
+            (search_room is not None and thing["location"] != search_room)):
             continue
-        if obj["_class"]["_classname"] == "SmartHouseManagement":
-            continue
-        if obj.get("status") != "on":
-            continue
-        if search_type is not None and obj["_class"]["_classname"] != search_type:
-            continue
-        if search_room is not None and obj.get("location") != search_room:
-            continue
-        try:
-            total += call(obj, "get_power_consumption")
-        except Exception:
-            pass
-    return total
+        res += call(thing, "get_power_consumption")
+    return res
 
+def get_all_device_description(thing, search_type=None, search_room=None):
+    descriptions = []
+    for thing in ALL_THINGS:
+        if ((search_type is not None and thing["_class"]["_classname"] != search_type) or 
+            (search_room is not None and thing["location"] != search_room)):
+            continue
+        descriptions.append(call(thing,"describe_device"))
+    return descriptions
 
-def get_all_device_description(manager, search_type=None, search_room=None):
-    descs = []
-    for name, obj in globals().items():
-        if not isinstance(obj, dict):
-            continue
-        if "_class" not in obj:
-            continue
-        if obj["_class"]["_classname"] == "SmartHouseManagement":
-            continue
-        if search_type is not None and obj["_class"]["_classname"] != search_type:
-            continue
-        if search_room is not None and obj.get("location") != search_room:
-            continue
-        try:
-            descs.append(call(obj, "describe_device"))
-        except Exception:
-            pass
-    return descs
-
-
-def get_all_connected_devices(manager, ip=None):
+def get_all_connected_devices(thing, ip=None):
     results = []
-    for name, obj in globals().items():
-        if not isinstance(obj, dict):
-            continue
-        if "_class" not in obj:
-            continue
-        if obj["_class"]["_classname"] not in ["Thermostat", "Camera"]:
-            continue
-        if obj.get("status") != "on":
-            continue
-        if not obj.get("connected"):
-            continue
-        if ip is not None and obj.get("ip") != ip:
-            continue
-        try:
-            results.append({
-                "description": call(obj, "describe_device"),
-                "power": call(obj, "get_power_consumption")
-            })
-        except Exception:
-            pass
+    for thing in ALL_THINGS:
+        if thing["_class"]["_classname"] in ["Thermostat", "Camera"]:
+            if thing["status"] == "on" and thing["connected"]:
+                if ip is None or thing["ip"] == ip:
+                    results.append({
+                        "description": call(thing, "describe_device"),
+                        "power": call(thing, "get_power_consumption")
+                    })
+
     return results
 
 
@@ -316,7 +287,7 @@ SmartHouseManagement = {
     "_new": smart_house_management_new,
     "calculate_total_power_consumption": calculate_total_power_consumption,
     "get_all_device_description": get_all_device_description,
-    "get_all_connected_devices": get_all_connected_devices
+    "get_all_connected_devices": get_all_connected_devices,
 }
 
 #---------------------[Step 1.4 & 2.2]---------------------
@@ -345,7 +316,9 @@ if __name__ == "__main__":
     call(bathroom_thermostat, "connect", "1.1.1.1")
     print(call(bathroom_thermostat, "is_connected"))
 
-    manager = make(SmartHouseManagement)
+    ALL_THINGS = [living_room_camera, bathroom_thermostat, bedroom_light]
+
+    manager = make(SmartHouseManagement, "manager")
     print("\n=========================TOTAL POWER=========================")
     print(call(manager, "calculate_total_power_consumption"))
     print("\n=========================BATHROOM POWER=========================")
@@ -360,4 +333,6 @@ if __name__ == "__main__":
     print(call(manager, "get_all_device_description", search_room="Bedroom"))
     print("\n=========================CONNECTED DEVICES=========================")
     print(call(manager, "get_all_connected_devices"))
+
+    ALL_THINGS = []
 
