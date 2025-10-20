@@ -182,8 +182,6 @@ def test_find_unknown_method(thing):
 
 #----------------------------[TEST SET]----------------------------
 
-ALL_THINGS = []
-
 def setUp():
     global ALL_THINGS
     #Light
@@ -199,11 +197,13 @@ def setUp():
     garage_camera = make(Camera, "Garage Peeker", "Garage", 200, "on", 20)
     kitchen_camera = make(Camera, "Scooby Cam", "Living Room", 500, "on", 4, True, "192.168.1.1")
 
+    """
     ALL_THINGS = [
         bedroom_light, basement_lava_lamp, closet_light,
         bathroom_thermostat, sauna_thermostat, office_thermostat,
         living_room_camera, garage_camera, kitchen_camera
         ]
+    """
 
 def tearDown():
     global ALL_THINGS
@@ -216,26 +216,25 @@ def run_tests(select=None):
     objects = {"PASS": [], "FAIL": [], "ERROR": []}
 
     for (name, test) in globals().items():
+        #skip if item is not test
         if not name.startswith("test_"):
             continue
 
+        #skip tests that don't match selection
+        if select and select.lower() not in name.lower():
+                    continue
+
         start_time = time.perf_counter()
+        setUp()
         res = ""
 
-        setUp()
-
         for thing in ALL_THINGS:
+            
+            #skip tests that don't match thing
             if select:
-                #skip tests that don't match selection
-                if select.lower() not in name.lower():
+                if select.lower() not in thing["_class"]["_classname"].lower():
                     continue
-                #skip tests that don't match thing
-                if select.lower() == "light" and thing["_class"]["_classname"] != "Light":
-                    continue
-                if select.lower() == "thermostat" and thing["_class"]["_classname"] != "Thermostat":
-                    continue
-                if select.lower() == "camera" and thing["_class"]["_classname"] != "Camera":
-                    continue
+                
             try:
                 test(thing)
                 results["pass"] += 1

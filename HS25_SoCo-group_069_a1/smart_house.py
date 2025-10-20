@@ -1,6 +1,7 @@
-
 #---------------------[CALL & CONSTRUCTOR FUNCTIONS]---------------------
-ALL_DEVICES = []
+
+#global device list for all objects
+ALL_THINGS = []
 
 def find(cls, method_name):
     if cls is None:
@@ -31,7 +32,7 @@ def call(thing, method_name, *args, **kwargs):
 def make(cls, *args, **kwargs):
     obj = cls["_new"](*args, **kwargs)
     if cls["_classname"] in ["Light", "Camera", "Thermostat"]:
-        ALL_DEVICES.append(obj)
+        ALL_THINGS.append(obj)
     return obj
 
 
@@ -243,6 +244,58 @@ Camera = {
    
 }
 
+#---------------------[Step 2]---------------------
+
+def smart_house_management_new():
+    return {
+        "_class": SmartHouseManagement    
+    }
+    
+
+def calculate_total_power_consumption(thing, search_type=None, search_room=None):
+    res = 0
+    for thing in ALL_THINGS:
+        if thing["status"] != "on":
+            continue
+        if ((search_type is not None and thing["_class"] != search_type) or 
+            (search_room is not None and thing["location"] != search_room)):
+            continue
+        res += call(thing, "get_power_consumption")
+    return res
+
+def get_all_device_description(thing, search_type=None, search_room=None):
+    descriptions = []
+    for thing in ALL_THINGS:
+        if ((search_type is not None and thing["_class"] != search_type) or 
+            (search_room is not None and thing["location"] != search_room)):
+            continue
+        descriptions.append(call(thing,"describe_device"))
+    return descriptions
+
+def get_all_connected_devices(thing, ip=None):
+    results = []
+    for thing in ALL_THINGS:
+        if thing["_class"] in [Thermostat, Camera]:
+            if thing["status"] == "on" and thing["connected"]:
+                if ip is None or thing["ip"] == ip:
+                    results.append({
+                        "description": call(thing, "describe_device"),
+                        "power": call(thing, "get_power_consumption")
+                    })
+
+    return results
+
+
+SmartHouseManagement = {
+    "_classname": "SmartHouseManagement",
+    "_parent": None,
+    "_new": smart_house_management_new,
+    "calculate_total_power_consumption": calculate_total_power_consumption,
+    "get_all_device_description": get_all_device_description,
+    "get_all_connected_devices": get_all_connected_devices
+}
+
+
 #---------------------[Step 1.4]---------------------
 
 if __name__ == "__main__":
@@ -267,57 +320,5 @@ if __name__ == "__main__":
     call(bathroom_thermostat, "connect", "1.1.1.1")
     print(call(bathroom_thermostat, "is_connected"))
 
-
-#---------------------[Step 2]---------------------
-
-
-
-
-def smart_house_management_new():
-    return {
-        "_class": SmartHouseManagement    
-    }
     
-
-def calculate_total_power_consumption(thing, search_type=None, search_room=None):
-    res = 0
-    for thing in ALL_DEVICES:
-        if thing["status"] != "on":
-            continue
-        if ((search_type is not None and thing["_class"] != search_type) or 
-            (search_room is not None and thing["location"] != search_room)):
-            continue
-        res += call(thing, "get_power_consumption")
-    return res
-
-def get_all_device_description(thing, search_type=None, search_room=None):
-    descriptions = []
-    for thing in ALL_DEVICES:
-        if ((search_type is not None and thing["_class"] != search_type) or 
-            (search_room is not None and thing["location"] != search_room)):
-            continue
-        descriptions.append(call(thing,"describe_device"))
-    return descriptions
-
-def get_all_connected_devices(thing, ip=None):
-    results = []
-    for thing in ALL_DEVICES:
-        if thing["_class"] in [Thermostat, Camera]:
-            if thing["status"] == "on" and thing["connected"]:
-                if ip is None or thing["ip"] == ip:
-                    results.append({
-                        "description": call(thing, "describe_device"),
-                        "power": call(thing, "get_power_consumption")
-                    })
-
-    return results
-
-
-SmartHouseManagement = {
-    "_classname": "SmartHouseManagement",
-    "_parent": None,
-    "_new": smart_house_management_new,
-    "calculate_total_power_consumption": calculate_total_power_consumption,
-    "get_all_device_description": get_all_device_description,
-    "get_all_connected_devices": get_all_connected_devices
-}
+    ALL_THINGS = []
