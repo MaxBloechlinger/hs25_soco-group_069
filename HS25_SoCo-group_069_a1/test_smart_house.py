@@ -217,7 +217,7 @@ def run_tests(select=None):
     total_time = 0
     objects = {"PASS": [], "FAIL": [], "ERROR": []}
 
-    for (name, test) in globals().items():
+    for (name, test) in list(globals().items()):
         if not name.startswith("test_"):
             continue
 
