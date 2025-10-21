@@ -369,8 +369,8 @@ I also asked ChatGPT: can you check chat history or other histories and show me 
 
 - “duplicates appear in ALL_THINGS after multiple test runs, how do i properly clear or handle that so the power output stays the same?”
 
--"i feel we should check for duplicates to be safe in the make() func what do you think?"
+- "i feel we should check for duplicates to be safe in the make() func what do you think?"
 
--"how can i make the passed tests prints prettier?"
+- "how can i make the passed tests prints prettier?"
 
--"do these files (all files) fulfill the assignment (asg01.pdf)?"
+- "do these files (all files) fulfill the assignment (asg01.pdf)?"
