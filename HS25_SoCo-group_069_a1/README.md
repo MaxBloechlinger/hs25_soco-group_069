@@ -47,6 +47,7 @@
 - The approach we took here is that the Smart House Manager will scan the globally instantiated ALL_THINGS list where all devices should be stored.
 - This allows us to track all instantiated devices and creates a broader scope for the project if more devices would want to be added.
 - It can also be filtered with search_type and search_room if a user wants to only look up specific rooms and/or devices
+- As per specifications "Use named keyword arguments '**kwargs' to allow for selecting devices of a specific type, or located in a specific room" which we implemented into the call(...) function so if a None argument were sent into the call(...) function, it would still work, or if chosen to discriminate by device/ room a user could also choose such.
 
 ### Error Handling
 - In case the abstract "Device" methods were not to be implemented or missing we created a *raise NotImplementedError* block
@@ -201,6 +202,8 @@ There are three possible test states in the framework:
 - test_disconnect - Verifies disconnection functionality
 - test_connected - Verifies is_connected() returns correct value
 
+*For the Device and Connectable Tests (Camera & Thermostat) we split all tests into the respective subclasses so "--select" would work correctly*
+
 **Light Tests:**
 - test_describe_light - Verifies correct description format
 - test_get_power_consumption_light - Verifies power calculation formula
@@ -290,7 +293,7 @@ python test_smart_house.py --verbose
 - “How can I validate that my introspection with globals() is working correctly?”
 - "Check for correct formatting and grammar in the readme testing framework section"
 
-**Promts Used by Abraham Herzog:**
+**Prompts Used by Abraham Herzog:**
 
 - Compare the readme.me file with both python files regarding the content and give a descriptive feedback
 - Given asg01(Project 1 File), how does our implementation look like - *all files were uploaded to the LLM here*
