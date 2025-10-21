@@ -20,11 +20,13 @@
 - We implemented a _class_ system without actually using classes, only plain dictionaries as this was a given requirement for the assignment.
 
 **The Class Dictionaries**
+
 - They define the methods of the object and have attribute: '\_new' which references the constructor for new instances
-- Can have a '_parent' (or multiple)
+- Can have a '\_parent' (or multiple)
 
 **Instance Dictionaries**
-- Stores the given information/ state of the object and has a '_class' attribute which points to the '_class' dictionary.
+
+- Stores the given information/ state of the object and has a '\_class' attribute which points to the '\_class' dictionary.
 
 ### Method Calls
 
@@ -39,8 +41,9 @@
   **Why we chose this design** - We tried to adhere as closely to the given format and outline defined in the book: _Software Design by Example, Chapter 2_
 
 ### Multiple Inheritance Implementation
-- We achieved this in our find() functions by checking whether *"_parent"* has len >= 2 which then iterates through the list with a try, except block. 
-- Will raise NotImplementedError if the *"_parent"* abstract method is called.
+
+- We achieved this in our find() functions by checking whether _"\_parent"_ has len >= 2 which then iterates through the list with a try, except block.
+- Will raise NotImplementedError if the _"\_parent"_ abstract method is called.
 - Is relatively simple and allows for Camera & Thermostat to inherit from both Device and Connectable
 
 ### Smart House Manager
@@ -48,13 +51,14 @@
 - The approach we took here is that the Smart House Manager will scan the globally instantiated ALL_THINGS list where all devices should be stored.
 - This allows us to track all instantiated devices and creates a broader scope for the project if more devices would want to be added.
 - It can also be filtered with search_type and search_room if a user wants to only look up specific rooms and/or devices
-- As per specifications, "Use named keyword arguments '**kwargs' to allow for selecting devices of a specific type, or located in a specific room", which we implemented into the call(...) function so if a None argument were sent into the call(...) function, it would still work, or if chosen to discriminate by device/ room a user could also choose such.
+- As per specifications, "Use named keyword arguments '\*\*kwargs' to allow for selecting devices of a specific type, or located in a specific room", which we implemented into the call(...) function so if a None argument were sent into the call(...) function, it would still work, or if chosen to discriminate by device/ room a user could also choose such.
 
 ### Error Handling
-- In case the abstract "Device" methods were not to be implemented or missing we created a *raise NotImplementedError* block.
-- The same goes for the *find()* function, if no parent or method can't be found we raise a *NotImplementedError*.
-- The Management Methods, *(defined below)*, ignores attributes like status, which stem from non-device objects - Smart House Management instances - as to not call Smart House Management methods on itself.
-- When devices are off we wanted to return a string message - seen in the *get_power_consumption* methods, to create a more friendly and clear message, instead of a 0.
+
+- In case the abstract "Device" methods were not to be implemented or missing we created a _raise NotImplementedError_ block.
+- The same goes for the _find()_ function, if no parent or method can't be found we raise a _NotImplementedError_.
+- The Management Methods, _(defined below)_, ignores attributes like status, which stem from non-device objects - Smart House Management instances - as to not call Smart House Management methods on itself.
+- When devices are off we wanted to return a string message - seen in the _get_power_consumption_ methods, to create a more friendly and clear message, instead of a 0.
 
 ## STEP 01
 
@@ -73,7 +77,7 @@ Methods:
 - toggle_status() - Switches the status of the instance being sent into the function to either "on" or "off".
 - get_power_consumption() - [**abstract**].
 - describe_device() - [**abstract**].
-- device_new(...) - Constructs a new dictionary, an instance of Device. The "_class" is set to Device.
+- device_new(...) - Constructs a new dictionary, an instance of Device. The "\_class" is set to Device.
 
 ### Connectable Parent Class
 
@@ -86,7 +90,7 @@ Methods:
 - connect(ip) Sets the status of connected to **True** and stores the ip address.
 - disconnect() Sets the status of connected to **False**.
 - is_connected() - Returns the status of the connection.
-- connectable_new(...) Constructs a new dictionary, an instance of Connectable. The "_class" is set to Connectable.
+- connectable_new(...) Constructs a new dictionary, an instance of Connectable. The "\_class" is set to Connectable.
 
 ### Light Subclass
 
@@ -96,7 +100,7 @@ Attributes:
 
 Methods:
 
-- light_new(...) - Constructs a new instance with its "_class" set to Light and "_parent" set to **Device**.
+- light_new(...) - Constructs a new instance with its "\_class" set to Light and "\_parent" set to **Device**.
 - light_describe_device() - Returns all relevant information stored in the Light instance formatted for human readability.
 - light_get_power_consumption() - If on, returns the power consumption with formula: round(base_power\*(brightness / 100)). Otherwise returns a string indicating the device is off.
 
@@ -108,11 +112,11 @@ Attributes:
 
 Methods:
 
-- thermostat_get_power_consumption() - If on, returns the power consumption with formula: round(base_power * abs(target_temperature - room_temperature)).
+- thermostat_get_power_consumption() - If on, returns the power consumption with formula: round(base_power \* abs(target_temperature - room_temperature)).
 - thermostat_describe_device() - Returns all relevant information stored in the Thermostat instance formatted for human readability.
 - set_target_temperature(new_temperature) - Sets the temperature the instance should adopt.
 - get_target_temperature() - Returns the set target temperature of the instance.
-- thermostat_new(...) -  Constructs a new instance with its "_class" set to Thermostat and "_parent" set to [**Device**, **Connectable**].
+- thermostat_new(...) - Constructs a new instance with its "\_class" set to Thermostat and "\_parent" set to [**Device**, **Connectable**].
 
 ### Camera Subclass
 
@@ -122,9 +126,11 @@ Attributes:
 
 Methods:
 
-- camera_new(...) - Constructs a new instance with its "_class" set to Camera and "_parent" set to [**Device**, **Connectable**].
+- camera_new(...) - Constructs a new instance with its "\_class" set to Camera and "\_parent" set to [**Device**, **Connectable**].
 - camera_get_power_consumption() - If on, returns the power consumption with formula: consumption = base power ∗ resolution_factor.
 - camera_describe_device() - Returns all relevant information stored in the Camera instance formatted for human readability.
+
+- we demonstrate all functionalities in the if **name** == "**main**": section of smart_house.py as required by Task 1.4
 
 ## STEP 02
 
@@ -141,6 +147,8 @@ Methods:
 - get*all_device_description(...) - Returns the \_describe_device* output for each subclass. Also can be filtered with _search_type_ and _search_room_
 - get*all_connected_devices(...) - Returns the connected \_Thermostat* and _Camera_ instances's _describe_device_. If no ip is provided all devices with ip attribute are called, otherwise only those with matching ip.
 
+- we demonstrate all functionalities in the if **name** == "**main**": section of smart_house.py as required by Task 2.2
+
 ## STEP 03
 
 ### Testing Framework Design
@@ -149,8 +157,8 @@ We implemented our own testing framework without using external libraries as req
 
 Automatic Test Discovery:
 
-- Functions starting with 'test_' at the beginning are automatically detected using introspection.
-- Only functions are executed, non callable variables starting with 'test_' are ignored.
+- Functions starting with 'test\_' at the beginning are automatically detected using introspection.
+- Only functions are executed, non callable variables starting with 'test\_' are ignored.
 - Uses 'globals()' to find all test functions.
 
 Test execution flow:
@@ -238,8 +246,10 @@ _For the Device and Connectable Tests (Camera & Thermostat) we split all tests i
 - test_get_all_connected_devices_management - Verifies connected device filtering (with/without IP)
 
 **Error Handling**
-- test_find_unknown_method - Checks wether calling an unimplemented method raises a *NotImplementedError*.
+
+- test*find_unknown_method - Checks wether calling an unimplemented method raises a \_NotImplementedError*.
 - This allows us to make sure that if called methods don't exist, the code identifies such.
+
 ### Why We Chose These Tests
 
 **Coverage Strategy:**
@@ -308,7 +318,7 @@ python test_smart_house.py --select thermostat --verbose
 
 **Prompts Used by Luiz Hablützel:**
 
-- “I get a KeyError when I try to access a device in ALL_THINGS — how can I fix this?”
+- “I get a KeyError when I try to access a device in ALL_THINGS how can I fix this?”
 - “Why does my test fail when I call get_power_consumption on an off device?”
 - “How can I refactor SmartHouseManagement so it doesn’t rely on ALL_THINGS but still finds all devices?”
 - “How do I avoid merge conflicts when I reset my branch to match remote?”
