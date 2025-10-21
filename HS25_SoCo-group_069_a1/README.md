@@ -174,7 +174,7 @@ There are three possible test states in the framework:
 - Creates fresh instances of all device types
 - Creates a SmartHouseManagement instance
 - Appends ALL_THINGS list with the test devices
-- Syncs ALL_THINGS with the smart_house module
+- Syncs ALL_THINGS locally and also with the smart_house file 
 
 **tearDown()**
 - Clears ALL_THINGS list in the test module and in the smart_house module
