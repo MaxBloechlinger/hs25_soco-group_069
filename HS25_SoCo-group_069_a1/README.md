@@ -56,11 +56,6 @@
 - The Management Methods, *(defined below)*, ignores attributes like status, which stem from non-device objects - Smart House Management instances - as to not call Smart House Management methods on itself.
 - When devices are off we wanted to return a string message - seen in the *get_power_consumption* methods, to create a more friendly and clear message, instead of a 0.
 
-- In case the abstract "Device" methods were not to be implemented or missing we created a _raise NotImplementedError_ block
-- The same goes for the _find()_ function, if no parent or method can't be found we raise a _NotImplementedError_
-- The Management Methods, _(defined below)_, ignores attributes like status, which stem from non-device objects - Smart House Management instances - as to not call Smart House Management methods on itself.
-- When devices are off we wanted to return a string message - seen in the _get_power_consumption_ methods, to create a more friendly and clear message, instead of a 0.
-
 ## STEP 01
 
 ### Dictionary Classes
@@ -242,6 +237,9 @@ _For the Device and Connectable Tests (Camera & Thermostat) we split all tests i
 - test_get_all_device_description_management - Verifies description retrieval with filtering
 - test_get_all_connected_devices_management - Verifies connected device filtering (with/without IP)
 
+**Error Handling**
+- test_find_unknown_method - Checks wether calling an unimplemented method raises a *NotImplementedError*.
+- This allows us to make sure that if called methods don't exist, the code identifies such.
 ### Why We Chose These Tests
 
 **Coverage Strategy:**
@@ -252,6 +250,9 @@ _For the Device and Connectable Tests (Camera & Thermostat) we split all tests i
 - **Filter Coverage** - Tests validate all filter combinations (search_type, search_room, ip)
 - **Edge Cases** - Tests also handle off devices, disconnected devices, and empty filters
 
+**Why we chose those specific tests**
+
+- We chose the tests seen above to verify each methods functionality, including parent class methods (which were implemented by their respective children), e.g., test_toggle_status() was split up into 3 seperate tests so that the each class receives their own tests.
 **Example Reasoning:**
 
 - test_get_power_consumption_light verifies the brightness formula and ensures off devices return string messages
