@@ -30,8 +30,12 @@ def call(thing, method_name, *args, **kwargs):
     return method(thing, *args, **kwargs)
 
 def make(cls, *args, **kwargs):
-    return cls["_new"](*args, **kwargs)
-
+    obj = cls["_new"](*args, **kwargs)
+    if "_class" in obj:
+        classname = obj["_class"]["_classname"]
+        if classname in ["Light", "Thermostat", "Camera"]:
+            ALL_THINGS.append(obj)
+    return obj
 #---------------------[DEVICE PARENT CLASS]---------------------
 
 #Abstract "Device" Methods
@@ -268,8 +272,6 @@ def get_all_device_description(thing, search_type=None, search_room=None):
     for thing in ALL_THINGS:
         if "status" not in thing:
             continue
-        if thing["status"] != "on":
-            continue
         if ((search_type is not None and thing["_class"]["_classname"] != search_type) or 
             (search_room is not None and thing["location"] != search_room)):
             continue
@@ -346,4 +348,6 @@ SmartHouseManagement = {
 #     print(call(manager, "get_all_connected_devices"))
 
 #     ALL_THINGS = []
+
+
 

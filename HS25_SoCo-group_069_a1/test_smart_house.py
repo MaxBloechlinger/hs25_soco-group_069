@@ -228,8 +228,6 @@ def test_get_all_device_description_management(thing):
     for t in ALL_THINGS:
         if "status" not in t:  # skip manager
             continue
-        if t["status"] != "on":
-            continue
         expected += call(t, "describe_device")
 
     actual = call(thing, "get_all_device_description")
@@ -240,8 +238,6 @@ def test_get_all_device_description_management(thing):
     expected = ""
     for t in ALL_THINGS:
         if "status" not in t:
-            continue
-        if t["status"] != "on":
             continue
         if t["location"] != search_room:
             continue
@@ -255,8 +251,6 @@ def test_get_all_device_description_management(thing):
     expected = ""
     for t in ALL_THINGS:
         if "status" not in t:
-            continue
-        if t["status"] != "on":
             continue
         if t["_class"]["_classname"] != search_type:
             continue
