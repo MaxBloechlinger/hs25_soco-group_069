@@ -145,21 +145,21 @@ Methods:
 
 ### Testing Framework Design
 
-We implemented our own testing framework without using external librarys as required in the assignment. It validates all methods and functionalities.
+We implemented our own testing framework without using external libraries as required in the assignment. It validates all methods and functionalities.
 
 Automatic Test Discovery:
 
 - Functions starting with 'test_' at the beginning are automatically detected using introspection.
-- Only functions are executed, all not callable variables starting with 'test_' are ignored.
+- Only functions are executed, non callable variables starting with 'test_' are ignored.
 - Uses 'globals()' to find all test functions
 
 Test execution flow:
 
-1. Loop through all 'test_' functions
-2. Run 'setUp()' before each test to create new device instances
-3. Execute test function for each device in ALL_THINGS
-4. Run 'tearDown()' after every test to clean up
-5. Measure and report exection time
+1. Loops through all 'test_' functions
+2. Runs 'setUp()' before each test to create a new device instances
+3. Executes test functions for each device in ALL_THINGS
+4. Runs 'tearDown()' after every test to clean up
+5. Measures and reports execution time
 
 ### Test States
 
@@ -183,10 +183,10 @@ There are three possible test states in the framework:
 ### Command Line Parameters
 
 **--select <pattern>**
-- Runs only tests that mach the specified pattern
-- Example: 'python test_smart_house.py --select light' runs only ligth tests.
+- Runs only tests that match the specified pattern
+- Example: 'python test_smart_house.py --select light' runs only light tests.
 
-**--verbose-**
+**--verbose**
 - Lists all variables starting with 'test_' and their types as well as the result of the test suite
 - Demonstrates that only functions are executed, not variables
 
@@ -267,3 +267,78 @@ python test_smart_house.py --select management
 # Verbose test mode (show all test_ variables)
 python test_smart_house.py --verbose
 ```
+
+
+## Use of Generative Ai
+
+### Scope and use of Generative Ai
+
+- We restricted our use of LLMs to the extent warranted by the assignments outline. 
+- LLMs were mostly used as tutors and assistants to understand concepts or clarify specifications. Meaning, we used Claude and ChatGPT to either explain why or how and implementation would work and wether our implementation was functioning as we intended.
+- The final code was written and reviewed only by the authors of the Project and no code was taken directly from LLMs.
+
+### Prompts - ChatGPT & Claude
+
+
+**Prompts Used by Luiz Hablützel:**
+
+- “I get a KeyError when I try to access a device in ALL_THINGS — how can I fix this?”
+- “Why does my test fail when I call get_power_consumption on an off device?”
+- “How can I refactor SmartHouseManagement so it doesn’t rely on ALL_THINGS but still finds all devices?”
+- “How do I avoid merge conflicts when I reset my branch to match remote?”
+- “Why is my test not running? It’s named correctly but doesn’t execute.”
+- “How can I validate that my introspection with globals() is working correctly?”
+- "Check for correct formatting and grammar in the readme testing framework section"
+
+**Promts Used by Abraham Herzog:**
+
+- Compare the readme.me file with both python files regarding the content and give a descriptive feedback
+- Given asg01(Project 1 File), how does our implementation look like - *all files were uploaded to the LLM here*
+- Read the asg01 File (Project 1 File) and create bullet points and a step by step guide to approach this project
+
+I also asked ChatGPT: can you check chat history or other histories and show me the prompts I used or might have used regarding this asg01 project
+
+- 2025-10-12 13:00
+“This is the description get_all_connected_devices(ip=None)… [spec text] … Here’s my function …”
+→ You asked for alignment of your implementation with the spec and correctness of the filter/return shape.
+- 2025-10-11 17:00
+“SyntaxError: f-string: expecting '}' on smart_house.py, line 223.”
+→ Classic nested f-string problem you wanted fixed.
+- 2025-10-14 13:00
+“I get this output … Is this the expected output?”
+→ You wanted confirmation that the test printout was normal.
+- 2025-10-14 ~13:00
+“How can I measure the time the test took? perf_counter vs perf_counter_ns.”
+- 2025-10-21 ~10:10
+“Does the current README accurately describe smart_house.py behavior?”
+- 2025-10-17 ~15:00
+“Given _parent = [Device, Connectable], does my find search left-to-right and stop at the first implementation?”
+
+ *Disclaimer:* The given time and dates by ChatGPT might not be very accurate
+
+**Promts used by Max Blöchlinger**
+
+- my teammates changed the way the custom dictionary objects are kept track ofagain as u can see in the "new" files. tell me exactly if it works the same way and what they changed
+- “Can you explain how to implement inheritance using Python dictionaries without using class, and how find() and call() should handle multiple parents?”
+
+- “What’s the cleanest way to keep track of all created smart house devices using a global list like ALL_THINGS, and how do I avoid duplicate entries during tests?”
+
+- “How can I automatically discover and run all functions starting with test_ without using unittest or pytest, and show pass/fail/error states?”
+
+- “How do I use argparse to add a --select option so that only tests containing a certain word like light are executed?”
+
+- “If my make() function automatically appends objects to ALL_THINGS, what do I need to change in my test setup so the output matches the old version exactly?”
+
+- “can you explain again if this inheritance works with dictionary objects.”
+
+- “so my teammates changed how ALL_THINGS is tracked, can you tell me if it still works the same and what i may need to look at?”
+
+- “what's typically done in a setup() and teardown function for custom testing?”
+
+- “what ways are there to add a --select argument so i can just run light tests for lights or thermostattest for thermostats in the terminal?”
+
+- “duplicates appear in ALL_THINGS after multiple test runs, how do i properly clear or handle that so the power output stays the same?”
+
+
+
+
