@@ -310,6 +310,8 @@ def test_find_unknown_method(thing):
 
 def setUp():
     global ALL_THINGS
+    ALL_THINGS.clear()
+    smart_house.ALL_THINGS.clear()
     #Light
     bedroom_light = make(Light, "Bedtable Light", "Bedroom", 300, "off", 70)
     basement_lava_lamp = make(Light, "Basement Lava Lamp", "Basement", 100, "on", 10)
