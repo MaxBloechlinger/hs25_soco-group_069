@@ -177,7 +177,7 @@ There are three possible test states in the framework:
 - Syncs ALL_THINGS locally and also with the smart_house file 
 
 **tearDown()**
-- Clears ALL_THINGS list in the test module and in the smart_house module
+- Clears ALL_THINGS list in the test file and in the smart_house file
 - Ensures a clean state for the next test
 
 ### Command Line Parameters
@@ -188,7 +188,7 @@ There are three possible test states in the framework:
 
 **--verbose**
 - Lists all variables starting with 'test_' and their types as well as the result of the test suite
-- Demonstrates that only functions are executed, not variables
+- Demonstrates that only functions are executed and not variables
 
 ### Test Categories
 
