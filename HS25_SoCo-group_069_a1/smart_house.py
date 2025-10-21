@@ -33,7 +33,7 @@ def make(cls, *args, **kwargs):
     obj = cls["_new"](*args, **kwargs)
     if "_class" in obj:
         classname = obj["_class"]["_classname"]
-        if classname in ["Light", "Thermostat", "Camera"]:
+        if classname in ["Light", "Thermostat", "Camera"] and obj not in ALL_THINGS:
             ALL_THINGS.append(obj)
     return obj
 #---------------------[DEVICE PARENT CLASS]---------------------
