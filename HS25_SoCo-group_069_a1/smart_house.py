@@ -305,48 +305,49 @@ SmartHouseManagement = {
 
 #---------------------[Step 1.4 & 2.2]---------------------
 
-if __name__ == "__main__":
-    print("Example Instances to demonstrate functionality:\n")
+# if __name__ == "__main__":
+#     print("Example Instances to demonstrate functionality:\n")
 
-    living_room_camera = make(Camera, "New RGB Camera", "Living Room", 500, "on", 8)
-    bathroom_thermostat = make(Thermostat, "Towel Thermostat", "Bathroom", 1200, "on", 18, 24)
-    bedroom_light = make(Light, "Bedtable Light", "Bedroom", 300, "off", 70)
+#     living_room_camera = make(Camera, "New RGB Camera", "Living Room", 500, "on", 8)
+#     bathroom_thermostat = make(Thermostat, "Towel Thermostat", "Bathroom", 1200, "on", 18, 24)
+#     bedroom_light = make(Light, "Bedtable Light", "Bedroom", 300, "off", 70)
 
-    print("\n=========================Describe Device Method=========================")
-    print(call(living_room_camera, "describe_device"))
-    print(call(bathroom_thermostat, "describe_device"))
-    print(call(bedroom_light, "describe_device"))
-    print("\n=========================Power Consumption Method=========================")
-    print(call(living_room_camera, "get_power_consumption"))
-    print(call(bathroom_thermostat, "get_power_consumption"))
-    print(call(bedroom_light, "get_power_consumption"))
-    print("\n=========================Toggle Status Method=========================")
-    call(living_room_camera, "toggle_status")
-    print(call(living_room_camera, "describe_device"))
-    call(living_room_camera, "toggle_status")
-    print(call(living_room_camera, "describe_device"))
-    print("\n=========================Connect / Disconnect=========================")
-    call(bathroom_thermostat, "connect", "1.1.1.1")
-    print(call(bathroom_thermostat, "is_connected"))
+#     print("\n=========================Describe Device Method=========================")
+#     print(call(living_room_camera, "describe_device"))
+#     print(call(bathroom_thermostat, "describe_device"))
+#     print(call(bedroom_light, "describe_device"))
+#     print("\n=========================Power Consumption Method=========================")
+#     print(call(living_room_camera, "get_power_consumption"))
+#     print(call(bathroom_thermostat, "get_power_consumption"))
+#     print(call(bedroom_light, "get_power_consumption"))
+#     print("\n=========================Toggle Status Method=========================")
+#     call(living_room_camera, "toggle_status")
+#     print(call(living_room_camera, "describe_device"))
+#     call(living_room_camera, "toggle_status")
+#     print(call(living_room_camera, "describe_device"))
+#     print("\n=========================Connect / Disconnect=========================")
+#     call(bathroom_thermostat, "connect", "1.1.1.1")
+#     print(call(bathroom_thermostat, "is_connected"))
 
+#     ALL_THINGS = [living_room_camera, bathroom_thermostat, bedroom_light]
 
-    manager = make(SmartHouseManagement, "manager")
-    print("\n=========================TOTAL POWER=========================")
-    print(call(manager, "calculate_total_power_consumption"))
-    print("\n=========================BATHROOM POWER=========================")
-    print(call(manager, "calculate_total_power_consumption", search_room="Bathroom"))
-    print("\n=========================LIGHT POWER=========================")
-    print(call(manager, "calculate_total_power_consumption", search_type="Light"))
-    print("\n=========================DESCRIPTION ALL=========================")
-    print(call(manager, "get_all_device_description"))
-    print("\n=========================DESCRIPTION CAMERA=========================")
-    print(call(manager, "get_all_device_description", search_type="Camera"))
-    print("\n=========================DESCRIPTION BEDROOM=========================")
-    print(call(manager, "get_all_device_description", search_room="Bedroom"))
-    print("\n=========================CONNECTED DEVICES=========================")
-    print(call(manager, "get_all_connected_devices"))
+#     manager = make(SmartHouseManagement, "manager")
+#     print("\n=========================TOTAL POWER=========================")
+#     print(call(manager, "calculate_total_power_consumption"))
+#     print("\n=========================BATHROOM POWER=========================")
+#     print(call(manager, "calculate_total_power_consumption", search_room="Bathroom"))
+#     print("\n=========================LIGHT POWER=========================")
+#     print(call(manager, "calculate_total_power_consumption", search_type="Light"))
+#     print("\n=========================DESCRIPTION ALL=========================")
+#     print(call(manager, "get_all_device_description"))
+#     print("\n=========================DESCRIPTION CAMERA=========================")
+#     print(call(manager, "get_all_device_description", search_type="Camera"))
+#     print("\n=========================DESCRIPTION BEDROOM=========================")
+#     print(call(manager, "get_all_device_description", search_room="Bedroom"))
+#     print("\n=========================CONNECTED DEVICES=========================")
+#     print(call(manager, "get_all_connected_devices"))
 
-    ALL_THINGS = []
+#     ALL_THINGS = []
 
 
 
