@@ -347,7 +347,7 @@ if __name__ == "__main__":
     print("\n=========================CONNECTED DEVICES=========================")
     print(call(manager, "get_all_connected_devices"))
 
-    ALL_THINGS = []
+    ALL_THINGS.clear()
 
 
 
