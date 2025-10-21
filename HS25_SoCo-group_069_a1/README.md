@@ -253,6 +253,7 @@ _For the Device and Connectable Tests (Camera & Thermostat) we split all tests i
 **Why we chose those specific tests**
 
 - We chose the tests seen above to verify each methods functionality, including parent class methods (which were implemented by their respective children), e.g., test_toggle_status() was split up into 3 seperate tests so that the each class receives their own tests.
+
 **Example Reasoning:**
 
 - test_get_power_consumption_light verifies the brightness formula and ensures off devices return string messages
