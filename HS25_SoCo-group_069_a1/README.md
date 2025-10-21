@@ -141,5 +141,129 @@ Methods:
 - get_all_device_description(...) - Returns the *describe_device* output for each subclass. Also can be filtered with *search_type* and *search_room*
 - get_all_connected_devices(...) - Returns the connected *Thermostat* and *Camera* instances's *describe_device*. If no ip is provided all devices with ip attribute are called, otherwise only those with matching ip.
 
+## STEP 03
 
+### Testing Framework Design
 
+We implemented our own testing framework without using external librarys as required in the assignment. It validates all methods and functionalities.
+
+Automatic Test Discovery:
+
+- Functions starting with 'test_' at the beginning are automatically detected using introspection.
+- Only functions are executed, all not callable variables starting with 'test_' are ignored.
+- Uses 'globals()' to find all test functions
+
+Test execution flow:
+
+1. Loop through all 'test_' functions
+2. Run 'setUp()' before each test to create new device instances
+3. Execute test function for each device in ALL_THINGS
+4. Run 'tearDown()' after every test to clean up
+5. Measure and report exection time
+
+### Test States
+
+There are three possible test states in the framework:
+- Pass: Test executed successfully
+- Fail: Test failed an assertion (AssertionError)
+- Error: Test crashed with an exeption (Any other Exception)
+
+### setUp() and tearDown()
+
+**setUp()**
+- Creates fresh instances of all device types
+- Creates a SmartHouseManagement instance
+- Appends ALL_THINGS list with the test devices
+- Syncs ALL_THINGS with the smart_house module
+
+**tearDown()**
+- Clears ALL_THINGS list in the test module and in the smart_house module
+- Ensures a clean state for the next test
+
+### Command Line Parameters
+
+**--select <pattern>**
+- Runs only tests that mach the specified pattern
+- Example: 'python test_smart_house.py --select light' runs only ligth tests.
+
+**--verbose-**
+- Lists all variables starting with 'test_' and their types as well as the result of the test suite
+- Demonstrates that only functions are executed, not variables
+
+### Test Categories
+
+**Device Tests:**
+- test_toggle_status - Verifies on/off status switching
+
+**Connectable Tests:**
+- test_connect_ip - Verifies IP address storage
+- test_connect_status - Verifies connection status update
+- test_disconnect - Verifies disconnection functionality
+- test_connected - Verifies is_connected() returns correct value
+
+**Light Tests:**
+- test_describe_light - Verifies correct description format
+- test_get_power_consumption_light - Verifies power calculation formula
+- test_toggle_status_light - Verifies toggle functionality
+
+**Thermostat Tests:**
+- test_describe_thermostat - Verifies description includes temperature info
+- test_get_power_consumption_thermostat - Verifies power calculation based on temperature difference
+- test_toggle_status_thermostat - Verifies toggle functionality
+- test_set_target_temperature_thermostat - Verifies temperature can be set
+- test_get_target_temperature_thermostat - Verifies temperature can be read
+
+**Camera Tests:**
+- test_describe_camera - Verifies description includes resolution
+- test_get_power_consumption_camera - Verifies power calculation formula
+- test_camera_resolution - Verifies resolution categorization (low/medium/high)
+- test_toggle_status_camera - Verifies toggle functionality
+
+**Management Tests:**
+- test_total_power_consumption_management - Verifies total power calculation with and without filters (room, type)
+- test_get_all_device_description_management - Verifies description retrieval with filtering
+- test_get_all_connected_devices_management - Verifies connected device filtering (with/without IP)
+
+### Why We Chose These Tests
+
+**Coverage Strategy:**
+- **Method Coverage** - Every method is tested
+- **State Coverage** - Tests verify both "on" and "off" states
+- **Inheritance Coverage** - Tests confirm inherited methods work correctly
+- **Filter Coverage** - Tests validate all filter combinations (search_type, search_room, ip)
+- **Edge Cases** - Tests also handle off devices, disconnected devices, and empty filters
+
+**Example Reasoning:**
+- test_get_power_consumption_light verifies the brightness formula and ensures off devices return string messages
+- test_get_all_connected_devices_management validates that only on and connected devices are returned
+
+### Test Output Format
+
+```
+toggle_status passed, ran in 0.000116s
+connect_ip passed, ran in 0.000163s
+...
+Total Runtime: 0.002185s
+
+99 PASSED:
+['Bedtable Light passed toggle_status', ...]
+0 FAILED:
+[]
+0 ERRORS:
+[]
+```
+
+### Running the Tests
+```bash
+# Run all tests
+python test_smart_house.py
+
+# Run only light tests
+python test_smart_house.py --select light
+
+# Run only management tests
+python test_smart_house.py --select management
+
+# Verbose test mode (show all test_ variables)
+python test_smart_house.py --verbose
+```
