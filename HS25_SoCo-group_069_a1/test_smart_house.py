@@ -3,50 +3,12 @@ import argparse
 from smart_house import *
 import smart_house
 
-#====================================[DEVICE METHOD TESTS]====================================
+#====================================[TEST VARIABLES FOR VERBOSE]====================================
 
-def test_toggle_status(thing):
-    if "status" not in thing:
-        return
-    if thing["status"] == "off":
-        call(thing, "toggle_status")
-        assert thing["status"] == "on"
-    else:
-        call(thing, "toggle_status")
-        assert thing["status"] == "off"
-        
 test_variables = "This is a variable which should not run"
 test_variables_list = [1,2,3,4]
 test_string = "not a function"
 test_number = 42
-
-#====================================[CONNECTABLE METHOD TESTS]====================================
-def test_connect_ip(thing):
-    if isinstance(thing["_class"]["_parent"], list):
-        ip = "8.8.8.8"
-        call(thing, "connect", ip)
-        assert thing["ip"] == ip
-        assert thing["connected"] == True
-
-def test_connect_status(thing):
-    if isinstance(thing["_class"]["_parent"], list):
-        ip = "8.8.8.8"
-        call(thing, "connect", ip)
-        assert thing["connected"] == True
-        assert thing["ip"] == ip
-
-def test_disconnect(thing):
-    if isinstance(thing["_class"]["_parent"], list):
-        call(thing, "disconnect")
-        assert thing["connected"] == False
-        
-def test_connected(thing):
-    if isinstance(thing["_class"]["_parent"], list):
-        call(thing, "connect", "1.2.3.4")
-        assert call(thing, "is_connected") == True
-        call(thing, "disconnect")
-        assert call(thing, "is_connected") == False
-
 
 #====================================[LIGHT METHOD TESTS]====================================
 def test_describe_light(thing):
@@ -125,6 +87,31 @@ def test_get_target_temperature_thermostat(thing):
     res = call(thing, "get_target_temperature")
     assert thing["target_temperature"] == res
 
+def test_connect_ip_thermostat(thing):
+    if isinstance(thing["_class"]["_parent"], list):
+        ip = "8.8.8.8"
+        call(thing, "connect", ip)
+        assert thing["ip"] == ip
+        assert thing["connected"] == True
+
+def test_connect_status_thermostat(thing):
+    if isinstance(thing["_class"]["_parent"], list):
+        ip = "8.8.8.8"
+        call(thing, "connect", ip)
+        assert thing["connected"] == True
+        assert thing["ip"] == ip
+
+def test_disconnect_thermostat(thing):
+    if isinstance(thing["_class"]["_parent"], list):
+        call(thing, "disconnect")
+        assert thing["connected"] == False
+        
+def test_connected_thermostat(thing):
+    if isinstance(thing["_class"]["_parent"], list):
+        call(thing, "connect", "1.2.3.4")
+        assert call(thing, "is_connected") == True
+        call(thing, "disconnect")
+        assert call(thing, "is_connected") == False
 
 #====================================[CAMERA METHOD TESTS]====================================
         
@@ -173,6 +160,32 @@ def test_toggle_status_camera(thing):
     else:
         call(thing, "toggle_status")
         assert thing["status"] == "off"
+
+def test_connect_ip_camera(thing):
+    if isinstance(thing["_class"]["_parent"], list):
+        ip = "8.8.8.8"
+        call(thing, "connect", ip)
+        assert thing["ip"] == ip
+        assert thing["connected"] == True
+
+def test_connect_status_camera(thing):
+    if isinstance(thing["_class"]["_parent"], list):
+        ip = "8.8.8.8"
+        call(thing, "connect", ip)
+        assert thing["connected"] == True
+        assert thing["ip"] == ip
+
+def test_disconnect_camera(thing):
+    if isinstance(thing["_class"]["_parent"], list):
+        call(thing, "disconnect")
+        assert thing["connected"] == False
+        
+def test_connected_camera(thing):
+    if isinstance(thing["_class"]["_parent"], list):
+        call(thing, "connect", "1.2.3.4")
+        assert call(thing, "is_connected") == True
+        call(thing, "disconnect")
+        assert call(thing, "is_connected") == False
 
 #====================================[MANAGEMENT METHOD TESTS]====================================
 
@@ -347,6 +360,7 @@ def run_tests(select=None):
     total_time = 0
     objects = {"PASS": [], "FAIL": [], "ERROR": []}
 
+    print(65*"-")
     for (name, test) in list(globals().items()):
         if not name.startswith("test_"):
             continue
@@ -395,8 +409,8 @@ def run_tests(select=None):
         duration = end_time - start_time
         total_time += duration
         
-        print(f"{name[5:]} {test_status}, ran in {duration:.6f}s\n")
-        
+        print(f"{name[5:]} {test_status}, ran in {duration:.6f}s")
+        print(65*"-")
 
     print(f"Total Runtime: {total_time:.6f}s\n")
 
@@ -415,7 +429,8 @@ if __name__ == "__main__":
     args = p.parse_args()
 
     if args.verbose:
-        print("\n===[Verbose: listing all variables that start with 'test_']===")
+        print("\nVerbose: listing all variables that start with 'test_'")
+        print(60*"-")
         for name, obj in list(globals().items()):
             if name.startswith("test_"):
                 t = "function" if callable(obj) else type(obj).__name__
