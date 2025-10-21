@@ -30,8 +30,12 @@ def call(thing, method_name, *args, **kwargs):
     return method(thing, *args, **kwargs)
 
 def make(cls, *args, **kwargs):
-    return cls["_new"](*args, **kwargs)
-
+    obj = cls["_new"](*args, **kwargs)
+    if "_class" in obj:
+        classname = obj["_class"]["_classname"]
+        if classname in ["Light", "Thermostat", "Camera"]:
+            ALL_THINGS.append(obj)
+    return obj
 #---------------------[DEVICE PARENT CLASS]---------------------
 
 #Abstract "Device" Methods
@@ -327,7 +331,6 @@ if __name__ == "__main__":
     call(bathroom_thermostat, "connect", "1.1.1.1")
     print(call(bathroom_thermostat, "is_connected"))
 
-    ALL_THINGS = [living_room_camera, bathroom_thermostat, bedroom_light]
 
     manager = make(SmartHouseManagement, "manager")
     print("\n=========================TOTAL POWER=========================")
