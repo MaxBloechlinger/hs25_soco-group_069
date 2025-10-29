@@ -45,6 +45,44 @@ def do_addieren(args,env):
     right = do(args[1],env)
     return left + right
 
+# --------------------[Arithmetic Operations] --------------------
+
+def do_multiplication(args,env):
+    assert len(args) == 2
+    left = do(args[0],env)
+    right = do(args[1],env)
+    return left * right
+
+def do_division(args,env):
+    assert len(args) == 2
+    left = do(args[0],env)
+    right = do(args[1],env)
+    try:
+        return left / right
+    except ZeroDivisionError:
+        return 0, "Can't divide by zero"
+def do_pow(args,env):
+    assert len(args) == 2
+    left = do(args[0],env)
+    right = do(args[1],env)
+    return left ** right
+
+def do_modulo(args,env):
+    assert len(args) == 2
+    left = do(args[0],env)
+    right = do(args[1],env)
+    try:
+        return left % right
+    except ZeroDivisionError:
+        return 0, "Can't divide by zero"
+    
+# --------------------[Arithmetic Operations] --------------------
+
+
+# --------------------[Comparison Operations] --------------------
+
+# --------------------[Comparison Operations] --------------------
+
 def do_absolutewert(args,env):
     assert len(args) == 1
     value = do(args[0],env)
