@@ -81,6 +81,42 @@ def do_modulo(args,env):
 
 # --------------------[Comparison Operations] --------------------
 
+def do_lessThan(args,env):
+    assert len(args) == 2
+    left = do(args[0],env)
+    right = do(args[1],env)
+    return left < right
+
+def do_greaterThan(args,env):
+    assert len(args) == 2
+    left = do(args[0],env)
+    right = do(args[1],env)
+    return left > right
+
+def do_lessThanEQ(args,env):
+    assert len(args) == 2
+    left = do(args[0],env)
+    right = do(args[1],env)
+    return left <= right
+
+def do_greaterThanEQ(args,env):
+    assert len(args) == 2
+    left = do(args[0],env)
+    right = do(args[1],env)
+    return left >= right
+
+def do_EQ(args,env):
+    assert len(args) == 2
+    left = do(args[0],env)
+    right = do(args[1],env)
+    return left == right
+
+def do_notEQ(args,env):
+    assert len(args) == 2
+    left = do(args[0],env)
+    right = do(args[1],env)
+    return left != right
+
 # --------------------[Comparison Operations] --------------------
 
 def do_absolutewert(args,env):
