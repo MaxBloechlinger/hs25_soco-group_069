@@ -7,6 +7,10 @@
   ["ArraySet", ["get","A"], 2, 3],
   ["ArraySet", ["get","A"], 3, 4],
   ["print", ["get","A"]],
-  ["set", "B", ["map", ["get","A"], "sq_func"]],
-  ["print", ["get","B"]]
+  ["set", "Output_Array", ["map", ["get","A"], "sq_func"]],
+  ["print", ["get","Output_Array"]],
+  
+  ["set", "add_func", ["func", ["x", "y"], ["addieren", ["get","x"], ["get","y"]]]],
+  ["set", "Reduce_Output", ["reduce", ["get","A"], "add_func"]],
+  ["print", ["get", "Reduce_Output"]]
 ]
