@@ -1,6 +1,9 @@
-["seq",
-    ["set", "same",
-        ["func", ["num"],
-            ["get","num"]]],
-    ["call","same",3]
+[
+    "seq",
+    ["set", "x", 1],
+    ["do",
+        ["set", "x", ["multiplication", ["get", "x"], 2]],
+        ["until", ["greaterThanEQ", ["get", "x"], 8]]
+    ],
+    ["print", ["get", "x"]]
 ]

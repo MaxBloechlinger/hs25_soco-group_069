@@ -4,6 +4,8 @@ import pprint
 
 env = dict()
 
+# --------------------[Class Operations] --------------------
+
 def do_set(args,envs):
     assert len(args) == 2
     assert isinstance(args[0],str)
@@ -45,6 +47,30 @@ def do_addieren(args,env):
     right = do(args[1],env)
     return left + right
 
+def do_absolutewert(args,env):
+    assert len(args) == 1
+    value = do(args[0],env)
+    if value >= 0:
+        return value
+    return -value
+
+def do_subtrahieren(args,envs):
+    assert len(args) == 2
+    left = do(args[0],envs)
+    right = do(args[1],envs)
+    return left - right
+
+def do_print(args, envs):
+    values = [do(a, envs) for a in args]
+    print(*values)
+    return None
+
+def do_func(args, env):
+    assert len(args) == 2
+    params = args[0]
+    body = args[1]
+    return ["func",params,body]
+
 # --------------------[Arithmetic Operations] --------------------
 
 def do_multiplication(args,env):
@@ -75,9 +101,6 @@ def do_modulo(args,env):
         return left % right
     except ZeroDivisionError:
         return 0, "Can't divide by zero"
-    
-# --------------------[Arithmetic Operations] --------------------
-
 
 # --------------------[Comparison Operations] --------------------
 
@@ -136,31 +159,34 @@ def do_NOT(args,env):
     x = do(args[0], env)
     return 0 if x else 1
 
-# --------------------[Comparison Operations] --------------------
 
-def do_absolutewert(args,env):
-    assert len(args) == 1
-    value = do(args[0],env)
-    if value >= 0:
-        return value
-    return -value
+# --------------------[Boolean Operations] --------------------
 
-def do_subtrahieren(args,envs):
-    assert len(args) == 2
-    left = do(args[0],envs)
-    right = do(args[1],envs)
-    return left - right
+#example:
 
-def do_print(args, env):
-    args = [do(env, a) for a in args]
-    print(*args)
-    return None
+"""
+[
+    "seq",
+    ["set", "x", 1],
+    ["do",
+        ["set", "x", ["multiplication", ["get", "x"], 2]],
+        ["until", ["greaterThanEQ", ["get", "x"], 8]]
+    ],
+    ["print", ["get", "x"]]
+]
+"""
 
-def do_func(args, env):
-    assert len(args) == 2
-    params = args[0]
-    body = args[1]
-    return ["func",params,body]
+def do_do(args, envs):
+    assert len(args)==2, "body and/or until condition missing"
+    body = args[0]
+    until = args[1]
+    assert until[0] == "until", "second arg must contani until"
+
+    while True:
+        if isinstance(body,list):
+            do(body, envs)
+        if do(until[1], envs):
+            break
 
 # ["call",
 #   "same", 3]
