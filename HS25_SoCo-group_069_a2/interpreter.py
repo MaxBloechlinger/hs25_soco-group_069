@@ -264,6 +264,31 @@ def do_call(args,envs):
 
     return result
 
+def do_map(args, envs):
+    assert len(args) == 2, "not enough args for map"
+    a = do(args[0], envs)
+    f = args[1]
+    assert isinstance(a, list), "first arg must be array"
+    assert isinstance(f, str), "second arg must be a func"
+    
+    f = env_get(f, envs) #search for function
+    assert isinstance(f, list) and f[0] == "func", "{f} is not a function"
+    
+    inputs = f[1] 
+    function_body = f[2]
+    assert len(inputs) == 1
+
+    res = []
+    for x in a:
+        env = {inputs[0]: x}
+        envs.append(env)
+        v = do(function_body, envs)
+        res.append(v)
+        envs.pop()
+    return res
+
+
+
 
 
 # {"addieren":do_addieren,
