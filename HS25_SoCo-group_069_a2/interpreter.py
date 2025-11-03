@@ -318,6 +318,31 @@ def do_map(args, envs):
         envs.pop()
     return res
 
+def do_reduce(args, envs):
+    assert len(args) == 2, "not enough args for reduce"
+    a = do(args[0], envs)
+    f = args[1]
+    assert isinstance(a, list), "first arg must be array"
+    assert isinstance(f, str), "second arg must be a func"
+    
+    f = env_get(f, envs) #search for function
+    assert isinstance(f, list) and f[0] == "func", "{f} is not a function"
+    
+    inputs = f[1] 
+    function_body = f[2]
+    assert len(inputs) == 2
+
+    res = a[0]
+    for i in range(1,len(a)): #skip first element
+        env = {inputs[0]: res, inputs[1]: a[i]}
+        envs.append(env)
+        res = do(function_body, envs)
+        envs.pop()
+    return res
+
+
+
+
 # {"addieren":do_addieren,
 #  "absolutewert":do_absolutewert, 
 #  "set":do_set,
