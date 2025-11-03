@@ -1,1 +1,10 @@
+<<<<<<< HEAD
 #showcase your solution in the first step
+=======
+["seq",
+    ["set", "same",
+        ["func", ["num"],
+            ["get","num"]]],
+    ["call","same",3]
+]
+>>>>>>> 9cbcf680256986109f122dcb15a3f45c95f30c81
