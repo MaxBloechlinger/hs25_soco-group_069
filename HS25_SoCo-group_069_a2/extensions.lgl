@@ -1,10 +1,43 @@
 [
     "seq",
-    ["set", "x", 1],
+
+
+    ["set", "x", 10],
     ["do",
-        ["set", "x", ["multiplication", ["get", "x"], 2]],
-        ["until", ["greaterThanEQ", ["get", "x"], 8]]
+
+        ["set", "x", ["subtrahieren", ["get", "x"], 2]],
+        ["until", ["lessThanEQ", ["get", "x"], 2]]
     ],
+    ["print", ["modulo", ["get", "x"], 2]],
+    ["print", ["get", "x"]],
+
+
+
+
+    ["set", "x", 0],
+    ["set", "y", 0],
+    ["do",
+        ["seq",
+        ["set", "x", ["addieren", ["get", "x"], 1]],
+        ["set", "y", ["addieren", ["get", "y"], ["get", "x"]]]
+        ],
+        ["until", ["EQ", ["get", "x"], 10]]
+    ],
+    ["print", ["get", "x"]],
+
+
+    ["set", "i", 2],
+    ["set", "j", 10],
+    ["do",
+        ["seq",
+        ["set", "i", ["multiplication", ["get", "i"], 2]],
+        ["set", "j", ["division", ["get", "j"], 2]]
+        ],
+        ["until", ["lessThan", ["get", "j"], ["get", "i"]]]
+    ],
+    ["print", ["get", "i"]],
+    ["print", ["get", "j"]],
+
     ["print", ["get", "x"]],
     ["print", ["lessThan", ["get", "x"], 3]],
     ["print", ["greaterThan", ["get", "x"], 3]],
@@ -18,4 +51,5 @@
     ["print", ["division", ["get", "x"], 2]],
     ["print", ["pow", ["get", "x"], 2]],
     ["print", ["modulo", ["get", "x"], 2]]
+        
 ]
