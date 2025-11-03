@@ -160,7 +160,7 @@ def do_NOT(args,env):
     return 0 if x else 1
 
 
-# --------------------[Boolean Operations] --------------------
+# --------------------[Loop] --------------------
 
 #example:
 
@@ -180,13 +180,63 @@ def do_do(args, envs):
     assert len(args)==2, "body and/or until condition missing"
     body = args[0]
     until = args[1]
-    assert until[0] == "until", "second arg must contani until"
+    assert until[0] == "until", "second arg must start with 'until'"
 
     while True:
         if isinstance(body,list):
             do(body, envs)
         if do(until[1], envs):
             break
+
+
+# --------------------[Data Structures] --------------------
+
+def do_Array(args, envs):
+    assert len(args) == 1
+    n = do(args[0], envs)
+    a = []
+    for _ in range(n):
+        a.append(0)
+    return a
+
+def do_ArrayGet(args, envs):
+    assert len(args) == 2
+    a = do(args[0], envs)
+    i = do(args[1], envs)
+    assert isinstance(a, list), "array must be list"
+    assert isinstance(i, int), "index must be int"
+    try:
+        res = a[i]
+        return res
+    except IndexError:
+        raise Exception("Index out of range")
+
+def do_ArraySet(args, envs):
+    assert len(args) == 3
+    a = do(args[0], envs)
+    i = do(args[1], envs)
+    e = do(args[2], envs)
+    assert isinstance(a, list), "array must be list"
+    assert isinstance(i, int), "index must be int"
+    try:
+        a[i] = e
+        return a
+    except IndexError:
+        raise Exception("Index out of range")
+
+def do_ArraySize(args, envs):
+    assert len(args) == 1
+    a = do(args[0], envs)
+    assert isinstance(a, list), "array must be list"
+    return len(a)
+
+def do_cat(args, envs):
+    assert len(args) == 2
+    a1 = do(args[0], envs)
+    a2 = do(args[1], envs)
+    assert isinstance(a1, list), "array 1 must be list"
+    assert isinstance(a2, list), "array 2 must be list"
+    return a1+a2
 
 # ["call",
 #   "same", 3]

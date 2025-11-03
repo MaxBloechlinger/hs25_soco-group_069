@@ -5,5 +5,17 @@
         ["set", "x", ["multiplication", ["get", "x"], 2]],
         ["until", ["greaterThanEQ", ["get", "x"], 8]]
     ],
-    ["print", ["get", "x"]]
+    ["print", ["get", "x"]],
+    ["print", ["lessThan", ["get", "x"], 3]],
+    ["print", ["greaterThan", ["get", "x"], 3]],
+    ["print", ["lessThanEQ", ["get", "x"], 3]],
+    ["print", ["greaterThanEQ", ["get", "x"], 3]],
+    ["print", ["EQ", ["get", "x"], 3]],
+    ["print", ["notEQ", ["get", "x"], 3]],
+    ["print", ["AND", ["get", "x"], 3]],
+    ["print", ["OR", ["get", "x"], 3]],
+    ["print", ["NOT", ["get", "x"]]],
+    ["print", ["division", ["get", "x"], 2]],
+    ["print", ["pow", ["get", "x"], 2]],
+    ["print", ["modulo", ["get", "x"], 2]]
 ]
