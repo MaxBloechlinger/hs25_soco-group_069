@@ -117,29 +117,24 @@ def do_notEQ(args,env):
     right = do(args[1],env)
     return left != right
 
-# --------------------[Comparison Operations] --------------------
+# --------------------[Boolean Operations] --------------------
 
-def do_andAND(args,env):
+def do_AND(args,env):
     assert len(args) == 2
     left = do(args[0], env)
     right = do(args[1], env)
-    
-    if left == right:
-        return 1
-    else:
-        return 0
+    return 1 if left and right else 0
 
-def do_orOR(args,env):
+def do_OR(args,env):
     assert len(args) == 2
     left = do(args[0], env)
     right = do(args[1], env)
-    return 
+    return 1 if left or right else 0
 
-def do_notNOT(args,env):
-    assert len(args) == 2
-    left = do(args[0], env)
-    right = do(args[1], env)
-    return
+def do_NOT(args,env):
+    assert len(args) == 1
+    x = do(args[0], env)
+    return 0 if x else 1
 
 # --------------------[Comparison Operations] --------------------
 
