@@ -51,9 +51,5 @@
     ["print", ["division", ["get", "x"], 2]],
     ["print", ["pow", ["get", "x"], 2]],
     ["print", ["modulo", ["get", "x"], 2]]
-
-
-
-
         
 ]
