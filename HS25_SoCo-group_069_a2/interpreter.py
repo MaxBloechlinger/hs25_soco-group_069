@@ -340,7 +340,29 @@ def do_reduce(args, envs):
         envs.pop()
     return res
 
+def do_filter(args, envs):
+    assert len(args) == 2, "not enough args for filtr"
+    a = do(args[0], envs)
+    f = args[1]
+    assert isinstance(a, list), "first arg must be array"
+    assert isinstance(f, str), "second arg must be a func"
+    
+    f = env_get(f, envs) #search for function
+    assert isinstance(f, list) and f[0] == "func", "{f} is not a function"
+    
+    inputs = f[1] 
+    function_body = f[2]
+    assert len(inputs) == 1
 
+    res = []
+    for x in a:
+        env = {inputs[0]: x}
+        envs.append(env)
+        cond = do(function_body, envs)
+        envs.pop()
+        if cond:
+            res.append(x)
+    return res
 
 
 # {"addieren":do_addieren,
