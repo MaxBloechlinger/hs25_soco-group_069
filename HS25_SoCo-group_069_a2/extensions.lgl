@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 #showcase your solution in the first step
 =======
 ["seq",
@@ -8,3 +9,14 @@
     ["call","same",3]
 ]
 >>>>>>> 9cbcf680256986109f122dcb15a3f45c95f30c81
+=======
+[
+    "seq",
+    ["set", "x", 1],
+    ["do",
+        ["set", "x", ["multiplication", ["get", "x"], 2]],
+        ["until", ["greaterThanEQ", ["get", "x"], 8]]
+    ],
+    ["print", ["get", "x"]]
+]
+>>>>>>> bc37f55c369d14954faaee1046fa5a073dec5eb0
