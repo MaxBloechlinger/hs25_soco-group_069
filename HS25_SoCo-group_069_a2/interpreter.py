@@ -280,7 +280,7 @@ def do_SetContain(args, envs):
     s = do(args[0], envs)
     val = do(args[1], env)
     assert isinstance(s, set)
-    return True if val in s else False
+    return 1 if val in s else 0
 
 def do_SetSize(args, envs):
     assert len(args) == 1
@@ -290,8 +290,8 @@ def do_SetSize(args, envs):
 
 def do_SetMerge(args, envs):
     assert len(args) == 2
-    s1 = args[0]
-    s2 = args[1]
+    s1 = do(args[0], envs)
+    s2 = do(args[1], envs)
     assert isinstance(s1, set) and isinstance(s2, set)
     return s1 | s2
 
