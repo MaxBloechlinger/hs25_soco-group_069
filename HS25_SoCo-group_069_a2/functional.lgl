@@ -1,16 +1,25 @@
 [
   "seq",
-  ["set", "sq_func", ["func", ["n"], ["multiplication", ["get","n"], ["get","n"]]]],
-  ["set", "A", ["Array", 4]],
+
+  ["set", "A", ["Array", 7]],
   ["ArraySet", ["get","A"], 0, 1],
   ["ArraySet", ["get","A"], 1, 2],
   ["ArraySet", ["get","A"], 2, 3],
   ["ArraySet", ["get","A"], 3, 4],
+  ["ArraySet", ["get","A"], 4, 15],
+  ["ArraySet", ["get","A"], 5, 22],
+  ["ArraySet", ["get","A"], 6, 34],
   ["print", ["get","A"]],
-  ["set", "Output_Array", ["map", ["get","A"], "sq_func"]],
-  ["print", ["get","Output_Array"]],
-  
+
+  ["set", "sq_func", ["func", ["n"], ["multiplication", ["get","n"], ["get","n"]]]],
+  ["set", "Map_Output", ["map", ["get","A"], "sq_func"]],
+  ["print", ["get","Map_Output"]],
+
   ["set", "add_func", ["func", ["x", "y"], ["addieren", ["get","x"], ["get","y"]]]],
   ["set", "Reduce_Output", ["reduce", ["get","A"], "add_func"]],
-  ["print", ["get", "Reduce_Output"]]
+  ["print", ["get", "Reduce_Output"]],
+
+  ["set", "larger_ten_func", ["func", ["n"], ["greaterThan", ["get","n"], 10]]],
+  ["set", "Filtered_Array", ["filter", ["get","A"], "larger_ten_func"]],
+  ["print", ["get","Filtered_Array"]]
 ]
