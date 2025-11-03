@@ -264,6 +264,37 @@ def do_call(args,envs):
 
     return result
 
+def do_CreateSet(args, envs):
+    assert len(args) == 0
+    return set()
+
+def do_SetInsert(args, envs):
+    assert len(args) == 2
+    s = do(args[0], envs)
+    val = do(args[1], envs)
+    assert isinstance(s, set)
+    s.add(val)
+
+def do_SetContain(args, envs):
+    assert len(args) == 2
+    s = do(args[0], envs)
+    val = do(args[1], env)
+    assert isinstance(s, set)
+    return True if val in s else False
+
+def do_SetSize(args, envs):
+    assert len(args) == 1
+    s = do(args[0], envs)
+    assert isinstance(s, set)
+    return len(s)
+
+def do_SetMerge(args, envs):
+    assert len(args) == 2
+    s1 = args[0]
+    s2 = args[1]
+    assert isinstance(s1, set) and isinstance(s2, set)
+    return s1 | s2
+
 def do_map(args, envs):
     assert len(args) == 2, "not enough args for map"
     a = do(args[0], envs)
