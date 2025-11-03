@@ -1,5 +1,6 @@
 [
     "seq",
+
     ["set", "A", ["Array", 3]],
     ["ArraySet", ["get","A"], 0, 7],
     ["ArraySet", ["get","A"], 1, 8],
@@ -11,5 +12,24 @@
     ["ArraySet", ["get","B"], 0, 100],
     ["ArraySet", ["get","B"], 1, 200],
     ["set", "C", ["cat", ["get","A"], ["get","B"]]],
-    ["print", ["get","C"]]
+    ["print", ["get","C"]],
+
+    
+
+
+    ["set", "I", ["CreateSet"]],
+    ["set", "J", ["CreateSet"]],
+    ["SetInsert", ["get", "I"], 1],
+    ["SetInsert", ["get", "I"], 2],
+    ["SetInsert", ["get", "I"], 3],
+    ["SetInsert", ["get", "I"], 4],
+    ["SetInsert", ["get", "I"], 4],
+    ["SetInsert", ["get", "J"], 1],
+    ["SetInsert", ["get", "J"], 2],
+    ["SetInsert", ["get", "J"], 20],
+    ["print", ["SetContain", ["get", "I"], 3]],
+    ["print", ["SetSize", ["get", "J"]]],
+    ["print", ["SetSize", ["get", "I"]]],
+    ["set", "K", ["SetMerge", ["get", "I"], ["get", "J"]]],
+    ["print", ["get", "K"]]
 ]
