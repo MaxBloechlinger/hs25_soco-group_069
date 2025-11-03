@@ -119,6 +119,30 @@ def do_notEQ(args,env):
 
 # --------------------[Comparison Operations] --------------------
 
+def do_andAND(args,env):
+    assert len(args) == 2
+    left = do(args[0], env)
+    right = do(args[1], env)
+    
+    if left == right:
+        return 1
+    else:
+        return 0
+
+def do_orOR(args,env):
+    assert len(args) == 2
+    left = do(args[0], env)
+    right = do(args[1], env)
+    return 
+
+def do_notNOT(args,env):
+    assert len(args) == 2
+    left = do(args[0], env)
+    right = do(args[1], env)
+    return
+
+# --------------------[Comparison Operations] --------------------
+
 def do_absolutewert(args,env):
     assert len(args) == 1
     value = do(args[0],env)
