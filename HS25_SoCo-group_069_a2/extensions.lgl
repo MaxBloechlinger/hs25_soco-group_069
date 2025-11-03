@@ -1,0 +1,6 @@
+["seq",
+    ["set", "same",
+        ["func", ["num"],
+            ["get","num"]]],
+    ["call","same",3]
+]
