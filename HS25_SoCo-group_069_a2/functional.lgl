@@ -1,2 +1,12 @@
-#showcase your solution in the thirs step
-
+[
+  "seq",
+  ["set", "sq_func", ["func", ["n"], ["multiplication", ["get","n"], ["get","n"]]]],
+  ["set", "A", ["Array", 4]],
+  ["ArraySet", ["get","A"], 0, 1],
+  ["ArraySet", ["get","A"], 1, 2],
+  ["ArraySet", ["get","A"], 2, 3],
+  ["ArraySet", ["get","A"], 3, 4],
+  ["print", ["get","A"]],
+  ["set", "B", ["map", ["get","A"], "sq_func"]],
+  ["print", ["get","B"]]
+]
