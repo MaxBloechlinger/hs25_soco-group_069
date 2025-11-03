@@ -146,20 +146,17 @@ def do_AND(args,env):
     assert len(args) == 2
     left = do(args[0], env)
     right = do(args[1], env)
-    assert left in [0,1] and right in [0,1]
     return 1 if left and right else 0
 
 def do_OR(args,env):
     assert len(args) == 2
     left = do(args[0], env)
     right = do(args[1], env)
-    assert left in [0,1] and right in [0,1]
     return 1 if left or right else 0
 
 def do_NOT(args,env):
     assert len(args) == 1
     x = do(args[0], env)
-    assert x in [0,1]
     return 0 if x else 1
 
 
