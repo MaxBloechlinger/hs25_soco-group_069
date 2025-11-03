@@ -1,1 +1,15 @@
-#showcase your solution in the second step
+[
+    "seq",
+    ["set", "A", ["Array", 3]],
+    ["ArraySet", ["get","A"], 0, 7],
+    ["ArraySet", ["get","A"], 1, 8],
+    ["ArraySet", ["get","A"], 2, 9],
+    ["print", ["get","A"]],
+    ["print", ["ArrayGet", ["get","A"], 1]],
+    ["print", ["ArraySize", ["get","A"]]],
+    ["set", "B", ["Array", 2]],
+    ["ArraySet", ["get","B"], 0, 100],
+    ["ArraySet", ["get","B"], 1, 200],
+    ["set", "C", ["cat", ["get","A"], ["get","B"]]],
+    ["print", ["get","C"]]
+]
