@@ -7,3 +7,7 @@
   ["ArraySet", ["get","nums"], 2, 7],
   ["ArraySet", ["get","nums"], 3, 10],
   ["print", ["get","nums"]],
+
+["set", "quadrouble_func", ["func", ["n"], "multiplication", ["get", "n"], 4]]],
+["set", "Quadroubled", ["map", ["get", "nums"], "quadrouble_func"]],
+["print", ["get", "Quadroubled]],
