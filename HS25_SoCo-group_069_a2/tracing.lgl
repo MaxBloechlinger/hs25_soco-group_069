@@ -8,6 +8,15 @@
   ["ArraySet", ["get","nums"], 3, 10],
   ["print", ["get","nums"]],
 
-["set", "quadrouble_func", ["func", ["n"], "multiplication", ["get", "n"], 4]]],
+["set", "quadrouble_func", ["func", ["n"], ["multiplication", ["get", "n"], 4]]],
 ["set", "Quadroubled", ["map", ["get", "nums"], "quadrouble_func"]],
-["print", ["get", "Quadroubled]],
+["print", ["get", "Quadroubled"]],
+
+ ["set", "sum_func", ["func", ["x","y"], ["addieren", ["get","x"], ["get","y"]]]],
+  ["set", "Total", ["reduce", ["get","Quadroubled"], "sum_func"]],
+  ["print", ["get","Total"]],
+
+  ["set", "gt5_func", ["func", ["n"], ["greaterThan", ["get","n"], 5]]],
+  ["set", "Filtered", ["filter", ["get","nums"], "gt5_func"]],
+  ["print", ["get","Filtered"]]
+]
