@@ -1,8 +1,12 @@
 import sys
 import json
 import pprint
+import time
 
 env = dict()
+trace = True if "--trace" in sys.argv else False
+depth = 0
+func_list = []
 
 # --------------------[Class Operations] --------------------
 
@@ -243,6 +247,10 @@ def do_cat(args, envs):
 def do_call(args,envs):
     assert len(args) >= 1
     assert isinstance(args[0],str)
+    global trace
+    if trace:
+        start_time = time.time()
+        depth += 1
     name_func = args[0] #same
     values = [do(a,envs) for a in args[1:]] #[3]
 
@@ -261,7 +269,10 @@ def do_call(args,envs):
     envs.append(local_env)
     result = do(body,envs) #["get","num"]
     envs.pop()
-
+    if trace:
+        duration = int(time.time()-start_time)
+        func_list.append([name_func, duration, depth])
+        depth -= 1
     return result
 
 def do_CreateSet(args, envs):
@@ -397,8 +408,15 @@ def main():
         program = json.load(f)
         envs = [dict()] 
         result = do(program,envs)
-    print(">>>" , result)
-    pprint.pprint(envs)
+
+    if trace:
+        for depth, name, duration in trace_log:
+            indent = " | " * (depth - 1) + "+--"
+            print(f"{indent} {name} ({duration}ms)")
+    else:
+        print(">>>" , result)
+        pprint.pprint(envs)
+    
 
 if __name__ == '__main__':
     main()
