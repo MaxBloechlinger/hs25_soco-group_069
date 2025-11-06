@@ -1,1 +1,9 @@
-#showcase your solution in the fourth step
+[
+  "seq",
+
+  ["set", "nums", ["Array", 4]],
+  ["ArraySet", ["get","nums"], 0, 2],
+  ["ArraySet", ["get","nums"], 1, 5],
+  ["ArraySet", ["get","nums"], 2, 7],
+  ["ArraySet", ["get","nums"], 3, 10],
+  ["print", ["get","nums"]],
