@@ -65,6 +65,7 @@ def do_subtrahieren(args,envs):
     return left - right
 
 def do_print(args, envs):
+    global trace
     values = [do(a, envs) for a in args]
     print(*values)
     return None
@@ -247,7 +248,7 @@ def do_cat(args, envs):
 def do_call(args,envs):
     assert len(args) >= 1
     assert isinstance(args[0],str)
-    global trace
+    global func_list, trace, depth
     if trace:
         start_time = time.time()
         depth += 1
@@ -270,8 +271,8 @@ def do_call(args,envs):
     result = do(body,envs) #["get","num"]
     envs.pop()
     if trace:
-        duration = int(time.time()-start_time)
-        func_list.append([name_func, duration, depth])
+        duration = int(1000*(time.time()-start_time))
+        func_list.append([depth, name_func, duration])
         depth -= 1
     return result
 
@@ -403,16 +404,26 @@ def do(program,envs):  # ["addieren",1,2]
 
 
 def main():
-    filename = sys.argv[1]
+    filename = [arg for arg in sys.argv[1:] if arg != '--trace'][0]
     with open(filename,'r') as f:
         program = json.load(f)
         envs = [dict()] 
         result = do(program,envs)
 
     if trace:
-        for depth, name, duration in func_list:
-            indent = " | " * (depth - 1) + "+--"
-            print(f"{indent} {name} ({duration}ms)")
+        func_list.reverse()
+        for i, (depth, name, duration) in enumerate(func_list):
+            if name == "main" and depth == 1:
+                print(f"{name}")
+            else:
+                has_more = False
+                for j in range(i+1, len(func_list)):
+                    if func_list[j][0] <= depth:
+                        has_more = True
+                        break
+                
+                indent = "|   " * (depth - 2)
+                print(f"{indent}+-- {name} ({duration}ms)")
     else:
         print(">>>" , result)
         pprint.pprint(envs)
