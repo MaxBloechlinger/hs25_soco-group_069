@@ -410,7 +410,7 @@ def main():
         result = do(program,envs)
 
     if trace:
-        for depth, name, duration in trace_log:
+        for depth, name, duration in func_list:
             indent = " | " * (depth - 1) + "+--"
             print(f"{indent} {name} ({duration}ms)")
     else:
