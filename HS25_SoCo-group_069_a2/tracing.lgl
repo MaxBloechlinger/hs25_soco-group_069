@@ -17,6 +17,7 @@
   
   ["set", "main", ["func", [],
     ["call", "process_numbers", 5, 3]]],
+    
   
   ["call", "main"]
 ]

@@ -5,8 +5,40 @@ import time
 
 env = dict()
 trace = True if "--trace" in sys.argv else False
-depth = 0
-func_list = []
+
+
+# --------------------[Tracer Class] --------------------
+
+class Tracer:
+
+    def __init__(self):
+        self.calls = []
+        self.stack = [] 
+
+    def enter(self, name):
+        call = {
+            "name": name,
+            "depth": len(self.stack) + 1,
+            "start_time": time.time()
+        }
+        self.calls.append(call)
+        self.stack.append(call)
+
+    def exit(self):
+        if self.stack:
+            call = self.stack.pop() 
+            call["duration"] = int((time.time() - call["start_time"]) * 1000)
+
+    def print_trace(self):
+        for call in self.calls:
+            if call["depth"] == 1:
+                print(call["name"])
+            else:
+                indent = "|   " * (call["depth"] - 2)
+                print(f"{indent}+-- {call['name']} ({call['duration']}ms)")
+
+tracer = Tracer()
+
 
 # --------------------[Class Operations] --------------------
 
@@ -65,9 +97,12 @@ def do_subtrahieren(args,envs):
     return left - right
 
 def do_print(args, envs):
-    global trace
+    if trace:
+        tracer.enter("print")
     values = [do(a, envs) for a in args]
     print(*values)
+    if trace:
+        tracer.exit()
     return None
 
 def do_func(args, env):
@@ -248,13 +283,11 @@ def do_cat(args, envs):
 def do_call(args,envs):
     assert len(args) >= 1
     assert isinstance(args[0],str)
-    global func_list, trace, depth
-    if trace:
-        start_time = time.time()
-        depth += 1
     name_func = args[0] #same
-    values = [do(a,envs) for a in args[1:]] #[3]
+    if trace:
+        tracer.enter(name_func)
 
+    values = [do(a,envs) for a in args[1:]] #[3]
     func = env_get(name_func,envs) # ["func",["num"],["get","num"]]
     assert isinstance(func,list) and (func[0] == "func")
     params = func[1]
@@ -270,11 +303,12 @@ def do_call(args,envs):
     envs.append(local_env)
     result = do(body,envs) #["get","num"]
     envs.pop()
+
     if trace:
-        duration = int(1000*(time.time()-start_time))
-        func_list.append([depth, name_func, duration])
-        depth -= 1
+        tracer.exit()
+
     return result
+    
 
 def do_CreateSet(args, envs):
     assert len(args) == 0
@@ -411,19 +445,7 @@ def main():
         result = do(program,envs)
 
     if trace:
-        func_list.reverse()
-        for i, (depth, name, duration) in enumerate(func_list):
-            if name == "main" and depth == 1:
-                print(f"{name}")
-            else:
-                has_more = False
-                for j in range(i+1, len(func_list)):
-                    if func_list[j][0] <= depth:
-                        has_more = True
-                        break
-                
-                indent = "|   " * (depth - 2)
-                print(f"{indent}+-- {name} ({duration}ms)")
+        tracer.print_trace()
     else:
         print(">>>" , result)
         pprint.pprint(envs)
