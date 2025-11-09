@@ -49,7 +49,8 @@
     ["print", ["OR", ["get", "x"], 3]],
     ["print", ["NOT", ["get", "x"]]],
     ["print", ["division", ["get", "x"], 2]],
-    ["print", ["pow", ["get", "x"], 2]],
-    ["print", ["modulo", ["get", "x"], 2]]
+    ["print", ["pow", ["get", "x"], -2]],
+    ["print", ["modulo", ["get", "x"], 2]],
+    ["print", ["lessThanEQ", 4 , 3]]
         
 ]
