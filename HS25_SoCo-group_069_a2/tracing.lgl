@@ -1,1 +1,23 @@
-#showcase your solution in the fourth step
+[
+  "seq",
+  
+  ["set", "square", ["func", ["n"], 
+    ["multiplication", ["get", "n"], ["get", "n"]]]],
+  
+  ["set", "cube", ["func", ["n"], 
+    ["multiplication", ["call", "square", ["get", "n"]], ["get", "n"]]]],
+  
+  ["set", "add_cubes", ["func", ["a", "b"],
+    ["addieren", 
+      ["call", "cube", ["get", "a"]],
+      ["call", "cube", ["get", "b"]]]]],
+  
+  ["set", "process_numbers", ["func", ["x", "y"],
+    ["call", "add_cubes", ["get", "x"], ["get", "y"]]]],
+  
+  ["set", "main", ["func", [],
+    ["call", "process_numbers", 5, 3]]],
+    
+  
+  ["call", "main"]
+]
