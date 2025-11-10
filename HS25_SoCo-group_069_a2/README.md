@@ -22,6 +22,39 @@
 
 
 ## Design Decisions for the Interpreter
+
+### args & envs
+
+As you will see, every function in the interpreter will take ``args`` & ``envs`` as arguments with the structure of **do_**operation(args, envs).
+
+We felt this was necessary due to previous implementations already using this scheme and, therefore, allowed us to implement new data structures and operations in a concise and fashionable manner.
+
+The ``args`` argument in every function usually contains what the user wants to do. If you want to multiply two numbers, that is where they are being sent into the function, e.g., 
+
+```
+def do_addieren(args,env):
+    assert len(args) == 2
+    left = do(args[0],env)
+    right = do(args[1],env)
+    return left + right
+```
+
+As you can see, if we want to add two numbers, ``args`` are where these numbers are sent into and checked for their validty: ``assert len(args) == 2``
+
+As for why ``envs`` can be found in every functions arguments is because, it is a list of dictionaries which allows for variable lookup and allowing a function to be limited to its scope.
+
+In the **extensions.lgl** file we can see us setting a variable x: ``["set", "x", 10]`` which stores the variable as **envs = {"x": 10}**.
+
+We could then call ``["get", "x"]``, which will lead to the interpreter to look up **x** in ``envs``.
+
+### Structure of function **do_** prefix 
+
+Every function in the interpreter starts with the **do_** prefix to create a less labour intensive alternative than manualy registering every function.
+
+The interpreter finds all functions starting with **do_**, registers them automatically, removes the **do_** part of the function name and stores them in a dictionary.
+
+So ``do_addieren`` is stored as ``addieren`` and can be called anytime as a function to add two numbers.
+
     
 ### Design Decisions for Step01 - Mathematical operations and Loops
 
@@ -91,18 +124,210 @@ As seen beforehand in the structure of the **do... until** loop, functions usual
 
 This would be the expected syntax for every functions, except if specified differently, e.g., **do_NOT**.
 
-The prefix **do_** allows the interpreter to map operations names to their function.
-
 
 ### Design Decision for Step02 - Arrays and Sets in LGL
 
 To implement array & set compatability into the interpreter we decided to utilise built-in python functions to do so. Additionaly, we stuck to the existing interpreter design, i.e., every function takes *args* & *envs* as parameters, thus allowing us to somewhat seamlessly integreate new data strucutes into the interpreter.
 
+**Array Implementation**
+
+**do_Array(args, envs):**
+- Creates a new array with length that has been specified
+- Takes only one argument, the length of the array
+
+*Example:*
+
+ ``["Array", 7]`` --> ``[0, 0, 0, 0, 0, 0, 0]``
+
+**def do_ArrayGet(args, envs):**
+- With this function we can retrieve a value, specified index, from an array of our choosing
+- Takes two arguments: the array we want to retrieve and the index of said array
+
+*Example:*
+
+``["ArrayGet", ["get","A"], 1]`` --> Looks up array **A** and index **1** and fetches its value
+
+*Error handling:*
+
+- In case the the user inputs an invalid number, we return a **Index out of range** exception.
+- We also check that the looked up data structure if of type array and return a string to warn the user incase it was not. This is done with ``assert isinstance()`` and its appropriate error handling.
+
+**def do_ArraySet(args, envs):**
+- With this function can set the value of an index in the array
+- Takes 3 arguments, the array, index and value we want to set
+
+*Example:*
+
+``["ArraySet", ["get","A"], 0, 7]`` --> Here we lookup for array A, and insert 7 into index 0.
+
+*Error Handling:*
+
+Here we used the same idea like in **do_ArrayGet**. Check proper index value and wether the called array is of type array.
+
+**def do_ArraySize(args, envs):**
+- This function returns the length of the called array
+- Only argument it takes is which array we want to retrieve
+
+*Example:*
+
+``["ArraySize", ["get","A"]]`` --> returns the size of the array.
+
+*Error Handling:*
+
+Here we assert wether the only one argument is sent in, the array, and wether we are looking for an array and not other data structures.
+
+**def do_cat(args, envs):**
+- This function concatenates two arrays
+- Takes two arguments, *Two arrays* and appends them with the builtin python operator ``+``.
+
+*Example:*
+
+``["cat", ["get","A"], ["get","B"]]`` --> Appends the values of B to the right of A
+
+*Error Handling:*
+
+Here we check for both sent in arrays wether they are of type list:
+
+``assert isinstance(Array1, list)``
+
+``assert isinstance(Array2, list)``
+
+**Set Implementation**
+
+Sets use Python's built-in `set()` function, allowing us to maintain uniqueness, no duplicate values.
+
+All set operations follow the pattern as previously seen in the arrays implementation
+
+**do_CreateSet(args, envs):**
+- Creates a new empty set
+- Takes no arguments
+
+*Example:* 
+
+``["CreateSet"]`` --> Creates a new set **set()**
+
+**do_SetInsert(args, envs):**
+- This function inserts an element into the set
+- It takes two arguments, the set we want to lookup, and the value we want to add
+
+*Example:* 
+
+``["SetInsert", ["get", "I"], 1]`` --> inserts 1 into set I
+
+**do_SetContain(args, envs):**
+- Checks wether an element exists in the set
+- Again takes two arguments, the sent we want to use and the value to find
+- Returns 1 if found, else 0
+
+*Example:* 
+
+``["SetContain", ["get", "I"], 3]]`` --> returns 1 if 3 is in set I
+
+
+**do_SetSize(args, envs):**
+- Returns the length of the set
+- Takes one argument: the set
+
+*Example:* 
+
+``["SetSize", ["get", "I"]]`` --> returns the size
+
+**do_SetMerge(args, envs):**
+- Merges two sets 
+- Takes two sets as arguments
+- The function also makes sure that there are no duplicates in the newly created set
+
+*Example:* 
+
+``["SetMerge", ["get", "I"], ["get", "J"]]`` --> `{1, 2, 3, 4} | {1, 2, 20}` = `{1, 2, 3, 4, 20}`
+
+*Error Handling:*
+
+- The error handling for the set data structure follows a very similar principle to the one seen in *arrays*. If necessary, we usually check wether the amount of arguments sent into the function are correct:
+
+``assert len(args) == 2``
+
+and wether the correct data structure is referenced:
+
+``assert isinstance(s, set)``
+
+
 ### Design Decision for Step03 - Functional Programming Elements
 
-*Insert Here*
+In order to implement and use *map, reduce & filter* it calls upon previously implemented functions which the user is free to choose from.
+
+
+**do_map(args, envs):**
+- This function essentially applies a specified function to every value in an array
+- Thus it only takes 2 arguments: The Function to be mapped to every value and the array this process should be applied to
+
+**Example:**
+
+```
+["set", "sq_func", ["func", ["n"], ["multiplication", ["get","n"], ["get","n"]]]],
+["set", "Map_Output", ["map", ["get","A"], "sq_func"]]
+```
+
+This squares ``sq_func`` every value in array A
+
+**Error Handling:**
+
+We check wether both sent in arguments are of correct type and return a string if not:
+
+``assert isinstance(a, list), "first arg must be array"``
+
+``assert isinstance(f, str), "second arg must be a func"``
+
+
+Furthermore, we also validate the amount of arguments to be 2
+
+After checking if the sent in string is actually a string we also must check wether the interpreter can find the associated function:
+
+``assert isinstance(f, list) and f[0] == "func", "{f} is not a function"``
+
+**do_reduce(args, envs):**
+- This function, for a given array, reduces it to one value, done with a function set by the user, e.g., if you send in ``do_addieren``, it will add the last two values together until the arrays consist of only 1 value. 
+- Two arguments are accpeted, an array and a string function name
+
+*Example:*
+
+```
+["set", "add_func", ["func", ["x", "y"], ["addieren", ["get","x"], ["get","y"]]]],
+["set", "Reduce_Output", ["reduce", ["get","A"], "add_func"]]
+```
+--> For input array ``[1, 2, 3, 4, 15, 22, 34]`` the result would be ``81``
+
+*Error Handling:*
+
+Again, as seen previously we first check wether both arguments sent in are valid and if the string can be assigned to a function:
+
+``assert isinstance(a, list), "first arg must be array"``
+
+``assert isinstance(f, str), "second arg must be a func"``
+
+``assert isinstance(f, list) and f[0] == "func", "{f} is not a function"``
+
+
+**do_filter(args, envs):**
+- The filter operation accepts an array and a function name, and produces a new array where only elements that satisfy the condition for the function to return true are present. 
+- Two arguments accepted: an array and a function name as string
+
+*Example:*
+```
+["set", "larger_ten_func", ["func", ["n"], ["greaterThan", ["get","n"], 10]]],
+["set", "Filtered_Array", ["filter", ["get","A"], "larger_ten_func"]]
+```
+--> For input array ```[1,2,3,4,15,16]``` this would return ```[15,16]```, only values larger than 10:  ``larger_ten_func``
+
+*Error Handling:*
+
+Same principle as for *reduce* and *map*: We first check wether both arguments sent in are valid and if the string can be assigned to a function.
 
 
 ### Design Decisions for Step04 - Visualized Tracing
+
+*Insert Here*
+
+### LLM Decleration
 
 *Insert Here*
