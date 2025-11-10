@@ -1,44 +1,8 @@
 import sys
 import json
 import pprint
-import time
 
 env = dict()
-trace = True if "--trace" in sys.argv else False
-
-
-# --------------------[Tracer Class] --------------------
-
-class Tracer:
-
-    def __init__(self):
-        self.calls = []
-        self.stack = [] 
-
-    def enter(self, name):
-        call = {
-            "name": name,
-            "depth": len(self.stack) + 1,
-            "start_time": time.time()
-        }
-        self.calls.append(call)
-        self.stack.append(call)
-
-    def exit(self):
-        if self.stack:
-            call = self.stack.pop() 
-            call["duration"] = int((time.time() - call["start_time"]) * 1000)
-
-    def print_trace(self):
-        for call in self.calls:
-            if call["depth"] == 1:
-                print(call["name"])
-            else:
-                indent = "|   " * (call["depth"] - 2)
-                print(f"{indent}+-- {call['name']} ({call['duration']}ms)")
-
-tracer = Tracer()
-
 
 # --------------------[Class Operations] --------------------
 
@@ -97,12 +61,8 @@ def do_subtrahieren(args,envs):
     return left - right
 
 def do_print(args, envs):
-    if trace:
-        tracer.enter("print")
     values = [do(a, envs) for a in args]
     print(*values)
-    if trace:
-        tracer.exit()
     return None
 
 def do_func(args, env):
@@ -284,10 +244,8 @@ def do_call(args,envs):
     assert len(args) >= 1
     assert isinstance(args[0],str)
     name_func = args[0] #same
-    if trace:
-        tracer.enter(name_func)
-
     values = [do(a,envs) for a in args[1:]] #[3]
+
     func = env_get(name_func,envs) # ["func",["num"],["get","num"]]
     assert isinstance(func,list) and (func[0] == "func")
     params = func[1]
@@ -304,11 +262,7 @@ def do_call(args,envs):
     result = do(body,envs) #["get","num"]
     envs.pop()
 
-    if trace:
-        tracer.exit()
-
     return result
-    
 
 def do_CreateSet(args, envs):
     assert len(args) == 0
@@ -438,18 +392,13 @@ def do(program,envs):  # ["addieren",1,2]
 
 
 def main():
-    filename = [arg for arg in sys.argv[1:] if arg != '--trace'][0]
+    filename = sys.argv[1]
     with open(filename,'r') as f:
         program = json.load(f)
         envs = [dict()] 
         result = do(program,envs)
-
-    if trace:
-        tracer.print_trace()
-    else:
-        print(">>>" , result)
-        pprint.pprint(envs)
-    
+    print(">>>" , result)
+    pprint.pprint(envs)
 
 if __name__ == '__main__':
     main()
