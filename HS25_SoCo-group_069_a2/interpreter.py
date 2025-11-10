@@ -27,7 +27,7 @@ class Tracer:
     def exit(self):
         if self.stack:
             call = self.stack.pop() 
-            call["duration"] = int((time.time() - call["start_time"]) * 1000)
+            call["duration"] = float((time.time() - call["start_time"]) * 1000)
 
     def print_trace(self):
         for call in self.calls:
@@ -35,7 +35,7 @@ class Tracer:
                 print(call["name"])
             else:
                 indent = "|   " * (call["depth"] - 2)
-                print(f"{indent}+-- {call['name']} ({call['duration']}ms)")
+                print(f"{indent}+-- {call["name"]} ({call["duration"]:.2f}ms)")
 
 tracer = Tracer()
 
@@ -97,10 +97,11 @@ def do_subtrahieren(args,envs):
     return left - right
 
 def do_print(args, envs):
+    values = [do(a, envs) for a in args]
     if trace:
         tracer.enter("print")
-    values = [do(a, envs) for a in args]
-    print(*values)
+    else:
+        print(*values)
     if trace:
         tracer.exit()
     return None
