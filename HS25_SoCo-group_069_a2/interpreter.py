@@ -35,7 +35,7 @@ class Tracer:
                 print(call["name"])
             else:
                 indent = "|   " * (call["depth"] - 2)
-                print(f"{indent}+-- {call['name']} ({call['duration']}ms)")
+                print(f"{indent}+-- {call["name"]} ({call["duration"]:.2f}ms)")
 
 tracer = Tracer()
 
@@ -96,10 +96,11 @@ def do_subtrahieren(args,envs):
     return left - right
 
 def do_print(args, envs):
+    values = [do(a, envs) for a in args]
     if trace:
         tracer.enter("print")
-    values = [do(a, envs) for a in args]
-    print(*values)
+    else:
+        print(*values)
     if trace:
         tracer.exit()
     return None
