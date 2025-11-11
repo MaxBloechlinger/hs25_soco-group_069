@@ -358,7 +358,11 @@ _Example_
 `python interpreter.py --trace tracing.lgl`
 
 ```
-
+main
++-- add_cubes (0.04ms)
+|   +-- get_cube_power (0.01ms)
+|   +-- get_cube_power (0.01ms)
++-- print (0.00ms)
 ```
 
 ### LLM Declaration
