@@ -20,6 +20,48 @@
   [Step04]
   Implementation of tracing in the interpreter, enabling visual tracing functionality
 
+## Usage Examples
+
+_Run one of the following lines in your terminal:_
+
+`python interpreter.py extensions.lgl`
+
+`python interpreter.py data_structures.lgl`
+
+`python interpreter.py functional.lgl`
+
+```
+Example:
+run 'python interpreter.py extensions.lgl'
+
+Output:
+0       # 2 % 2
+2       # subtrahieren loop
+10      # addieren loop
+8       # double loop
+2.5     # half loop
+10      # x
+False   # 10 < 3
+True    # 10 > 3
+False   # 10 <= 3
+True    # 10 >= 3
+False   # 10 == 3
+True    # 10 != 3
+1       # 10 and 3
+1       # 10 or 3
+0       # not 10
+5.0     # 10 / 2
+0.0     # 10 to power of -2
+0       # 10 % 2
+False   # 4 <= 3
+#block appears twice
+>>> None
+[{'i': 8, 'j': 2.5, 'x': 10, 'y': 55}]
+>>> None
+[{'i': 8, 'j': 2.5, 'x': 10, 'y': 55}]
+
+```
+
 ## Design Decisions for the Interpreter
 
 ### args & envs
@@ -379,7 +421,7 @@ main
 - Why is my trace tree showing the print function at the start instead of at the end? **I inserted a snippet from the do_print function**
 - Does this LGL file implement the same functionality as the pseudocode program? **I wanted to make sure that I implemented the same code as in the assignment**
 - Check this README snippet for grammar mistakes
-**I wanted to avoid grammar mistakes, because my English is error-prone**
+  **I wanted to avoid grammar mistakes, because my English is error-prone**
 
 **Prompts Used by Abraham Herzog:**
 
