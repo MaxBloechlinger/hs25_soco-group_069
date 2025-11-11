@@ -64,7 +64,6 @@ False   # 4 <= 3
 #environment
 >>> None
 [{'i': 8, 'j': 2.5, 'x': 10, 'y': 55}]
-
 ```
 
 ## Design Decisions for the Interpreter
