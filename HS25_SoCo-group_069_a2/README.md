@@ -329,15 +329,22 @@ Same principle as for *reduce* and *map*: We first check wether both arguments s
 
 We designed our tracing component with an object-oriented dual system in mind. After things became complex with  global variables tracing the runtime across the interpreter, we decided to simplify the process by encapsulating all tracing funcationalities in a ``Tracer`` class. Everytime a program is executed, the interpreter initializes a ``Tracer`` object that internally manages two lists: one for function calls and one for the stack.
 
-- The calls list acts as a history of all function invocations. Each entry stores the ``function name``, its ``depth``, the ``start_time`` and the measured ``duration`` in a dictionary. This list ist later used to reconstruct the tree calls for visualization.
+- The calls list acts as a history of all function invocations. Each entry stores the ``function name``, its ``depth``, the ``start_time`` and the measured ``duration`` in a dictionary. This list is later used to reconstruct the tree calls for visualization.
 
 - The stack list represents the current runtime state. Functions are pushed onto it when entered and popped off when exited so we can calculate durations precisely.
 
 By splitting these tasks, the ``tracer`` can be both accurate while running (using the stack) and clear afterwards (using the call list). This mix gives a simple and clean structure and it avoids using global stuff and makes the tracing logic easier to reuse and keep tidy.
 
-To turn ``tracing`` on, we added a command line flag ``--trace``. When the interpreter starts, it checks for this flag and if it’s there, switches from normal mode to tracing mode. In tracing mode it prints the full call tree with indentation and timing info. To make sure it always finds the right file, we used a small list comprehension that filters out the ``--trace`` flag before loading the file. That way, extra flags don’t confuse the argument parsing.
+To turn ``tracing`` on, we added a command line flag ``--trace``. When the interpreter starts, it checks for this flag and if it is there, switches from normal mode to tracing mode. In tracing mode it prints the full call tree with indentation and timing info. To make sure it always finds the right file, we used a small list comprehension that filters out the ``--trace`` flag before loading the file. That way it avoids "--trace" to be identified as the filename if active.
 
-We also decided that tracing shouldn’t just work for user-made functions, but also for some built-in ones. For example, the built-in ``do_print`` function now appears in the trace tree too. This helps show the full picture of what happens from calculations to the final output.
+For our ``tracing.lgl`` LGL file, we implemented the exact same example from the assignment paper. We did this on purpose to be absolutely sure our tracing does the right thing.
+
+The code has the same functions as in the assignment:
+- ``get_cube_power(n)`` - calculates n³ 
+- ``add_cubes(a, b)`` - adds two cubes by calling ``get_cube_power`` twice with variable a and b
+- ``main()`` - runs everything by calling ``add_cubes(10, 12)`` and then prints the result
+
+We also decided that tracing shouldn't just work for user-made functions, but also for the built-in  ``do_print`` function. This helps show the full picture of what happens from calculations to the final output.
 
 Execution times are shown in milliseconds as floating-point numbers with two decimal places. We chose that format because whole milliseconds often looked just like zeros. Floats make even short calls visible and make it easier to spot small timing differences between functions.
 
@@ -347,7 +354,6 @@ Execution times are shown in milliseconds as floating-point numbers with two dec
 
 ```
 ```
-
 
 
 

@@ -448,8 +448,7 @@ def main():
     else:
         print(">>>" , result)
         pprint.pprint(envs)
-    print(">>>" , result)
-    pprint.pprint(envs)
+    
 
 if __name__ == '__main__':
     main()
