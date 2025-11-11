@@ -30,10 +30,12 @@ _Run one of the following lines in your terminal:_
 
 `python interpreter.py functional.lgl`
 
-```
-Example:
-run 'python interpreter.py extensions.lgl'
 
+
+
+Example:
+run `python interpreter.py extensions.lgl`
+```
 Output:
 0       # 2 % 2
 2       # subtrahieren loop
