@@ -355,6 +355,11 @@ Execution times are shown in milliseconds as floating-point numbers with two dec
 
 **Prompts Used by Luiz Hablützel:**
 
+- Why is my trace tree showing the print function at the start instead of at the end? **I inserted a snippet from the do_print function**
+- Does this LGL file implement the same functionality as the pseudocode program? **I wanted to make sure that I implemented the same code as in the assignment**
+- Check this README snippet for grammar mistakes
+**I wanted to avoid grammar mistakes, because my English is error-prone**
+
 **Prompts Used by Abraham Herzog:**
 
 - Why does this not work? **I inserted a snippet from an lgl file, there was a comma missing**
