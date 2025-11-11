@@ -1,4 +1,4 @@
-# HS25 SoCo Assignment 2 Group 69: LGL Interpreters
+# HS25 SoCo Assignment 2 Group 69: LGL Interpreter
 
 **Members:** Max Blöchlinger, Abraham Herzog, Luiz Hablützel
 
@@ -6,28 +6,29 @@
 
 - **interpreter.py**
     [Step01-Step04]
-    Implmentations of Mathematical Operations, Data structures, programming elements & Tracing  
+    Implementations of Mathematical Operations, Data Structures, programming elements & tracing  
 - **extensions.lgl**
     [Step01]
     Implementations of 3 algorithms to test the Mathematical Operations of the Interpreter, with added output verification.
 - **data_structures.lgl**
     [Step02]
-    Checks wether arrays & sets behave correctly in the interpreter.
+    Checks whether arrays & sets behave correctly in the interpreter.
 - **functional.lgl**
     [Step03]
-    Implementation of algorithms to verify functional programming operations (map, reduce, filter) with output verification 
+    Implementations of algorithms to verify functional programming operations (map, reduce, filter) with output verification 
 - **tracing.lgl**
     [Step04]
+    Implementation of tracing in the interpreter, enabling visual tracing functionality
 
 
-
+ 
 ## Design Decisions for the Interpreter
 
 ### args & envs
 
-As you will see, every function in the interpreter will take ``args`` & ``envs`` as arguments with the structure of **do_**operation(args, envs).
+As you will see, every function in the interpreter will take ``args`` & ``envs`` as arguments with the structure of *do_* operation(args, envs).
 
-We felt this was necessary due to previous implementations already using this scheme and, therefore, allowed us to implement new data structures and operations in a concise and fashionable manner.
+We felt this was necessary due to previous implementations already using this scheme and, therefore, allowed us to implement new data structures and operations in a concise and consistent manner.
 
 The ``args`` argument in every function usually contains what the user wants to do. If you want to multiply two numbers, that is where they are being sent into the function, e.g., 
 
@@ -39,7 +40,7 @@ def do_addieren(args,env):
     return left + right
 ```
 
-As you can see, if we want to add two numbers, ``args`` are where these numbers are sent into and checked for their validty: ``assert len(args) == 2``
+As you can see, if we want to add two numbers, ``args`` are where these numbers are sent into and checked for their validity: ``assert len(args) == 2``
 
 As for why ``envs`` can be found in every functions arguments is because, it is a list of dictionaries which allows for variable lookup and allowing a function to be limited to its scope.
 
@@ -49,7 +50,7 @@ We could then call ``["get", "x"]``, which will lead to the interpreter to look 
 
 ### Structure of function **do_** prefix 
 
-Every function in the interpreter starts with the **do_** prefix to create a less labour intensive alternative than manualy registering every function.
+Every function in the interpreter starts with the **do_** prefix to create a less labour intensive alternative than manually registering every function.
 
 The interpreter finds all functions starting with **do_**, registers them automatically, removes the **do_** part of the function name and stores them in a dictionary.
 
@@ -112,13 +113,13 @@ Furthermore, regarding the do... until loop, we intended to create it following 
 **Implementation**
 - Takes two arguments (args, envs) --> do_do(args, envs):
 - Uses a `while True` loop and evaluates each iteration, (until condition), and breaks loop if said condition is true
-- Implementation supports nested loops and can use any aformentioned operator; comparison, boolean, arithmetic.
+- Implementation supports nested loops and can use any aforementioned operator; comparison, boolean, arithmetic.
 
 **Syntax**
 
 As seen beforehand in the structure of the **do... until** loop, functions usually expect 2 arguments to operate as expected and also checks for such:
 
-``["lessThanEQ",4 , 3]`` --> 4 being the left argument and 3 being the right argument
+``["lessThanEQ",4 , 3]`` --> 4 being the left argument and 3 being the right argument, evaluates to 7
 
 ``["multiplication",4 , 3]`` --> Evaluates to 12
 
@@ -132,7 +133,7 @@ To implement array & set compatability into the interpreter we decided to utilis
 **Array Implementation**
 
 **do_Array(args, envs):**
-- Creates a new array with length that has been specified
+- Creates a new array with length that has been specified by the user
 - Takes only one argument, the length of the array
 
 *Example:*
@@ -153,12 +154,12 @@ To implement array & set compatability into the interpreter we decided to utilis
 - We also check that the looked up data structure if of type array and return a string to warn the user incase it was not. This is done with ``assert isinstance()`` and its appropriate error handling.
 
 **def do_ArraySet(args, envs):**
-- With this function can set the value of an index in the array
+- With this function, we can set the value of an index in the array
 - Takes 3 arguments, the array, index and value we want to set
 
 *Example:*
 
-``["ArraySet", ["get","A"], 0, 7]`` --> Here we lookup for array A, and insert 7 into index 0.
+``["ArraySet", ["get","A"], 0, 7]`` --> Here we lookup array A, and insert 7 into index 0.
 
 *Error Handling:*
 
@@ -178,7 +179,7 @@ Here we assert wether the only one argument is sent in, the array, and wether we
 
 **def do_cat(args, envs):**
 - This function concatenates two arrays
-- Takes two arguments, *Two arrays* and appends them with the builtin python operator ``+``.
+- Takes two arguments, *Two arrays*, and appends them with the builtin python operator ``+``.
 
 *Example:*
 
@@ -268,7 +269,7 @@ In order to implement and use *map, reduce & filter* it calls upon previously im
 ["set", "Map_Output", ["map", ["get","A"], "sq_func"]]
 ```
 
-This squares ``sq_func`` every value in array A
+This squares, ``sq_func``, every value in array A
 
 **Error Handling:**
 
@@ -340,8 +341,23 @@ We also decided that tracing shouldn’t just work for user-made functions, but 
 
 Execution times are shown in milliseconds as floating-point numbers with two decimal places. We chose that format because whole milliseconds often looked just like zeros. Floats make even short calls visible and make it easier to spot small timing differences between functions.
 
+*Example*
+
+``python interpreter.py --trace tracing.lgl``
+
+```
+```
 
 
-### LLM Decleration
 
-*Insert Here*
+
+### LLM Declaration
+
+**Prompts Used by Luiz Hablützel:**
+
+**Prompts Used by Abraham Herzog:**
+
+- Why does this not work? **I inserted a snippet from an lgl file, there was a comma missing**
+- Check for grammar mistakes **This I used for the readme to avoid any common spelling mistakes**
+
+**Prompts used by Max Blöchlinger**
