@@ -390,6 +390,8 @@ By splitting these tasks, the `tracer` can be both accurate while running (using
 
 To turn `tracing` on, we added a command line flag `--trace`. When the interpreter starts, it checks for this flag and if it is there, switches from normal mode to tracing mode. In tracing mode it prints the full call tree with indentation and timing info. To make sure it always finds the right file, we used a small list comprehension that filters out the `--trace` flag before loading the file. That way it avoids "--trace" to be identified as the filename if active.
 
+We put the tracing code inside `do_call` because that's where all user functions go through to execute. Every time you call a function with `["call", "function_name", args]`, it goes to `do_call`. This is the only place where user functions run, so it's the perfect spot to add tracing.
+
 For our `tracing.lgl` LGL file, we implemented the exact same example from the assignment paper. We did this on purpose to be absolutely sure our tracing does the right thing.
 
 The code has the same functions as in the assignment:
