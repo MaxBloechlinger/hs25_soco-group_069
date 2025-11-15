@@ -10,4 +10,4 @@ Max Prompts:
 "but whats the exact structure the graph is so unclear. explain like im an idiot"
 "https://docs.python.org/3/library/struct.html explain to me briefly what struct does in context to the zvfs asg i shared"
 "which format chars can i choose for file offset and why?"
-"what are the next steps tell me socratically"
+"what are the next steps tell me socratically)"
