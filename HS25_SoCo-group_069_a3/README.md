@@ -2,7 +2,7 @@
 
 - creates new filesystem, populates header, fills out file entries with 0s for 32 entries and includes values for header metadata
 
-Max Prompts:
+**Max Prompts**:
 "please explain what they exactly want from us give a few steps to stategically conquer this complex task"
 "put the steps in a pdf i can share with the team"
 "the file structure graph is confusing me, is this supposed to be a single file or is the graph showing the system?"
@@ -11,3 +11,7 @@ Max Prompts:
 "https://docs.python.org/3/library/struct.html explain to me briefly what struct does in context to the zvfs asg i shared"
 "which format chars can i choose for file offset and why?"
 "what are the next steps tell me socratically)"
+
+**Abraham Prompts**:
+
+

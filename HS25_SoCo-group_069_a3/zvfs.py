@@ -29,20 +29,20 @@ def mkfs(file_system_name):
     #pack() header into byte format
     header = struct.pack(
         header_format_string, 
-        magic,
-        version,
-        flags,
-        reserved0,
-        file_count,
-        file_capacity,
-        file_entry_size,
-        reserved1,
-        file_table_offset,
-        data_start_offset,
-        next_free_offset,
-        free_entry_offset,
-        deleted_files,
-        reserved2
+        magic, #0
+        version, #1
+        flags, #2
+        reserved0, #3
+        file_count, #4
+        file_capacity,#5
+        file_entry_size, #6
+        reserved1, #7
+        file_table_offset, #8
+        data_start_offset, #9
+        next_free_offset, #10
+        free_entry_offset, #11
+        deleted_files, #12
+        reserved2 #13
         )
     
     #========================[ FILE ENTRY ]=========================
@@ -69,6 +69,32 @@ def mkfs(file_system_name):
         created,
         reserved1
         )
+    #==========================[ Get info about a .zvfs file ]============================]
+def gifs(file_system_name):
+    with open(file_system_name, "rb") as f:
+
+        header_bytes = f.read(64) # Read entire file system, I don't think extracting only necessary data would warrant difficulty to maintain for minimal efficiency increase
+
+        res = struct.unpack("<8sBBHHHHHIIIIH26s", header_bytes) # Maybe instead of copy pasting header format we could define it globally.
+
+        #check struct.pack for proper index of data
+        file_count = res[4]
+        file_capacity = res[5]
+        deleted_files = res[12] 
+
+        remaining_entries = file_capacity - file_count - deleted_files # Count deleted files as well, they are only marked as deleted but still exist
+
+        f.seek(0, 2)
+        file_size = f.tell() #Jump to the end of the file, tells us where we are which should be current size
+
+        print(f"The file name is: {file_system_name}\n" )
+        print(f"The number of files present is: {file_count} \n")
+        print(f"The remaining free entries are: {remaining_entries} \n")
+        print(f"Number of files marked as deleted: {deleted_files} \n")
+        print(f"The total size of the file is: {file_size} \n")
+
+        
+
     
     #========================[ WRITE file_system_name.zvfs FILE ]=========================]
 
