@@ -119,7 +119,10 @@ if __name__ == "__main__":
         print(f"New file system '{file_system_name}.zvfs' created.")
         sys.exit(0) #exit with success, return 0
     if function == "gifs":
-        pass
+        file_system_name = args[0]
+        gifs(file_system_name)
+        print(f"Here is the asked for info about {file_system_name}.zvfs")
+        sys.exit(0)
     if function == "addfs":
         pass
     if function == "getfs":
