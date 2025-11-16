@@ -14,4 +14,10 @@
 
 **Abraham Prompts**:
 
+"What are some good api documentations for this project?"
+"Can you summarize this: https://docs.python.org/3/library/io.html"
+"Can you summarise this: https://docs.python.org/3/library/struct.html"
+"Summarise and explain thuroughly this chapter of the source material: **Chapter 17, Software design by example**
+"Explain the difference between rb and r"
+"Explaint the format my friend used and explain it: **pasted a snipped of the code**
 
