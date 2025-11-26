@@ -80,7 +80,7 @@ def mkfs(file_system_name):
 
     #==========================[ Get info about a .zvfs file ]============================]
 def gifs(file_system_name):
-    with open(file_system_name, "rb") as f:
+    with open(f"{file_system_name}.zvfs", "rb") as f:
 
         header_bytes = f.read(64) # Read entire file system, I don't think extracting only necessary data would warrant difficulty to maintain for minimal efficiency increase
 
