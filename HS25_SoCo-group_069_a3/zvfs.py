@@ -1,6 +1,63 @@
 import struct
 import sys
 
+
+#========================[ GLOBAL VARIABLES FOR HELPER METHODS ]=========================
+
+#Format Variables
+HEADER_FORMAT = "<8sBBHHHHHIIIIH26s"
+ENTRY_FORMAT = "<32sIIBBHQ12s"
+
+#Size Variables
+HEADER_SIZE = 64
+ENTRY_SIZE = 64
+ENTRY_COUNT = 32
+FILE_TABLE_OFFSET = 64
+DATA_START_OFFSET = 2112
+
+def pack_header(magic,version, flags, reserved0, file_count, file_capacity,
+                file_entry_size, reserved1, file_table_offset, data_start_offset,
+                next_free_offset, free_entry_offset, deleted_files, reserved2):
+    
+    header = struct.pack(
+        HEADER_FORMAT, 
+        magic, #0
+        version, #1
+        flags, #2
+        reserved0, #3
+        file_count, #4
+        file_capacity,#5
+        file_entry_size, #6
+        reserved1, #7
+        file_table_offset, #8
+        data_start_offset, #9
+        next_free_offset, #10
+        free_entry_offset, #11
+        deleted_files, #12
+        reserved2 #13
+        )
+        
+    return header
+
+def unpack_header(header_bytes):
+    return struct.unpack(HEADER_FORMAT, header_bytes)
+
+#pack_entry_emptty() is only used for mkfs and dfrgfs!!!
+def pack_entry_empty(name, start, length, type,
+        flag, reserved0, created, reserved1):
+    empty_entry = struct.pack(
+        ENTRY_FORMAT,
+        name,
+        start,
+        length,
+        type,
+        flag,
+        reserved0,
+        created,
+        reserved1
+        )
+    return empty_entry
+
 #create new filesystem, populate header, fillout file entries with 0s for 32 entries,
 #include values for header metadata
 def mkfs(file_system_name):
@@ -19,31 +76,15 @@ def mkfs(file_system_name):
     file_table_offset = 64      #"I" 4 byte unsigned int 
     data_start_offset = 2112    #"I"
     next_free_offset = data_start_offset    #"I"
-    free_entry_offset = 64      #"I"
+    free_entry_offset = 0      #"I"
     deleted_files = 0           #"H"
     reserved2 = b"\x00" * 26     #26 times 00, so 26 bytes containing 0s, format char: "26s"
 
-    #all formats from above combined:
-    header_format_string = "<8sBBHHHHHIIIIH26s" #little-endian "<" byteorder because sys.byteorder returns "little"
 
     #pack() header into byte format
-    header = struct.pack(
-        header_format_string, 
-        magic, #0
-        version, #1
-        flags, #2
-        reserved0, #3
-        file_count, #4
-        file_capacity,#5
-        file_entry_size, #6
-        reserved1, #7
-        file_table_offset, #8
-        data_start_offset, #9
-        next_free_offset, #10
-        free_entry_offset, #11
-        deleted_files, #12
-        reserved2 #13
-        )
+    header = pack_header(magic,version, flags, reserved0, file_count, file_capacity,
+                file_entry_size, reserved1, file_table_offset, data_start_offset,
+                next_free_offset, free_entry_offset, deleted_files, reserved2)
     
     #========================[ FILE ENTRY ]=========================
 
@@ -56,19 +97,9 @@ def mkfs(file_system_name):
     created = 0                 #"Q"
     reserved1 = b"\x00" * 12    #"12s"
 
-    file_entry_string = "<32sIIBBHQ12s"
 
-    entry = struct.pack(
-        file_entry_string,
-        name,
-        start,
-        length,
-        type,
-        flag,
-        reserved0,
-        created,
-        reserved1
-        )
+    empty_entry = pack_entry_empty(name, start, length, type, flag, 
+                             reserved0, created, reserved1)
     
     #========================[ WRITE file_system_name.zvfs FILE ]=========================]
 
@@ -76,20 +107,20 @@ def mkfs(file_system_name):
     with open(f"{file_system_name}.zvfs", "wb") as f:
         f.write(header)
         for _ in range(32):
-            f.write(entry) 
+            f.write(empty_entry) 
 
     #==========================[ Get info about a .zvfs file ]============================]
 def gifs(file_system_name):
     with open(f"{file_system_name}.zvfs", "rb") as f:
 
-        header_bytes = f.read(64) # Read entire file system, I don't think extracting only necessary data would warrant difficulty to maintain for minimal efficiency increase
+        header_bytes = f.read(HEADER_SIZE) # Read entire file system, I don't think extracting only necessary data would warrant difficulty to maintain for minimal efficiency increase 🤓
 
-        res = struct.unpack("<8sBBHHHHHIIIIH26s", header_bytes) # Maybe instead of copy pasting header format we could define it globally.
+        header = unpack_header(header_bytes)
 
         #check struct.pack for proper index of data
-        file_count = res[4]
-        file_capacity = res[5]
-        deleted_files = res[12] 
+        file_count = header[4]
+        file_capacity = header[5]
+        deleted_files = header[12] 
 
         remaining_entries = file_capacity - file_count - deleted_files # Count deleted files as well, they are only marked as deleted but still exist
 
