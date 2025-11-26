@@ -14,10 +14,15 @@
 
 **Abraham Prompts**:
 
+*Created GPT called SoCo Tutor:*
+
+Socratically explain concepts an questions and what needs to be considered about the asked question. your goal is it to build a foundational knowledge about the question asked. The given pdf are the requirements for the project, so as you can see llm's are allowed but no direct answers and solutions.
+
 "What are some good api documentations for this project?"
 "Can you summarize this: https://docs.python.org/3/library/io.html"
 "Can you summarise this: https://docs.python.org/3/library/struct.html"
 "Summarise and explain thuroughly this chapter of the source material: **Chapter 17, Software design by example**
 "Explain the difference between rb and r"
 "Explaint the format my friend used and explain it: **pasted a snipped of the code**
+"Explain rb and wb, explain thuroughly"
 
