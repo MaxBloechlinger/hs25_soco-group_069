@@ -1,5 +1,6 @@
 import struct
 import sys
+import os
 
 
 #========================[ GLOBAL VARIABLES FOR HELPER METHODS ]=========================
@@ -138,7 +139,32 @@ def gifs(file_system_name):
         print(f"The total size of the file is: {file_size} ")
         print("-------------------------------------")
 
+#==========================[ Adding files to the .zvfs file]============================]
 
+def addfs(file_system_name, src_path):
+    with open(f"{file_system_name}.zvfs", "r+b") as f:
+        # read header
+        f.seek(0)
+        header_bytes = f.read(HEADER_SIZE)
+        (magic, version, flags, reserved0, file_count, file_capacity, file_entry_size, reserved1, file_table_off, data_start_off, next_free_off, free_entry_off, deleted_files, reserved2) = unpack_header(header_bytes)
+
+        src_size = os.path.getsize(src_path)
+        with open(src_path, "rb") as sf:
+            data = sf.read()
+
+        # write data in free_off
+
+        f.seek(next_free_off)
+        f.write(data)
+
+        dest_name = os.path.basename(src_path)
+        name_bytes = dest_name.encode()[:32].ljust(32, b"\x00")
+        created = int(time.time())
+        entry = struct.pack(ENTRY_FMT, name_bytes, next_free_off, src_size, 1, 0, 0, created, b"\x00"*12)  
+        f.seek(0)
+        f.write(pack_header(new_header))
+
+    print(f"Added '{dest_name}' ({src_size} bytes) to {file_system_name}.zvfs")
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
