@@ -69,6 +69,15 @@ def mkfs(file_system_name):
         created,
         reserved1
         )
+    
+    #========================[ WRITE file_system_name.zvfs FILE ]=========================]
+
+    #open new file in write binary mode
+    with open(f"{file_system_name}.zvfs", "wb") as f:
+        f.write(header)
+        for _ in range(32):
+            f.write(entry) 
+
     #==========================[ Get info about a .zvfs file ]============================]
 def gifs(file_system_name):
     with open(file_system_name, "rb") as f:
@@ -93,16 +102,6 @@ def gifs(file_system_name):
         print(f"Number of files marked as deleted: {deleted_files} \n")
         print(f"The total size of the file is: {file_size} \n")
 
-        
-
-    
-    #========================[ WRITE file_system_name.zvfs FILE ]=========================]
-
-    #open new file in write binary mode
-    with open(f"{file_system_name}.zvfs", "wb") as f:
-        f.write(header)
-        for _ in range(32):
-            f.write(entry) 
 
 
 if __name__ == "__main__":
