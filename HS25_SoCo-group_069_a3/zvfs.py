@@ -12,9 +12,6 @@ ENTRY_FORMAT = "<32sIIBBHQ12s"
 #Size Variables
 HEADER_SIZE = 64
 ENTRY_SIZE = 64
-ENTRY_COUNT = 32
-FILE_TABLE_OFFSET = 64
-DATA_START_OFFSET = 2112
 
 def pack_header(magic,version, flags, reserved0, file_count, file_capacity,
                 file_entry_size, reserved1, file_table_offset, data_start_offset,
@@ -139,6 +136,39 @@ def gifs(file_system_name):
         print(f"The total size of the file is: {file_size} ")
         print("-------------------------------------")
 
+
+def getfs(file_path):
+    #fs dict to store "header", "entries" & "data"
+    file_system = {}
+
+    with open(file_path, "rb") as f:
+        header_bytes = f.read(HEADER_SIZE)
+        header = unpack_header(header_bytes)
+        file_system["header"] = header
+
+        file_capacity = header[5]
+        file_table_offset = header[8]
+        data_start_offset = header[9] 
+
+        f.seek(file_table_offset)
+
+        file_entries = []
+
+        for _ in range(file_capacity):
+            entry_bytes = f.read(ENTRY_SIZE)
+            file_entries.append(entry_bytes)
+        
+        file_system["entries"] = file_entries
+
+        f.seek(data_start_offset)
+
+        data = f.read()
+
+        file_system["data"] = data
+
+        return file_system
+
+    
 #==========================[ Adding files to the .zvfs file]============================]
 
 def addfs(file_system_name, src_path):
@@ -186,7 +216,16 @@ if __name__ == "__main__":
     if function == "addfs":
         pass
     if function == "getfs":
-        pass
+        path = args[0]
+        file_system = getfs(path)
+        print("==========================[ HEADER ]==========================")
+        print(file_system["header"])
+        print("==========================[ ENTRIES ]==========================")
+        print(f"Number of entries: {len(file_system["entries"])}")
+        print("==========================[ DATA ]==========================")
+        print(f"Data size: {len(file_system["data"])} bytes")
+        sys.exit(0)
+
     if function == "rmfs":
         pass
     if function == "lsfs":
