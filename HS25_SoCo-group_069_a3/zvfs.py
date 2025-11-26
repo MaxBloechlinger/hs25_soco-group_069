@@ -96,11 +96,16 @@ def gifs(file_system_name):
         f.seek(0, 2)
         file_size = f.tell() #Jump to the end of the file, tells us where we are which should be current size
 
-        print(f"The file name is: {file_system_name}\n" )
-        print(f"The number of files present is: {file_count} \n")
-        print(f"The remaining free entries are: {remaining_entries} \n")
-        print(f"Number of files marked as deleted: {deleted_files} \n")
-        print(f"The total size of the file is: {file_size} \n")
+        print(f"The file system name is: {file_system_name}.zvfs " )
+        print("-------------------------------------")
+        print(f"The number of files present is: {file_count} ")
+        print("-------------------------------------")
+        print(f"The remaining free entries are: {remaining_entries} ")
+        print("-------------------------------------")
+        print(f"Number of files marked as deleted: {deleted_files} ")
+        print("-------------------------------------")
+        print(f"The total size of the file is: {file_size} ")
+        print("-------------------------------------")
 
 
 
@@ -120,7 +125,6 @@ if __name__ == "__main__":
     if function == "gifs":
         file_system_name = args[0]
         gifs(file_system_name)
-        print(f"Here is the asked for info about {file_system_name}.zvfs")
         sys.exit(0)
     if function == "addfs":
         pass
