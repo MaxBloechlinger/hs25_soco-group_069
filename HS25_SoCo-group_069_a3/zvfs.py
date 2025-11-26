@@ -214,7 +214,11 @@ if __name__ == "__main__":
         gifs(file_system_name)
         sys.exit(0)
     if function == "addfs":
-        pass
+        file_system_name = args[0]
+        src_path = args[1]
+        addfs(file_system_name, src_path)
+        sys.exit(0)
+
     if function == "getfs":
         path = args[0]
         file_system = getfs(path)
