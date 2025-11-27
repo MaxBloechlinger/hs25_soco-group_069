@@ -1,6 +1,7 @@
 import struct
 import sys
 import os
+import time
 
 
 #========================[ GLOBAL VARIABLES FOR HELPER METHODS ]=========================
@@ -107,7 +108,7 @@ def mkfs(file_system_name):
         for _ in range(32):
             f.write(empty_entry) 
 
-    #==========================[ Get info about a .zvfs file ]============================]
+#==========================[ Get info about a .zvfs file ]============================]
 def gifs(file_system_name):
     with open(f"{file_system_name}.zvfs", "rb") as f:
 
@@ -173,28 +174,83 @@ def getfs(file_path):
 
 def addfs(file_system_name, src_path):
     with open(f"{file_system_name}.zvfs", "r+b") as f:
-        # read header
+        #===========================[ READ HEADER ]==========================
         f.seek(0)
         header_bytes = f.read(HEADER_SIZE)
-        (magic, version, flags, reserved0, file_count, file_capacity, file_entry_size, reserved1, file_table_off, data_start_off, next_free_off, free_entry_off, deleted_files, reserved2) = unpack_header(header_bytes)
+        header = unpack_header(header_bytes)
+        
+        source_file_size = os.path.getsize(src_path) #get src file size
+        
+        with open(src_path, "rb") as source_file:
+            data = source_file.read() #save file bytes of source file in "data"
 
-        src_size = os.path.getsize(src_path)
-        with open(src_path, "rb") as sf:
-            data = sf.read()
+        #extract relevant vars from header tuple
+        file_table_offset = header[8]
+        file_capacity = header[5]
+        next_free_offset = header[10]
 
-        # write data in free_off
-
-        f.seek(next_free_off)
+        #===========================[ FIND FREE ENTRY FIELD ]==========================
+        
+        f.seek(file_table_offset)
+        #find the first empty file entry:
+        for i in range(file_capacity): #for i = 0; i<32; i++ file entries
+            entry = f.read(ENTRY_SIZE)
+            (name, start, length, typ , flag, reserved0, created, reserved1) = struct.unpack(ENTRY_FORMAT, entry)
+            if length == 0 and typ == 0: #type is called typ to avoid type() shadowing
+                entry_offset = file_table_offset + i * ENTRY_SIZE
+                break
+        
+        #===========================[ WRITE DATA ]==========================
+        f.seek(next_free_offset)
         f.write(data)
 
-        dest_name = os.path.basename(src_path)
-        name_bytes = dest_name.encode()[:32].ljust(32, b"\x00")
-        created = int(time.time())
-        entry = struct.pack(ENTRY_FMT, name_bytes, next_free_off, src_size, 1, 0, 0, created, b"\x00"*12)  
-        f.seek(0)
-        f.write(pack_header(new_header))
+        dest_file_name = os.path.basename(src_path) 
+        encoded_name = dest_file_name.encode()[:32] #encode destinantion name to first 32 bytes
+        name = encoded_name + (32-len(encoded_name))*b"\x00" #add zero padding to fill incase name didnt use all 32 bytes 
 
-    print(f"Added '{dest_name}' ({src_size} bytes) to {file_system_name}.zvfs")
+
+        created = int(time.time())
+        reserved1 = 12 * b"\x00"
+        
+        entry = struct.pack(
+        ENTRY_FORMAT,
+        name,
+        next_free_offset, #start
+        source_file_size, #length
+        1,                #type     
+        0,                #flag
+        0,                #reserved0
+        created,
+        reserved1
+        )
+
+        f.seek(entry_offset)
+        f.write(entry)
+
+        #===========================[ WRITE NEW HEADER ]==========================
+        new_header = pack_header(
+            header[0],  #magic
+            header[1],  #version
+            header[2],  #flags
+            header[3],  #reserved0
+            header[4]+1,  #file_count
+            header[5],  #file_capacity
+            header[6],  #file_entry_size
+            header[7],  #reserved1
+            header[8],  #file_table_offset
+            header[9],  #data_start_offset
+            header[10]+source_file_size, #next_free_offset
+            header[11],  # free_entry_offset
+            header[12],  # deleted_files
+            header[13]   # reserved2
+        )
+
+        f.seek(0)
+        f.write(new_header)
+
+    print(f"Added '{dest_file_name}' ({source_file_size} bytes) to {file_system_name}.zvfs")
+
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
@@ -204,7 +260,7 @@ if __name__ == "__main__":
     function = sys.argv[1].lower()
     args = sys.argv[2:]
 
-    if function == "mkfs":
+    if function == "mkfs": #python zvfs.py mkfs "fs_name"
         file_system_name = args[0]
         mkfs(file_system_name)
         print(f"New file system '{file_system_name}.zvfs' created.")
@@ -213,21 +269,21 @@ if __name__ == "__main__":
         file_system_name = args[0]
         gifs(file_system_name)
         sys.exit(0)
-    if function == "addfs":
+    if function == "addfs": #usage: python zvfs.py addfs "fs_name" "example_file"
         file_system_name = args[0]
         src_path = args[1]
         addfs(file_system_name, src_path)
         sys.exit(0)
 
-    if function == "getfs":
+    if function == "getfs": #usage: python zvfs.py getfs "fs_name"
         path = args[0]
         file_system = getfs(path)
         print("==========================[ HEADER ]==========================")
         print(file_system["header"])
         print("==========================[ ENTRIES ]==========================")
-        print(f"Number of entries: {len(file_system["entries"])}")
+        print(f"Number of files: {file_system['header'][4]}/32")
         print("==========================[ DATA ]==========================")
-        print(f"Data size: {len(file_system["data"])} bytes")
+        print(f"Data size: {len(file_system['data'])} bytes")
         sys.exit(0)
 
     if function == "rmfs":
