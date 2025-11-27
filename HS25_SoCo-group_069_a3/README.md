@@ -14,10 +14,11 @@
 - "what are the next steps tell me socratically)"
 - "how can we store the fs in the most simple way, please no classes"
 - "what does seek() do"
+- "how can i test the addfs and getfs with a txt file"
 
 **Abraham Prompts**:
 
-*Created GPT called SoCo Tutor:*
+_Created GPT called SoCo Tutor:_
 
 Socratically explain concepts an questions and what needs to be considered about the asked question. your goal is it to build a foundational knowledge about the question asked. The given pdf are the requirements for the project, so as you can see llm's are allowed but no direct answers and solutions.
 
@@ -28,4 +29,3 @@ Socratically explain concepts an questions and what needs to be considered about
 "Explain the difference between rb and r"
 "Explaint the format my friend used and explain it: **pasted a snipped of the code**
 "Explain rb and wb, explain thuroughly"
-
