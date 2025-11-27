@@ -2,6 +2,7 @@ import struct
 import sys
 import os
 import time
+from datetime import datetime
 
 
 #========================[ GLOBAL VARIABLES FOR HELPER METHODS ]=========================
@@ -137,38 +138,6 @@ def gifs(file_system_name):
         print(f"The total size of the file is: {file_size} ")
         print("-------------------------------------")
 
-
-def getfs(file_path):
-    #fs dict to store "header", "entries" & "data"
-    file_system = {}
-
-    with open(file_path, "rb") as f:
-        header_bytes = f.read(HEADER_SIZE)
-        header = unpack_header(header_bytes)
-        file_system["header"] = header
-
-        file_capacity = header[5]
-        file_table_offset = header[8]
-        data_start_offset = header[9] 
-
-        f.seek(file_table_offset)
-
-        file_entries = []
-
-        for _ in range(file_capacity):
-            entry_bytes = f.read(ENTRY_SIZE)
-            file_entries.append(entry_bytes)
-        
-        file_system["entries"] = file_entries
-
-        f.seek(data_start_offset)
-
-        data = f.read()
-
-        file_system["data"] = data
-
-        return file_system
-
     
 #==========================[ Adding files to the .zvfs file]============================]
 
@@ -251,6 +220,64 @@ def addfs(file_system_name, src_path):
     print(f"Added '{dest_file_name}' ({source_file_size} bytes) to {file_system_name}.zvfs")
 
 
+def getfs(file_system_name):
+    #fs dict to store "header", "entries" & "data"
+    file_system = {}
+
+    with open(file_system_name, "rb") as f:
+        header_bytes = f.read(HEADER_SIZE)
+        header = unpack_header(header_bytes)
+        file_system["header"] = header
+
+        file_capacity = header[5]
+        file_table_offset = header[8]
+        data_start_offset = header[9] 
+
+        f.seek(file_table_offset)
+
+        file_entries = []
+
+        for _ in range(file_capacity):
+            entry_bytes = f.read(ENTRY_SIZE)
+            file_entries.append(entry_bytes)
+        
+        file_system["entries"] = file_entries
+
+        f.seek(data_start_offset)
+
+        data = f.read()
+
+        file_system["data"] = data
+
+        return file_system
+
+#lsfs <file system file>: Lists all the file in the provided filesystem. For every file, print its name, size
+#(in bytes) and creation time. Make sure to not print files marked as deleted.
+def lsfs(file_system_name):
+    file_system = getfs(file_system_name)
+
+    entries = file_system["entries"]
+    header = file_system["header"]
+
+    print(f"{file_system_name}:")
+    for _, entry_byte in enumerate(entries):
+        (name, start, length, typ , flag, reserved0, created, reserved1) = struct.unpack(ENTRY_FORMAT, entry_byte)
+
+        if typ == 0 and length == 0:
+            continue
+        
+        file = name.split(b"\x00", 1)[0].decode() #returns clean string until buffer
+        created_at = datetime.fromtimestamp(created)
+
+        if not flag:
+            print(f"-{file}, size: {length}, created: {created_at}")
+
+
+    
+
+
+
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
@@ -288,8 +315,10 @@ if __name__ == "__main__":
 
     if function == "rmfs":
         pass
-    if function == "lsfs":
-        pass
+    if function == "lsfs": #python zvfs.py lsfs "fs_name"
+        file_system_name = args[0]
+        lsfs(file_system_name)
+        sys.exit(0)
     if function == "dfrgfs":
         pass
     if function == "catfs":
