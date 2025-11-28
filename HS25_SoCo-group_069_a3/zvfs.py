@@ -394,7 +394,9 @@ if __name__ == "__main__":
         print(f"Data size: {len(file_system['data'])} bytes")
         sys.exit(0)
     if function == "rmfs":
-        pass
+        filename = args[1]
+        rmfs(file_system_name, filename)
+        sys.exit(0)
     if function == "lsfs": #python zvfs.py lsfs "fs_name"
         lsfs(file_system_name)
         sys.exit(0)
