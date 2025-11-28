@@ -251,6 +251,66 @@ def getfs(file_system_name):
 
         return file_system
 
+def rmfs(file_system_name, filename):
+    file_system = getfs(file_system_name)
+
+    with open(file_system_name, "r+b") as f:
+        entries = file_system["entries"]
+        header = file_system["header"]
+
+        for i, entry_byte in enumerate(entries):
+            (name, start, length, typ , flag, reserved0, created, reserved1) = struct.unpack(ENTRY_FORMAT, entry_byte)
+
+            if typ == 0 and length == 0:
+                continue
+
+            file = name.split(b"\x00", 1)[0].decode()
+
+
+            if file == filename and flag == 0:
+                file_table_offset = header[8]
+                new_flag = 1
+
+                new_entry = struct.pack(
+                    ENTRY_FORMAT,
+                    name,
+                    start,
+                    length,
+                    typ,
+                    new_flag,   #update flag from 0 to 1
+                    reserved0,
+                    created,
+                    reserved1
+                    )
+                
+                entry_offset = file_table_offset + i * ENTRY_SIZE
+
+                f.seek(entry_offset)
+                f.write(new_entry)
+
+                new_header = pack_header(
+                    header[0],  #magic
+                    header[1],  #version
+                    header[2],  #flags
+                    header[3],  #reserved0
+                    header[4]-1,  #file_count
+                    header[5],  #file_capacity
+                    header[6],  #file_entry_size
+                    header[7],  #reserved1
+                    header[8],  #file_table_offset
+                    header[9],  #data_start_offset
+                    header[10], #next_free_offset
+                    header[11],  # free_entry_offset
+                    header[12] + 1,  # deleted_files
+                    header[13]   # reserved2
+                )
+
+                f.seek(0)
+                f.write(new_header)
+
+                return f"Successfully deleted {filename}"
+        return f"{filename} was not found, perhaps there was a typo?"
+
 #lsfs <file system file>: Lists all the file in the provided filesystem. For every file, print its name, size
 #(in bytes) and creation time. Make sure to not print files marked as deleted.
 def lsfs(file_system_name):
