@@ -257,7 +257,6 @@ def lsfs(file_system_name):
     file_system = getfs(file_system_name)
 
     entries = file_system["entries"]
-    header = file_system["header"]
 
     print(f"{file_system_name}:")
     for _, entry_byte in enumerate(entries):
@@ -269,14 +268,38 @@ def lsfs(file_system_name):
         file = name.split(b"\x00", 1)[0].decode() #returns clean string until buffer
         created_at = datetime.fromtimestamp(created)
 
-        if not flag:
-            print(f"-{file}, size: {length}, created: {created_at}")
+        if flag == 0:
+            print(f"-{file} [size: {length} bytes; created: {created_at.strftime('%d.%m.%Y %H:%M')}]")
 
+#catfs <file system file> <file in filesystem>: Print out the file contents of a specified file from
+# the filesystem to the console.
+def catfs(file_system_name, file_name):
+    file_system = getfs(file_system_name)
 
-    
+    entries = file_system["entries"]
+    header = file_system["header"]
+    data_start_offset = header[9]
+    data_region = file_system["data"]
 
+    for _, entry_byte in enumerate(entries):
+        (name, start, length, typ , flag, reserved0, created, reserved1) = struct.unpack(ENTRY_FORMAT, entry_byte)
 
+        if typ == 0 and length == 0:
+            continue
 
+        if flag != 0:
+            continue #skip deleted files
+        
+        file = name.split(b"\x00", 1)[0].decode()
+
+        if file_name == file:    
+            offset = start - data_start_offset
+            data_end = offset + length
+            content = data_region[offset : data_end]
+            print(content.decode(errors="replace"))
+            return
+    print(f"'{file_name}' data not found")
+            
 
 
 if __name__ == "__main__":
@@ -322,4 +345,7 @@ if __name__ == "__main__":
     if function == "dfrgfs":
         pass
     if function == "catfs":
-        pass
+        file_system_name = args[0]
+        file_name = args[1]
+        catfs(file_system_name, file_name)
+        sys.exit(0)
