@@ -331,6 +331,23 @@ def lsfs(file_system_name):
         if flag == 0:
             print(f"-{file} [size: {length} bytes; created: {created_at.strftime('%d.%m.%Y %H:%M')}]")
 
+#dfrgfs <file system file>: Defragments the file system
+
+def dfrgfs(file_system_name):
+    file_system = getfs(file_system_name)
+    header = file_system["header"]
+    entries = file_system["entries"]
+    data_start_offset = header[9]
+
+    files_active = []
+    for byte in entries:
+         (name, start, length, typ, flag, reserved0, created, reserved1) = struct.unpack(ENTRY_FORMAT, byte)
+         if flag == 1 and length>0:
+             file_name = name.split(b"\x00", 1)[0] #get rid off nullbytes
+             files_active.append((file_name, start, length, typ, created))
+
+
+
 #catfs <file system file> <file in filesystem>: Print out the file contents of a specified file from
 # the filesystem to the console.
 def catfs(file_system_name, file_name):
