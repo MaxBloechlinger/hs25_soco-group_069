@@ -111,7 +111,7 @@ def mkfs(file_system_name):
 
 #==========================[ Get info about a .zvfs file ]============================]
 def gifs(file_system_name):
-    with open(f"{file_system_name}.zvfs", "rb") as f:
+    with open(file_system_name, "rb") as f:
 
         header_bytes = f.read(HEADER_SIZE) # Read entire file system, I don't think extracting only necessary data would warrant difficulty to maintain for minimal efficiency increase 🤓
 
@@ -141,16 +141,16 @@ def gifs(file_system_name):
     
 #==========================[ Adding files to the .zvfs file]============================]
 
-def addfs(file_system_name, src_path):
-    with open(f"{file_system_name}.zvfs", "r+b") as f:
+def addfs(file_system_name, file_name):
+    with open(file_system_name, "r+b") as f:
         #===========================[ READ HEADER ]==========================
         f.seek(0)
         header_bytes = f.read(HEADER_SIZE)
         header = unpack_header(header_bytes)
         
-        source_file_size = os.path.getsize(src_path) #get src file size
+        source_file_size = os.path.getsize(file_name) #get src file size
         
-        with open(src_path, "rb") as source_file:
+        with open(file_name, "rb") as source_file:
             data = source_file.read() #save file bytes of source file in "data"
 
         #extract relevant vars from header tuple
@@ -173,7 +173,7 @@ def addfs(file_system_name, src_path):
         f.seek(next_free_offset)
         f.write(data)
 
-        dest_file_name = os.path.basename(src_path) 
+        dest_file_name = os.path.basename(file_name) 
         encoded_name = dest_file_name.encode()[:32] #encode destinantion name to first 32 bytes
         name = encoded_name + (32-len(encoded_name))*b"\x00" #add zero padding to fill incase name didnt use all 32 bytes 
 
@@ -309,25 +309,23 @@ if __name__ == "__main__":
     
     function = sys.argv[1].lower()
     args = sys.argv[2:]
+    
+    file_system_name = args[0]
 
-    if function == "mkfs": #python zvfs.py mkfs "fs_name"
-        file_system_name = args[0]
+
+    if function == "mkfs": #python zvfs.py mkfs "fs_name.extension"
         mkfs(file_system_name)
         print(f"New file system '{file_system_name}.zvfs' created.")
         sys.exit(0) #exit with success, return 0
     if function == "gifs":
-        file_system_name = args[0]
         gifs(file_system_name)
         sys.exit(0)
     if function == "addfs": #usage: python zvfs.py addfs "fs_name" "example_file"
-        file_system_name = args[0]
-        src_path = args[1]
-        addfs(file_system_name, src_path)
+        file_name = args[1]
+        addfs(file_system_name, file_name)
         sys.exit(0)
-
     if function == "getfs": #usage: python zvfs.py getfs "fs_name"
-        path = args[0]
-        file_system = getfs(path)
+        file_system = getfs(file_system_name)
         print("==========================[ HEADER ]==========================")
         print(file_system["header"])
         print("==========================[ ENTRIES ]==========================")
@@ -335,17 +333,14 @@ if __name__ == "__main__":
         print("==========================[ DATA ]==========================")
         print(f"Data size: {len(file_system['data'])} bytes")
         sys.exit(0)
-
     if function == "rmfs":
         pass
     if function == "lsfs": #python zvfs.py lsfs "fs_name"
-        file_system_name = args[0]
         lsfs(file_system_name)
         sys.exit(0)
     if function == "dfrgfs":
         pass
     if function == "catfs":
-        file_system_name = args[0]
         file_name = args[1]
         catfs(file_system_name, file_name)
         sys.exit(0)
