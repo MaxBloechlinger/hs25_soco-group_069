@@ -331,6 +331,71 @@ def lsfs(file_system_name):
         if flag == 0:
             print(f"-{file} [size: {length} bytes; created: {created_at.strftime('%d.%m.%Y %H:%M')}]")
 
+#dfrgfs <file system file>: Defragments the file system
+
+def dfrgfs(file_system_name):
+    file_system = getfs(file_system_name)
+    header = file_system["header"]
+    entries = file_system["entries"]
+    data_start_offset = header[9]
+
+    #active data
+    files_active = []
+    for byte in entries:
+         (name, start, length, typ, flag, reserved0, created, reserved1) = struct.unpack(ENTRY_FORMAT, byte)
+         if flag == 1 and length>0:
+             file_name = name.split(b"\x00", 1)[0] #get rid off nullbytes
+             files_active.append((file_name, start, length, typ, created))
+
+    #new data
+    new_data = b""
+    new_entries = []
+    current_offset = data_start_offset
+
+    for filename, start, length, typ, created in files_active:
+        old_offset = start - data_start_offset
+        file_bytes = file_system["data"][old_offset:old_offset+length]
+
+        new_data += file_bytes
+
+        padding = (64-(len(length)%64))%64 #padding to 64bytes
+        new_data += b"\x00" * padding
+
+        reserved1 += b"\x00" * 12
+        new_entries.append(struct.pack(
+            ENTRY_FORMAT,
+            file_name,
+            current_offset,
+            length,
+            typ,
+            0, # flag
+            0, # reserved0
+            created,
+            reserved1
+            ))
+        current_offset += length + padding
+
+    # fill empty spaces
+    empty_entry = pack_entry_empty(b"\x00"*32, 0, 0, 0, 0, 0, 0, b"\x00"*12)
+    while len(new_entries) < header[5]:
+        new_entries.append(empty_entry)
+
+    # update header
+    header_new = pack_header(
+        header[0], header[1], header[2], header[3], len(files_active), header[5], header[6], header[7], header[8], header[9], current_offset, 0, 0, header[13]
+    )
+
+    with open(file_system_name, "wb") as f:
+        f.write(header_new)
+        for entry in new_entries:
+            f.write(entry)
+        f.write(new_data)
+
+    file_string = "file" if len(files_active)==1 else "files"
+    byte_string = "byte" if header[12]==1 else "bytes"
+    print(f"Defragmentation complete: defragmented {len(files_active)} {file_string} and freed {header[12]} {byte_string}")
+
+
 #catfs <file system file> <file in filesystem>: Print out the file contents of a specified file from
 # the filesystem to the console.
 def catfs(file_system_name, file_name):
@@ -401,7 +466,8 @@ if __name__ == "__main__":
         lsfs(file_system_name)
         sys.exit(0)
     if function == "dfrgfs":
-        pass
+        dfrgfs(file_system_name)
+        sys.exit(0)
     if function == "catfs":
         file_name = args[1]
         catfs(file_system_name, file_name)
