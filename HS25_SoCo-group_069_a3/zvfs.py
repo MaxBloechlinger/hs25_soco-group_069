@@ -104,7 +104,7 @@ def mkfs(file_system_name):
     #========================[ WRITE file_system_name.zvfs FILE ]=========================]
 
     #open new file in write binary mode
-    with open(f"{file_system_name}.zvfs", "wb") as f:
+    with open(file_system_name, "wb") as f:
         f.write(header)
         for _ in range(32):
             f.write(empty_entry) 
@@ -127,7 +127,7 @@ def gifs(file_system_name):
         f.seek(0, 2)
         file_size = f.tell() #Jump to the end of the file, tells us where we are which should be current size
 
-        print(f"The file system name is: {file_system_name}.zvfs " )
+        print(f"The file system name is: {file_system_name}" )
         print("-------------------------------------")
         print(f"The number of files present is: {file_count} ")
         print("-------------------------------------")
@@ -217,7 +217,7 @@ def addfs(file_system_name, file_name):
         f.seek(0)
         f.write(new_header)
 
-    print(f"Added '{dest_file_name}' ({source_file_size} bytes) to {file_system_name}.zvfs")
+    print(f"Added '{dest_file_name}' ({source_file_size} bytes) to {file_system_name}")
 
 
 def getfs(file_system_name):
@@ -343,7 +343,7 @@ def dfrgfs(file_system_name):
     files_active = []
     for byte in entries:
          (name, start, length, typ, flag, reserved0, created, reserved1) = struct.unpack(ENTRY_FORMAT, byte)
-         if flag == 1 and length>0:
+         if flag == 0 and length>0:
              file_name = name.split(b"\x00", 1)[0] #get rid off nullbytes
              files_active.append((file_name, start, length, typ, created))
 
@@ -357,14 +357,14 @@ def dfrgfs(file_system_name):
         file_bytes = file_system["data"][old_offset:old_offset+length]
 
         new_data += file_bytes
-
-        padding = (64-(len(length)%64))%64 #padding to 64bytes
+        padding = (64-(length%64))%64 #padding to 64bytes
         new_data += b"\x00" * padding
+        file = filename[:32] + b"\x00"*(32-len(filename))
+        reserved1 = b"\x00" * 12
 
-        reserved1 += b"\x00" * 12
         new_entries.append(struct.pack(
             ENTRY_FORMAT,
-            file_name,
+            file,
             current_offset,
             length,
             typ,
@@ -382,7 +382,17 @@ def dfrgfs(file_system_name):
 
     # update header
     header_new = pack_header(
-        header[0], header[1], header[2], header[3], len(files_active), header[5], header[6], header[7], header[8], header[9], current_offset, 0, 0, header[13]
+        header[0], header[1], header[2], header[3],
+        len(files_active), #active files
+        header[5],  #file_capacity
+        header[6],  #entrysize
+        header[7],  #reserved1
+        header[8],  #table_offset
+        header[9],  #data_start_offset
+        current_offset,#next_free_offset
+        0,          #free_entry_offset
+        0,          #deleted_files
+        header[13]  #reserved2
     )
 
     with open(file_system_name, "wb") as f:
@@ -440,7 +450,7 @@ if __name__ == "__main__":
 
     if function == "mkfs": #python zvfs.py mkfs "fs_name.extension"
         mkfs(file_system_name)
-        print(f"New file system '{file_system_name}.zvfs' created.")
+        print(f"New file system '{file_system_name}' created.")
         sys.exit(0) #exit with success, return 0
     if function == "gifs":
         gifs(file_system_name)
