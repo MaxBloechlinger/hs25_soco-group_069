@@ -15,8 +15,8 @@
 - "how can we store the fs in the most simple way, please no classes"
 - "what does seek() do"
 - "how can i test the addfs and getfs with a txt file"
-
-**Abraham Prompts**:
+- "how can we go about this in java ? i want to implement it as simple as possible should we do ojbects? or purely funcs like in python ? lets discuss options"
+  **Abraham Prompts**:
 
 _Created GPT called SoCo Tutor:_
 
