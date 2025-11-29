@@ -43,7 +43,7 @@ def unpack_header(header_bytes):
     return struct.unpack(HEADER_FORMAT, header_bytes)
 
 #pack_entry_emptty() is only used for mkfs and dfrgfs!!!
-def pack_entry_empty(name, start, length, type,
+def pack_empty_entry(name, start, length, type,
         flag, reserved0, created, reserved1):
     empty_entry = struct.pack(
         ENTRY_FORMAT,
@@ -98,7 +98,7 @@ def mkfs(file_system_name):
     reserved1 = b"\x00" * 12    #"12s"
 
 
-    empty_entry = pack_entry_empty(name, start, length, type, flag, 
+    empty_entry = pack_empty_entry(name, start, length, type, flag, 
                              reserved0, created, reserved1)
     
     #========================[ WRITE file_system_name.zvfs FILE ]=========================]
@@ -376,7 +376,7 @@ def dfrgfs(file_system_name):
         current_offset += length + padding
 
     # fill empty spaces
-    empty_entry = pack_entry_empty(b"\x00"*32, 0, 0, 0, 0, 0, 0, b"\x00"*12)
+    empty_entry = pack_empty_entry(b"\x00"*32, 0, 0, 0, 0, 0, 0, b"\x00"*12)
     while len(new_entries) < header[5]:
         new_entries.append(empty_entry)
 
@@ -439,13 +439,14 @@ def catfs(file_system_name, file_name):
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
-        print("too few args \n example usage: python zvfs.py <function> <arg1> <arg2>")
+        print("too few args \n example usage: python zvfs.py <function> <filesystem> <file>")
         sys.exit(1) #exit with error, return 1
     
     function = sys.argv[1].lower()
     args = sys.argv[2:]
     
     file_system_name = args[0]
+
 
 
     if function == "mkfs": #python zvfs.py mkfs "fs_name.extension"
