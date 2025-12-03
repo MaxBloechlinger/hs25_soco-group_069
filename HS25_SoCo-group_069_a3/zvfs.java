@@ -141,4 +141,30 @@ public class zvfs {
         return buffer.array();
     }
 
+    private static byte[] unpackEntry(byte[] data) {
+        ByteBuffer b = ByteBuffer.allocate(64);
+        b.order(ByteOrder.LITTLE_ENDIAN); //same as in packEntry
+
+        Entry e = new Entry();
+        
+        e.name = new byte[32];
+        b.get(e.name);
+
+        e.start = b.getInt();
+        e.length = b.getInt();
+
+        e.type = Byte.toUnsignedInt(b.get());
+        e.flag = Byte.toUnsignedInt(b.get());
+
+        e.reserved0 = Short.toUnsignedInt(b.getShort());
+
+        e.created = b.getLong();
+
+        e.reserved1 = new byte[12];
+        b.get(e.reserved1);
+
+        return e;
+    
+
+    }
 }
