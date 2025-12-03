@@ -41,20 +41,6 @@ public class zvfs {
     //static void packEmptyEntry()
 
     static void mkfs(String fileSystemName){
-        byte magic = "ZVFSDSK1"
-        byte version = 1;
-        byte flags = 0;
-        byte reserved0 = 0;
-        byte file_count = 0;
-        byte file_capacity = 32;
-        byte file_entry_size = 64;
-        byte reserved1 = 0;
-        byte file_table_offset = 64;
-        byte data_start_offset = 2112;
-        byte next_free_offset = data_start_offset;
-        byte free_entry_offset = 0;
-        byte deleted_files = 0;
-        byte[] reserved2 = new byte[26]
 
         //byte[] header = Continue here
     }
