@@ -40,20 +40,20 @@ public class zvfs {
     //static void unpackHeader()
     //static void packEmptyEntry()
 
-    private static byte[] packEntry(Entry e) {
-        ByteBuffer buf = ByteBuffer.allocate(64);
-        buf.order(ByteOrder.LITTLE_ENDIAN);
+    private static byte[] packEntry(Entry entry) {
+        ByteBuffer buffer = ByteBuffer.allocate(64);
+        buffer.order(ByteOrder.LITTLE_ENDIAN);
 
-        buf.put(e.name);
-        buf.putInt(e.start);
-        buf.putInt(e.length);
-        buf.put((byte) e.type);
-        buf.put((byte) e.flag);
-        buf.putShort((short) e.reserved0);
-        buf.putLong(e.created);
-        buf.put(e.reserved1);
+        buffer.put(entry.name);
+        buffer.putInt(entry.start);
+        buffer.putInt(entry.length);
+        buffer.put((byte) entry.type);
+        buffer.put((byte) entry.flag);
+        buffer.putShort((short) entry.reserved0);
+        buffer.putLong(entry.created);
+        buffer.put(entry.reserved1);
 
-        return buf.array();
+        return buffer.array();
     }
 
     static void mkfs(String fileSystemName){
