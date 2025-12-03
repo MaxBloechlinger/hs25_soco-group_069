@@ -39,25 +39,6 @@ public class zvfs {
 
 
     }
-    //static void packHeader()
-    //static void unpackHeader()
-    //static void packEmptyEntry()
-
-    private static byte[] packEntry(Entry entry) {
-        ByteBuffer buffer = ByteBuffer.allocate(64);
-        buffer.order(ByteOrder.LITTLE_ENDIAN);
-
-        buffer.put(entry.name);
-        buffer.putInt(entry.start);
-        buffer.putInt(entry.length);
-        buffer.put((byte) entry.type);
-        buffer.put((byte) entry.flag);
-        buffer.putShort((short) entry.reserved0);
-        buffer.putLong(entry.created);
-        buffer.put(entry.reserved1);
-
-        return buffer.array();
-    }
 
     static void mkfs(String fileSystemName){
 
@@ -119,6 +100,45 @@ public class zvfs {
         long created;      
         byte[] reserved1;  
     }
+    
+   //=================[ HELPER FUNCTIONS ]=================
 
+    private static byte[] packHeader(Header header){
+        ByteBuffer buffer = ByteBuffer.allocate(64); //allocate 64 bytes for buffer
+        buffer.order(ByteOrder.LITTLE_ENDIAN); //set ByteOrder to little endian like "<" in .py 
+        
+        buffer.put(header.magic);                       //8s
+        buffer.put((byte)header.version);               //B
+        buffer.put((byte)header.flags);                 //B
+        buffer.putShort((short)header.reserved0);       //H
+        buffer.putShort((short)header.fileCount);       //H
+        buffer.putShort((short)header.fileCapacity);    //H
+        buffer.putShort((short)header.fileEntrySize);   //H
+        buffer.putShort((short)header.reserved1);       //H
+        buffer.putInt(header.fileTableOffset);          //I
+        buffer.putInt(header.dataStartOffset);          //I
+        buffer.putInt(header.nextFreeOffset);           //I
+        buffer.putInt(header.freeEntryOffset);          //I
+        buffer.putShort((short)header.deletedFiles);    //H
+        buffer.put(header.reserved2);                   //26s
+            
+        return buffer.array();
+    }
+
+    private static byte[] packEntry(Entry entry) {
+        ByteBuffer buffer = ByteBuffer.allocate(64);
+        buffer.order(ByteOrder.LITTLE_ENDIAN);
+
+        buffer.put(entry.name);
+        buffer.putInt(entry.start);
+        buffer.putInt(entry.length);
+        buffer.put((byte) entry.type);
+        buffer.put((byte) entry.flag);
+        buffer.putShort((short) entry.reserved0);
+        buffer.putLong(entry.created);
+        buffer.put(entry.reserved1);
+
+        return buffer.array();
+    }
 
 }
