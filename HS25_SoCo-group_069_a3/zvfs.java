@@ -1,3 +1,6 @@
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+
 public class zvfs {
     public static void main(String[] args){
         String usage = "Usage: java zvfs <function> <filesystem> <file>";
@@ -90,19 +93,20 @@ public class zvfs {
     //HELPER STUFF
 
     private static class Header {
-        byte[] magic;
-        int version;
-        int flags;
-        int reserved0;
-        int fileCapacity;
-        int fileEntrySize;
-        int reserved1;
+        byte[] magic;      
+        int version;       
+        int flags;         
+        int reserved0;     
+        int fileCount;     
+        int fileCapacity;  
+        int fileEntrySize; 
+        int reserved1;     
         int fileTableOffset;
         int dataStartOffset;
         int nextFreeOffset;
         int freeEntryOffset;
         int deletedFiles;  
-        byte[] reserved2;
+        byte[] reserved2;  
     }
 
     private static class Entry {
@@ -112,7 +116,9 @@ public class zvfs {
         int type;          
         int flag;          
         int reserved0;     
-        long created;  //8 bytes   
-        byte[] reserved1;
+        long created;      
+        byte[] reserved1;  
     }
+
+
 }
