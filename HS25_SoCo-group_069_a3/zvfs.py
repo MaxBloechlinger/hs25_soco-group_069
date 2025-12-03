@@ -219,8 +219,37 @@ def addfs(file_system_name, file_name):
 
     print(f"Added '{dest_file_name}' ({source_file_size} bytes) to {file_system_name}")
 
+#retrieve file from zvfs system to hard drive
+def getfs(file_system_name, filename):
+    file_system = loadfs(file_system_name)
 
-def getfs(file_system_name):
+    with open(file_system_name, "r+b") as f:
+        entries = file_system["entries"]
+        header = file_system["header"]
+        data_start_offset = header[9]
+
+        for i, entry_byte in enumerate(entries):
+            (name, start, length, typ , flag, reserved0, created, reserved1) = struct.unpack(ENTRY_FORMAT, entry_byte)
+
+            if typ == 0 and length == 0:
+                continue
+
+        
+            file = name.split(b"\x00", 1)[0].decode()
+
+
+            if file == filename:
+                old_offset = start - data_start_offset
+                file_bytes = file_system["data"][old_offset:old_offset+length]
+
+                with open(file_name, "wb") as new_file:
+                    new_file.write(file_bytes)
+
+                print(f"{file_name} restored to HARD DISK")
+                return
+        print(f"{file_name} not found")
+
+def loadfs(file_system_name):
     #fs dict to store "header", "entries" & "data"
     file_system = {}
 
@@ -252,7 +281,7 @@ def getfs(file_system_name):
         return file_system
 
 def rmfs(file_system_name, filename):
-    file_system = getfs(file_system_name)
+    file_system = loadfs(file_system_name)
 
     with open(file_system_name, "r+b") as f:
         entries = file_system["entries"]
@@ -314,7 +343,7 @@ def rmfs(file_system_name, filename):
 #lsfs <file system file>: Lists all the file in the provided filesystem. For every file, print its name, size
 #(in bytes) and creation time. Make sure to not print files marked as deleted.
 def lsfs(file_system_name):
-    file_system = getfs(file_system_name)
+    file_system = loadfs(file_system_name)
 
     entries = file_system["entries"]
 
@@ -334,7 +363,7 @@ def lsfs(file_system_name):
 #dfrgfs <file system file>: Defragments the file system
 
 def dfrgfs(file_system_name):
-    file_system = getfs(file_system_name)
+    file_system = loadfs(file_system_name)
     header = file_system["header"]
     entries = file_system["entries"]
     data_start_offset = header[9]
@@ -409,7 +438,7 @@ def dfrgfs(file_system_name):
 #catfs <file system file> <file in filesystem>: Print out the file contents of a specified file from
 # the filesystem to the console.
 def catfs(file_system_name, file_name):
-    file_system = getfs(file_system_name)
+    file_system = loadfs(file_system_name)
 
     entries = file_system["entries"]
     header = file_system["header"]
@@ -447,8 +476,6 @@ if __name__ == "__main__":
     
     file_system_name = args[0]
 
-
-
     if function == "mkfs": #python zvfs.py mkfs "fs_name.extension"
         mkfs(file_system_name)
         print(f"New file system '{file_system_name}' created.")
@@ -460,14 +487,9 @@ if __name__ == "__main__":
         file_name = args[1]
         addfs(file_system_name, file_name)
         sys.exit(0)
-    if function == "getfs": #usage: python zvfs.py getfs "fs_name"
-        file_system = getfs(file_system_name)
-        print("==========================[ HEADER ]==========================")
-        print(file_system["header"])
-        print("==========================[ ENTRIES ]==========================")
-        print(f"Number of files: {file_system['header'][4]}/32")
-        print("==========================[ DATA ]==========================")
-        print(f"Data size: {len(file_system['data'])} bytes")
+    if function == "getfs":
+        file_name = args[1]
+        getfs(file_system_name, file_name)
         sys.exit(0)
     if function == "rmfs":
         filename = args[1]
@@ -482,4 +504,14 @@ if __name__ == "__main__":
     if function == "catfs":
         file_name = args[1]
         catfs(file_system_name, file_name)
+        sys.exit(0)
+    #custom helper function loadfs used in other funcs to load fs and useful for debugging
+    if function == "loadfs": #usage: python zvfs.py loadfs "fs_name"
+        file_system = loadfs(file_system_name)
+        print("==========================[ HEADER ]==========================")
+        print(file_system["header"])
+        print("==========================[ ENTRIES ]==========================")
+        print(f"Number of files: {file_system['header'][4]}/32")
+        print("==========================[ DATA ]==========================")
+        print(f"Data size: {len(file_system['data'])} bytes")
         sys.exit(0)
