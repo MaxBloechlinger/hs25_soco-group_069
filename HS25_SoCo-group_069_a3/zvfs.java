@@ -42,7 +42,6 @@ public class zvfs {
 
     static void mkfs(String fileSystemName){
 
-        //byte[] header = Continue here
     }
 
     static void gifs(String fileSystemName){
@@ -72,5 +71,32 @@ public class zvfs {
     static void catfs(String fileSystemName, String fileName){
         
     }
-    
+    //HELPER STUFF
+
+    private static class Header {
+        byte[] magic;
+        int version;
+        int flags;
+        int reserved0;
+        int fileCapacity;
+        int fileEntrySize;
+        int reserved1;
+        int fileTableOffset;
+        int dataStartOffset;
+        int nextFreeOffset;
+        int freeEntryOffset;
+        int deletedFiles;  
+        byte[] reserved2;
+    }
+
+    private static class Entry {
+        byte[] name;       
+        int start;         
+        int length;        
+        int type;          
+        int flag;          
+        int reserved0;     
+        long created;  //8 bytes   
+        byte[] reserved1;
+    }
 }
