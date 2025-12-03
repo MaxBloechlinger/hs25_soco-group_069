@@ -141,6 +141,7 @@ public class zvfs {
         return buffer.array();
     }
 
+
     private static byte[] unpackEntry(byte[] data) {
         ByteBuffer b = ByteBuffer.allocate(64);
         b.order(ByteOrder.LITTLE_ENDIAN); //same as in packEntry
@@ -167,4 +168,38 @@ public class zvfs {
     
 
     }
+
+    private static Header unpackHeader(byte[] packedHeader){
+        ByteBuffer buffer = ByteBuffer.wrap(packedHeader);
+        buffer.order(ByteOrder.LITTLE_ENDIAN);
+
+        Header header = new Header();
+
+        //Bytes
+        header.magic = new byte[8];
+        buffer.get(header.magic);
+        header.version = Byte.toUnsignedInt(buffer.get());
+        header.flags = Byte.toUnsignedInt(buffer.get());
+
+        //H
+        header.reserved0 = Short.toUnsignedInt(buffer.getShort());
+        header.fileCount = Short.toUnsignedInt(buffer.getShort());
+        header.fileCapacity = Short.toUnsignedInt(buffer.getShort());
+        header.fileEntrySize = Short.toUnsignedInt(buffer.getShort());
+        header.reserved1 = Short.toUnsignedInt(buffer.getShort());
+        
+        //I
+        header.fileTableOffset = buffer.getInt();
+        header.dataStartOffset = buffer.getInt();
+        header.nextFreeOffset = buffer.getInt();
+        header.freeEntryOffset = buffer.getInt();
+        //H
+        header.deletedFiles = Short.toUnsignedInt(buffer.getShort());
+        //26s 
+        header.reserved2 = new byte[26];
+        buffer.get(header.reserved2);
+
+        return header;
+    }
+
 }
