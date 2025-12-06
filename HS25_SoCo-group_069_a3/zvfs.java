@@ -125,24 +125,23 @@ public class zvfs {
         return buffer.array();
     }
 
-    private static byte[] packEntry(Entry entry) {
+    private static byte[] packEntry(Entry e) {
         ByteBuffer buffer = ByteBuffer.allocate(64);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
 
-        buffer.put(entry.name);
-        buffer.putInt(entry.start);
-        buffer.putInt(entry.length);
-        buffer.put((byte) entry.type);
-        buffer.put((byte) entry.flag);
-        buffer.putShort((short) entry.reserved0);
-        buffer.putLong(entry.created);
-        buffer.put(entry.reserved1);
+        buffer.put(e.name);
+        buffer.putInt(e.start);
+        buffer.putInt(e.length);
+        buffer.put((byte) e.type);
+        buffer.put((byte) e.flag);
+        buffer.putShort((short) e.reserved0);
+        buffer.putLong(e.created);
+        buffer.put(e.reserved1);
 
         return buffer.array();
     }
 
-
-    private static byte[] unpackEntry(byte[] data) {
+    private static Entry unpackEntry(byte[] data) {
         ByteBuffer b = ByteBuffer.allocate(64);
         b.order(ByteOrder.LITTLE_ENDIAN); //same as in packEntry
 
