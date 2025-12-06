@@ -239,8 +239,114 @@ static void addfs(String fileSystemName, String fileName){
     }
 
     static void dfrgfs(String fileSystemName){
+    try {
+        FileSystem fs = loadfs(fileSystemName);
+        if (fs == null){
+            System.out.println("Error: Can't load filesystem: " + fileSystemName);
+            return;
+        }
+
+        Header header = fs.header;
+        Entry[] entries = fs.entries;
+        byte[] oldData = fs.data;
+        int dataStartOffset = header.dataStartOffset;
+
+        // collect active files
+        int activeCount = 0;
+        int totalDataLen = 0;
+        for (Entry e : entries) {
+    
+            if (e.flag == 0 && e.length >= 0) {
+                int padding = (64 - (e.length % 64)) % 64;
+                totalDataLen += e.length + padding;
+                activeCount++;
+            }
+        }
+
+        byte[] newData = new byte[totalDataLen];
+        Entry[] newEntries = new Entry[header.fileCapacity];
+
+        int currentOffset = dataStartOffset;
+        int dataPos = 0;
+        int idx = 0;
+
+        for (Entry e : entries) {
+            if (e.flag == 0 && e.length >= 0) {
+                int oldOff = e.start;
+                System.arraycopy(oldData, oldOff, newData, dataPos, e.length);
+                dataPos += e.length;
+
+                int padding = (64 - (e.length % 64)) % 64;
+                dataPos += padding;
+
+                Entry ne = new Entry();
+                ne.name = e.name;
+                ne.start = currentOffset;
+                ne.length = e.length;
+                ne.type = e.type;
+                ne.flag = 0;
+                ne.reserved0 = 0;
+                ne.created = e.created;
+                ne.reserved1 = new byte[12];
+
+                newEntries[idx++] = ne;
+                currentOffset += e.length + padding;
+            }
+        }
+
+        while (idx < header.fileCapacity) {
+            Entry emp = new Entry();
+            emp.name = new byte[32];
+            emp.start = 0;
+            emp.length = 0;
+            emp.type = 0;
+            emp.flag = 0;
+            emp.reserved0 = 0;
+            emp.created = 0;
+            emp.reserved1 = new byte[12];
+            newEntries[idx++] = emp;
+        }
+
+        int oldDeleted = header.deletedFiles;
+
+        // header update
+        header.fileCount = activeCount;
+        header.nextFreeOffset = currentOffset;
         
+        int headerSize = 64;
+        int entrySize = header.fileEntrySize;
+        int fileCapacity = header.fileCapacity;
+        int tableOffset = header.fileTableOffset;
+        int totalSize = header.dataStartOffset + newData.length;
+
+        byte[] out = new byte[totalSize];
+
+        byte[] headerBytes = packHeader(header);
+        System.arraycopy(headerBytes, 0, out, 0, headerSize);
+
+        for (int i = 0; i < fileCapacity; i++) {
+            byte[] eBytes = packEntry(newEntries[i]);
+            int off = tableOffset + i * entrySize;
+            System.arraycopy(eBytes, 0, out, off, entrySize);
+        }
+
+        System.arraycopy(newData, 0, out, header.dataStartOffset, newData.length);
+
+        Files.write(Paths.get(fileSystemName), out);
+
+        String fileWord = (activeCount == 1) ? "file" : "files";
+        String byteWord = (oldDeleted == 1) ? "byte" : "bytes";
+        System.out.println(
+            "Defragmentation complete: defragmented " +
+            activeCount + " " + fileWord +
+            " and freed " + oldDeleted + " " + byteWord
+        );
+
+    } catch (Exception e) {
+        System.out.println("Error: Could not defragment: " + e.getMessage());
     }
+}
+
 
     static void catfs(String fileSystemName, String fileName){
         
