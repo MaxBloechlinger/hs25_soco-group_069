@@ -2,9 +2,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.util.Arrays;
 
 
 public class zvfs {
@@ -19,7 +16,7 @@ public class zvfs {
     
     String function = args[0];
     String fileSystemName = args[1];
-    String fileName = (args.length > 3) ? args[2] : null;
+    String fileName = (args.length == 3) ? args[2] : null;
     
     if ("mkfs".equals(function)){
         mkfs(fileSystemName);
@@ -27,7 +24,10 @@ public class zvfs {
         System.out.println(success);
             return;
         }
-    if ("gifs".equals(function)){}
+    if ("gifs".equals(function)){
+        gifs(fileSystemName);
+        return;
+    }
     if ("addfs".equals(function)){
         if (fileName == null){
             System.out.println("file name missing");
@@ -47,11 +47,82 @@ public class zvfs {
     }
 
     static void mkfs(String fileSystemName){
+        try {
+        
+        //=================[ HEADER ]=================
+        Header header = new Header();
 
+        header.magic = "ZVFSDSK1".getBytes();
+        header.version = 1;
+        header.flags = 0;
+        header.reserved0 = 0;
+        header.fileCount = 0;
+        header.fileCapacity = 32;
+        header.fileEntrySize = 64;
+        header.reserved1 = 0;
+        header.fileTableOffset = 64;      
+        header.dataStartOffset = 2112;
+        header.nextFreeOffset = header.dataStartOffset;
+        header.freeEntryOffset = 0;
+        header.deletedFiles = 0;
+        header.reserved2 = new byte[26];
+
+        //turn header to bytes
+        byte[] headerBytes = packHeader(header);
+
+        //=================[ ENTRIES ]=================
+        Entry emptyEntry = new Entry();   
+        emptyEntry.name = new byte[32]; 
+        emptyEntry.start = 0;
+        emptyEntry.length = 0;    
+        emptyEntry.type = 0;
+        emptyEntry.flag =  0; 
+        emptyEntry.reserved0 = 0;
+        emptyEntry.created = 0;
+        emptyEntry.reserved1 = new byte[12];
+
+        byte[] emptyEntryBytes  = packEntry(emptyEntry);
+        byte[] res = new byte[64+32*64];
+        //HEADER WRITE
+        System.arraycopy(headerBytes,0,res,0,64);
+        //ENTRY WRITE
+        for (int i=0 ; i < 32; i++) {
+            int offset = 64 + i*64;
+            System.arraycopy(emptyEntryBytes,0,res,offset,64);
+        }
+        //WRITE FILE
+        Files.write(Paths.get(fileSystemName),res);
+
+    } catch (Exception e) { 
+        System.out.println("Error: Could not make filesystem: " + fileSystemName);
+    }
     }
 
     static void gifs(String fileSystemName){
-        //get info about a file system 
+        try {
+        FileSystem filesystem = loadfs(fileSystemName);
+
+        Header header = filesystem.header;
+
+        int remaining_entries = header.fileCapacity - header.fileCount - header.deletedFiles;
+
+        long filesize = Files.size(Paths.get(fileSystemName));
+
+        System.out.println("The file system name is: " + fileSystemName);
+        System.out.println("-------------------------------------");
+        System.out.println("The number of files present is: " + header.fileCount);
+        System.out.println("-------------------------------------");
+        System.out.println("The remaining entries are: " + remaining_entries);
+        System.out.println("-------------------------------------");
+        System.out.println("Number of deleted files marked as deleted: " + header.deletedFiles);
+        System.out.println("-------------------------------------");
+        System.out.println("The total size of the file is: " + filesize);
+        System.out.println("-------------------------------------");
+
+        } catch (Exception e) {
+            System.out.println("Error when extracting data, Filesystem might be empty");
+        }
+
     }
 
     static void addfs(String fileSystemName, String fileName){
@@ -215,6 +286,7 @@ public class zvfs {
 
         } catch (Exception e) {
             System.out.println("Error: Can't load filesystem: " + fileSystemName);
+            return null;
         }
     }
 
