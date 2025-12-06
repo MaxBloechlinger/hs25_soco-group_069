@@ -2,8 +2,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.io.IOException;
-import java.util.Arrays;
 
 
 public class zvfs {
@@ -18,7 +16,7 @@ public class zvfs {
     
     String function = args[0];
     String fileSystemName = args[1];
-    String fileName = (args.length > 3) ? args[2] : null;
+    String fileName = (args.length == 3) ? args[2] : null;
     
     if ("mkfs".equals(function)){
         mkfs(fileSystemName);
@@ -46,7 +44,55 @@ public class zvfs {
     }
 
     static void mkfs(String fileSystemName){
+        try {
+        
+        //=================[ HEADER ]=================
+        Header header = new Header();
 
+        header.magic = "ZVFSDSK1".getBytes();
+        header.version = 1;
+        header.flags = 0;
+        header.reserved0 = 0;
+        header.fileCount = 0;
+        header.fileCapacity = 32;
+        header.fileEntrySize = 64;
+        header.reserved1 = 0;
+        header.fileTableOffset = 64;      
+        header.dataStartOffset = 2112;
+        header.nextFreeOffset = header.dataStartOffset;
+        header.freeEntryOffset = 0;
+        header.deletedFiles = 0;
+        header.reserved2 = new byte[26];
+
+        //turn header to bytes
+        byte[] headerBytes = packHeader(header);
+
+        //=================[ ENTRIES ]=================
+        Entry emptyEntry = new Entry();   
+        emptyEntry.name = new byte[32]; 
+        emptyEntry.start = 0;
+        emptyEntry.length = 0;    
+        emptyEntry.type = 0;
+        emptyEntry.flag =  0; 
+        emptyEntry.reserved0 = 0;
+        emptyEntry.created = 0;
+        emptyEntry.reserved1 = new byte[12];
+
+        byte[] emptyEntryBytes  = packEntry(emptyEntry);
+        byte[] res = new byte[64+32*64];
+        //HEADER WRITE
+        System.arraycopy(headerBytes,0,res,0,64);
+        //ENTRY WRITE
+        for (int i=0 ; i < 32; i++) {
+            int offset = 64 + i*64;
+            System.arraycopy(emptyEntryBytes,0,res,offset,64);
+        }
+        //WRITE FILE
+        Files.write(Paths.get(fileSystemName),res);
+
+    } catch (Exception e) { 
+        System.out.println("Error: Could not make filesystem: " + fileSystemName);
+    }
     }
 
     static void gifs(String fileSystemName){
@@ -122,6 +168,7 @@ public class zvfs {
 
         } catch (Exception e) {
             System.out.println("Error: Can't load filesystem: " + fileSystemName);
+            return null;
         }
     }
 
