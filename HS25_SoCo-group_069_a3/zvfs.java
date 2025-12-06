@@ -1,5 +1,10 @@
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.io.IOException;
+import java.util.Arrays;
+
 
 public class zvfs {
     public static void main(String[] args){
@@ -71,7 +76,63 @@ public class zvfs {
     static void catfs(String fileSystemName, String fileName){
         
     }
-    //HELPER STUFF
+
+    private static FileSystem loadfs(String fileSystemName) {
+        FileSystem fileSystem = new FileSystem();
+
+        try {
+            //turn file into byte array
+            byte[] allBytes = Files.readAllBytes(Paths.get(fileSystemName));
+
+            //=================[ HEADER ]=================
+            byte[] headerBytes = new byte[64];
+            System.arraycopy(allBytes, 0, headerBytes, 0, 64);
+
+            Header header = unpackHeader(headerBytes);
+            fileSystem.header = header;
+
+            int entrySize = header.fileEntrySize;
+            int fileCapacity = header.fileCapacity;
+            int tableOffset = header.fileTableOffset;
+
+            //=================[ ENTRIES ]=================
+            Entry[] entries = new Entry[fileCapacity];
+
+            for (int i = 0; i < fileCapacity; i++) {
+                int start = tableOffset + i * entrySize;
+
+                byte[] entryBytes = new byte[entrySize];
+                System.arraycopy(allBytes, start, entryBytes, 0, entrySize);
+
+                entries[i] = unpackEntry(entryBytes);
+            }
+
+            fileSystem.entries = entries;
+
+            //=================[ DATA ]=================
+            int dataStart = header.dataStartOffset;
+            int dataLength = allBytes.length - dataStart;
+
+            byte[] dataRegion = new byte[dataLength];
+            System.arraycopy(allBytes, dataStart, dataRegion, 0, dataLength);
+
+            fileSystem.data = dataRegion;
+
+            return fileSystem;
+
+        } catch (Exception e) {
+            System.out.println("Error: Can't load filesystem: " + fileSystemName);
+        }
+    }
+
+
+    //=================[ FILESYSTEM, HEADER & ENTRY CLASSES ]=================
+
+    private static class FileSystem {
+        Header header;
+        Entry[] entries;
+        byte[] data;
+    }
 
     private static class Header {
         byte[] magic;      
@@ -142,31 +203,30 @@ public class zvfs {
     }
 
     private static Entry unpackEntry(byte[] data) {
-        ByteBuffer b = ByteBuffer.allocate(64);
-        b.order(ByteOrder.LITTLE_ENDIAN); //same as in packEntry
+        ByteBuffer b = ByteBuffer.wrap(data); 
+        b.order(ByteOrder.LITTLE_ENDIAN);
 
         Entry e = new Entry();
-        
+
         e.name = new byte[32];
         b.get(e.name);
 
-        e.start = b.getInt();
-        e.length = b.getInt();
+        e.start  = b.getInt();
+        e.length = b.getInt(); 
 
         e.type = Byte.toUnsignedInt(b.get());
         e.flag = Byte.toUnsignedInt(b.get());
 
         e.reserved0 = Short.toUnsignedInt(b.getShort());
 
-        e.created = b.getLong();
+        e.created = b.getLong();    
 
         e.reserved1 = new byte[12];
         b.get(e.reserved1);
 
         return e;
-    
-
     }
+
 
     private static Header unpackHeader(byte[] packedHeader){
         ByteBuffer buffer = ByteBuffer.wrap(packedHeader);
