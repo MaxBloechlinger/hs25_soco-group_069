@@ -11,59 +11,57 @@
   [Step02]
   Previous python implementation of the zvfs file system translated into java
 
-
 ## Usage Example
 
 Here we will show general usecases for the operations of the filesystem. A more thorough documentation can be found [here](#operations).
 
- *Run these following lines in your terminal:*
+_Run these following lines in your terminal:_
 
-  **To create a new filesystem**
+**To create a new filesystem**
 
-  `python zvfs.py mkfs filesystem1.zvfs`
+`python zvfs.py mkfs filesystem1.zvfs`
 
-  *Now that you have created a new filesystem, you'd probably want to add two text files into your newly created filesystem:*
+_Now that you have created a new filesystem, you'd probably want to add two text files into your newly created filesystem:_
 
-  **Create two files:**
+**Create two files:**
 
-  `echo Hello, world! > test_file1.txt`
+`echo Hello, world! > test_file1.txt`
 
-  `echo The weather is nice today > test_file2.txt`
+`echo The weather is nice today > test_file2.txt`
 
-  **Add them both to the filesystem**
+**Add them both to the filesystem**
 
-  `python zvfs.py addfs filesystem1.zvfs test_file1.txt`
+`python zvfs.py addfs filesystem1.zvfs test_file1.txt`
 
-  `python zvfs.py addfs filesystem1.zvfs test_file2.txt`
+`python zvfs.py addfs filesystem1.zvfs test_file2.txt`
 
-  **To list all files run:**
+**To list all files run:**
 
-  `python zvfs.py lsfs filesystem1.zvfs`
+`python zvfs.py lsfs filesystem1.zvfs`
 
-  **To print the content of a text file in the filesystem run:**
+**To print the content of a text file in the filesystem run:**
 
-  `python zvfs.py catfs filesystem1.zvfs test_file1.txt`
+`python zvfs.py catfs filesystem1.zvfs test_file1.txt`
 
-  **If you deleted the filesystem from *your disk* you can restore them by running:**
+**If you deleted the filesystem from _your disk_ you can restore them by running:**
 
-  `python zvfs.py getfs filesystem1.zvfs test_file1.txt`
+`python zvfs.py getfs filesystem1.zvfs test_file1.txt`
 
-  **To get the info of a filesystem you can run:**
+**To get the info of a filesystem you can run:**
 
-  `python zvfs.py gifs filesystem1.zvfs`
+`python zvfs.py gifs filesystem1.zvfs`
 
-  **To delete a texfile from the filesystem run:**
+**To delete a texfile from the filesystem run:**
 
-  `python zvfs.py rmfs filesystem1.zvfs test_file1.txt`
+`python zvfs.py rmfs filesystem1.zvfs test_file1.txt`
 
-  **Finally if you want to defragment the filesystem run:**
+**Finally if you want to defragment the filesystem run:**
 
-  `python zvfs.py dfrgfs filesystem1.zvfs`
+`python zvfs.py dfrgfs filesystem1.zvfs`
 
-  Note, if you want to run these operations in jave you simply have to replace the python command in the beginning and omit the .py suffix:
+Note, if you want to run these operations in jave you simply have to replace the python command in the beginning and omit the .py suffix:
 
-  --> `java zvfs mkfs filesystem1.zvfs` to create a new filesystem in java
-
+--> `java zvfs mkfs filesystem1.zvfs` to create a new filesystem in java
 
 ## zvfs.py
 
@@ -98,7 +96,7 @@ ENTRY_SIZE = 64
 
 **def pack_empty_entry(...):**
 
-- Creates a 64 byte file entry, for mkfs and dfrgfs 
+- Creates a 64 byte file entry, for mkfs and dfrgfs
 
 **Filesystem Loader - loadfs**
 
@@ -116,9 +114,10 @@ Showcase of mkfs:
 
 `python zvfs.py mkfs filesystem1.zvfs` --> **New file system 'filesystem1.zvfs' created.**
 
-*There now should be a new filesystem in your working directory called filesystem1.zvfs*
+_There now should be a new filesystem in your working directory called filesystem1.zvfs_
 
 **def gifs(...):**
+
 - Returns: file name, number of files present (non deleted), remaining free entries for new files (excluding deleted files), and the number of files marked as deleted
 - Opens the file and extracts necessary header data and calculates the the remaining free entries
 
@@ -129,30 +128,31 @@ Showcase of gifs:
 ```
 The file system name is: filesystem1.zvfs
 -------------------------------------
-The number of files present is: 2 
+The number of files present is: 2
 -------------------------------------
-The remaining free entries are: 30 
+The remaining free entries are: 30
 -------------------------------------
-Number of files marked as deleted: 0 
+Number of files marked as deleted: 0
 -------------------------------------
-The total size of the file is: 2152 
+The total size of the file is: 2152
 -------------------------------------
 ```
 
 **def addfs(...):**
+
 - Adds a file from from the users directory to the filesystem
-- Scans the filesystem for first free entry, *next_free_offset* and inserts it there
+- Scans the filesystem for first free entry, _next_free_offset_ and inserts it there
 
 Showcase of addfs:
 
-*To showcase the usecase for this operation you first must add two files to your directory:*
+_To showcase the usecase for this operation you first must add two files to your directory:_
 
 ```
 echo Hello, world! > test_file1.txt
 echo The weather is nice today > test_file2.txt
 ```
 
-*Then we can call addfs:*
+_Then we can call addfs:_
 
 ```
 python zvfs.py addfs filesystem1.zvfs test_file1.txt
@@ -163,26 +163,27 @@ python zvfs.py addfs filesystem1.zvfs test_file2.txt
 
 --> **Added 'test_file2.txt' (26 bytes) to filesystem1.zvfs**
 
-*Now both .txt files should be present in your newly created filesystem1.zvfs*
+_Now both .txt files should be present in your newly created filesystem1.zvfs_
 
 **def getfs(...):**
+
 - Extracts a file from the filesystem to the users disk
 - Locates the specified file by name
 
 Showcase of getfs:
 
-*To properly show the usecase of this operation we ask the user to first delete the file they wish to extract from their own directory:*
+_To properly show the usecase of this operation we ask the user to first delete the file they wish to extract from their own directory:_
 
 `rm test_file1.txt`
 
-*And the you should be able to extract it from the created filesystem:*
+_And the you should be able to extract it from the created filesystem:_
 
 `python zvfs.py getfs filesystem1.zvfs test_file1.txt`
 
-*It should now have appeared back into your directory*
-
+_It should now have appeared back into your directory_
 
 **def rmfs(...):**
+
 - Locates the file it wants to delete in the filesystem
 - Changes its flag byte from 0 to 1, however, the data is not deleted
 
@@ -190,9 +191,10 @@ Showcase of rmfs:
 
 `python zvfs.py rmfs filesystem1.zvfs test_file1.txt`
 
-*The file should now be deleted from the filesystem*
+_The file should now be deleted from the filesystem_
 
 **def lsfs(...):**
+
 - Lists all the files in the provided file system and for every file, print its name, size (in bytes) and creation time
 - Iterates through file entries and sorts out relevant ones (non deleted files or empty files)
 
@@ -207,6 +209,7 @@ filesystem1.zvfs:
 ```
 
 **def dfrgfs(...):**
+
 - Defragments the file system. This operation removes all files marked from deletion from the system, along with their respective file entries. Afterwards, it compacts the file entries and the file data (moves everything up to fill up the available space, so that no 64 byte block gaps exist)
 - Loads all non-deleted files into memory and overwrites the filesystem with only relevant files
 
@@ -215,6 +218,7 @@ Showcase of dfrgfs:
 `python zvfs.py dfrgfs filesystem1.zvfs` --> **Defragmentation complete: defragmented 1 file and freed 1 byte**
 
 **def catfs(...):**
+
 - Prints out the file contents of a specified file from the filesystem to the console
 - Locates the file in the filesystem, extracts the relevant data and prints it directly to the console
 
@@ -222,64 +226,39 @@ Showcase of catfs:
 
 `python zvfs.py catfs filesystem1.zvfs test_file1.txt` --> **Hello, world!**
 
-
-
 ## zvfs.java
 
 ### Design Decision for zvfs.java
 
+For the Java Implentation we mostly adhered to our python decisions. We used similar Helper Functions and implementd 3 classes for FileSystem, Header &Entry.
 
+**Helper Classes**
 
+**private static class FileSystem{...}**
 
+- stores all the entries for the FileSystem Object
 
+**private static class Header{...}**
 
+- stores all the entries for the Header Object
 
+**private static class Entry{...}**
 
+- stores all the entries for the Entry Object
 
+Filesystem Class for Example:
 
+```
+private static class FileSystem {
+        Header header;
+        Entry[] entries;
+        byte[] data;
+    }
+```
 
+**Helper Functions**
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+**private static byte[] packHeader(Header header)**
+**private static byte[] packEntry(Header header)**
+**private static Header unpackHeader(byte[] data)**
+**private static Entry unpackEntry(byte[] data)**
