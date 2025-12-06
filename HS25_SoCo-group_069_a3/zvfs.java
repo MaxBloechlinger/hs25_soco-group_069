@@ -1,3 +1,4 @@
+import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
@@ -49,7 +50,10 @@ public class zvfs {
     }
     if ("lsfs".equals(function)){}
     if ("dfrgfs".equals(function)){}
-    if ("catfs".equals(function)){}
+    if ("catfs".equals(function)){
+        catfs(fileSystemName, fileName);
+        return;
+    }
 
 
     }
@@ -280,9 +284,48 @@ static void addfs(String fileSystemName, String fileName){
         
     }
 
-    static void catfs(String fileSystemName, String fileName){
-        
+    static void catfs(String fileSystemName, String fileName) {
+        FileSystem fileSystem = loadfs(fileSystemName);
+        if (fileSystem == null) {
+            System.out.println("Could not open filesystem.");
+            return;
+        }
+
+        Header header = fileSystem.header;
+        Entry[] entries = fileSystem.entries;
+
+        int dataStart = header.dataStartOffset;
+        byte[] data = fileSystem.data;
+
+        for (int i = 0; i < entries.length; i++) {
+            Entry e = entries[i];
+
+            //skip empty file
+            if (e.type == 0 && e.length == 0){
+                continue;}
+            //skip deleted file
+            if (e.flag != 0){
+                continue;}
+
+            String entryName = new String(e.name).split("\0")[0];
+
+            if (entryName.equals(fileName)){
+                int offset = e.start-dataStart;
+                int end = offset+e.length;
+
+                if (offset < 0 || end > data.length){
+                    System.out.println("Error: invalid file offsets");
+                    return; 
+                }
+                String res = new String(data, offset, e.length);
+                System.out.println(res);
+                return;
+            }
+        }
+
+        System.out.println("File not found in filesystem: " + fileName);
     }
+
 
     private static FileSystem loadfs(String fileSystemName) {
         FileSystem fileSystem = new FileSystem();
