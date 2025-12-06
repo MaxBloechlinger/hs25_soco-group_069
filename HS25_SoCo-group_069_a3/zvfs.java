@@ -125,9 +125,9 @@ public class zvfs {
 
     }
 
-    static void addfs(String fileSystemName, String fileName){
+static void addfs(String fileSystemName, String fileName){
     try {
-        // load fs first so we know header + table layout (similar to python's loadfs)
+        // load current fs
         FileSystem fs = loadfs(fileSystemName);
         if (fs == null){
             System.out.println("Error: Can't load filesystem: " + fileSystemName);
@@ -135,90 +135,92 @@ public class zvfs {
         }
 
         Header header = fs.header;
+        Entry[] entries = fs.entries;
+        byte[] oldData = fs.data;
 
-        // read source file bytes (python did: with open(...,"rb") as f: data=f.read())
+        // read file
         byte[] fileBytes = Files.readAllBytes(Paths.get(fileName));
         int fileSize = fileBytes.length;
 
-        try (RandomAccessFile raf = new RandomAccessFile(fileSystemName, "rw")) {
+        // new data = old data + new file bytes
+        byte[] newData = new byte[oldData.length + fileSize];
+        System.arraycopy(oldData, 0, newData, 0, oldData.length);
+        System.arraycopy(fileBytes, 0, newData, oldData.length, fileSize);
 
-            int entrySize = header.fileEntrySize;
-            int cap = header.fileCapacity;
-            int tblOff = header.fileTableOffset;
-            int freeOff = header.nextFreeOffset;
+        // abs offset
+        int fileStart = header.dataStartOffset + oldData.length;
 
-            // look for a free slot in entry table (python: first entry where len==0 and type==0)
-            int entryOff = -1;
-            for (int i = 0; i < cap; i++) {
-                long pos = tblOff + (long) i * entrySize;
-                raf.seek(pos);
-
-                byte[] eb = new byte[entrySize];
-                raf.readFully(eb);
-
-                Entry e = unpackEntry(eb);
-
-                // empty entry marker here
-                if (e.length == 0 && e.type == 0) {
-                    entryOff = (int) pos;
-                    break;
-                }
+        // find first free entry
+        int freeIndex = -1;
+        for (int i = 0; i < entries.length; i++) {
+            Entry e = entries[i];
+            if (e.length == 0 && e.type == 0) {
+                freeIndex = i;
+                break;
             }
-
-            if (entryOff == -1) {
-                System.out.println("no free entry left in fs");
-                return;
-            }
-
-            // write raw file contents into the data region (python: f.seek(next_free_offset); f.write(data))
-            raf.seek(freeOff);
-            raf.write(fileBytes);
-
-            // build entry for this new file
-            Entry newE = new Entry();
-            newE.name = new byte[32];
-
-            // copy name but max 32 bytes (same idea as python's name.encode()[:32])
-            String bn = Paths.get(fileName).getFileName().toString();
-            byte[] nm = bn.getBytes();
-            int c = Math.min(nm.length, 32);
-            System.arraycopy(nm, 0, newE.name, 0, c);
-
-            newE.start = freeOff;
-            newE.length = fileSize;
-            newE.type = 1;     // means it's a "real" file
-            newE.flag = 0;     // not deleted
-            newE.reserved0 = 0;
-            newE.created = System.currentTimeMillis() / 1000L; // unix time kinda like python time.time()
-            newE.reserved1 = new byte[12];
-
-            // pack entry bytes so we can write it back
-            byte[] entryBytes = packEntry(newE);
-
-            // drop the entry back into the table
-            raf.seek(entryOff);
-            raf.write(entryBytes);
-
-            // update header like python does: file_count++, next_free_offset += fileSize
-            header.fileCount = header.fileCount + 1;
-            header.nextFreeOffset = header.nextFreeOffset + fileSize;
-
-            // pack + rewrite header at start of file
-            byte[] newHd = packHeader(header);
-            raf.seek(0);
-            raf.write(newHd);
+        }
+        if (freeIndex == -1) {
+            System.out.println("no free entry left in fs");
+            return;
         }
 
-        // print result (python: print(f"Added ..."))
+        // new entry
+        Entry newE = new Entry();
+        newE.name = new byte[32];
+        String baseName = Paths.get(fileName).getFileName().toString();
+        byte[] nameBytes = baseName.getBytes();
+        int nameLen = Math.min(nameBytes.length, 32);
+        System.arraycopy(nameBytes, 0, newE.name, 0, nameLen);
+
+        newE.start = fileStart;
+        newE.length = fileSize;
+        newE.type = 1;
+        newE.flag = 0;
+        newE.reserved0 = 0;
+        newE.created = System.currentTimeMillis() / 1000L;
+        newE.reserved1 = new byte[12];
+
+        entries[freeIndex] = newE;
+
+        // update header
+        header.fileCount = header.fileCount + 1;
+        header.nextFreeOffset = fileStart + fileSize;
+
+        // rebuild whole fs
+        int headerSize = 64;
+        int entrySize = header.fileEntrySize;
+        int fileCapacity = header.fileCapacity;
+        int tableOffset = header.fileTableOffset;
+        int totalSize = header.dataStartOffset + newData.length;
+
+        byte[] out = new byte[totalSize];
+
+        // header
+        byte[] newHeaderBytes = packHeader(header);
+        System.arraycopy(newHeaderBytes, 0, out, 0, headerSize);
+
+        // entries
+        for (int i = 0; i < fileCapacity; i++) {
+            byte[] entryBytes = packEntry(entries[i]);
+            int off = tableOffset + i * entrySize;
+            System.arraycopy(entryBytes, 0, out, off, entrySize);
+        }
+
+
+        System.arraycopy(newData, 0, out, header.dataStartOffset, newData.length);
+
+        // write back filesystem file
+        Files.write(Paths.get(fileSystemName), out);
+
         System.out.println("Added '" 
             + Paths.get(fileName).getFileName().toString() 
             + "' (" + fileSize + " bytes) to " + fileSystemName);
 
     } catch (Exception ex) {
-        // rough error print, nothing fancy
         System.out.println("Error: Could not add file: " + ex.getMessage());
     }
 }
+
 
 
     static void getfs(String fileSystemName, String fileName){
