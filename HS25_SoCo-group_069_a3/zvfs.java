@@ -3,6 +3,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.channels.FileChannel;
+import java.io.RandomAccessFile;
 
 
 public class zvfs {
@@ -251,26 +253,55 @@ static void addfs(String fileSystemName, String fileName){
 
                 if (entry.length == 0 && entry.type == 0)
                     continue;
-
                 
-                String entryname = new String(entry.name, "UTF-8");
 
+                // Check ending for null bytes
+                int prefix = 0;
+                for (int x = 0; x < entry.name.length; x++){
+                    if(entry.name[x] == 0){
+                        break;
+                    } prefix++;
+                }
+                
+                String entryname = new String(entry.name, 0, prefix, "UTF-8");
 
-
+ 
                 if (entryname.equals(fileName) && entry.flag == 0) {
                     idx = i;
                     target = entry;
                     break;
                 }
-
             }
 
-        
-        
-        
-        
-        
-        
+            if (idx == -1){
+                System.out.println("File couln't be found");
+                return;
+            }
+
+            try (RandomAccessFile raf = new RandomAccessFile(fileSystemName, "rw"); 
+                FileChannel channel = raf.getChannel()) {
+
+                    target.flag = 1;
+
+                    long position = 64 + (idx * 64);
+
+                    byte[] eb = packEntry(target);
+                    ByteBuffer b = ByteBuffer.wrap(eb);
+
+                    channel.position(position);
+                    channel.write(b);
+
+                    filesystem.header.fileCount = filesystem.header.fileCount - 1;
+                    filesystem.header.deletedFiles = filesystem.header.deletedFiles + 1;
+
+                    byte[] hb = packHeader(filesystem.header);
+                    ByteBuffer bb = ByteBuffer.wrap(hb);
+
+                    channel.position(0);
+                    channel.write(bb);
+
+                }
+                System.out.println("This file has been deleted successfully: " + fileName);
         } catch (Exception e) {
             System.out.println("Could not delete file");
         }
