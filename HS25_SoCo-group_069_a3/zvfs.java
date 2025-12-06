@@ -26,7 +26,10 @@ public class zvfs {
         System.out.println(success);
             return;
         }
-    if ("gifs".equals(function)){}
+    if ("gifs".equals(function)){
+        gifs(fileSystemName);
+        return;
+    }
     if ("addfs".equals(function)){
         if (fileName == null){
             System.out.println("file name missing");
@@ -50,7 +53,30 @@ public class zvfs {
     }
 
     static void gifs(String fileSystemName){
-        //get info about a file system 
+        try {
+        FileSystem filesystem = loadfs(fileSystemName);
+
+        Header header = filesystem.header;
+
+        int remaining_entries = header.fileCapacity - header.fileCount - header.deletedFiles;
+
+        long filesize = Files.size(Paths.get(fileSystemName));
+
+        System.out.println("The file system name is: " + fileSystemName);
+        System.out.println("-------------------------------------");
+        System.out.println("The number of files present is: " + header.fileCount);
+        System.out.println("-------------------------------------");
+        System.out.println("The remaining entries are: " + remaining_entries);
+        System.out.println("-------------------------------------");
+        System.out.println("Number of deleted files marked as deleted: " + header.deletedFiles);
+        System.out.println("-------------------------------------");
+        System.out.println("The total size of the file is: " + filesize);
+        System.out.println("-------------------------------------");
+
+        } catch (Exception e) {
+            System.out.println("Error when extracting data, Filesystem might be empty");
+        }
+
     }
 
     static void addfs(String fileSystemName, String fileName){
@@ -122,6 +148,7 @@ public class zvfs {
 
         } catch (Exception e) {
             System.out.println("Error: Can't load filesystem: " + fileSystemName);
+            return null;
         }
     }
 
