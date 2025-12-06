@@ -38,7 +38,15 @@ public class zvfs {
         return;
     }
     if ("getfs".equals(function)){}
-    if ("rmfs".equals(function)){}
+    if ("rmfs".equals(function)){
+        if (fileName == null){
+            System.out.println("file name missing");
+            System.out.println(usage);
+            return;
+        }
+        rmfs(fileSystemName, fileName);
+        return;
+    }
     if ("lsfs".equals(function)){}
     if ("dfrgfs".equals(function)){}
     if ("catfs".equals(function)){}
@@ -228,7 +236,40 @@ static void addfs(String fileSystemName, String fileName){
     }
 
     static void rmfs(String fileSystemName, String fileName){
+        try{
+            FileSystem filesystem = loadfs(fileSystemName);
+        
+            int idx = -1;
+            Entry target = null;
+            
+            for (int i = 0; i < filesystem.entries.length; i++){
+                Entry entry = filesystem.entries[i];
 
+                if (entry.length == 0 && entry.type == 0)
+                    continue;
+
+                
+                String entryname = new String(entry.name, "UTF-8");
+
+
+
+                if (entryname.equals(fileName) && entry.flag == 0) {
+                    idx = i;
+                    target = entry;
+                    break;
+                }
+
+            }
+
+        
+        
+        
+        
+        
+        
+        } catch (Exception e) {
+            System.out.println("Could not delete file");
+        }
     }
 
     static void lsfs(String fileSystemName){
