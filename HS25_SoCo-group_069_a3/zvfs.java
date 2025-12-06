@@ -40,7 +40,10 @@ public class zvfs {
     if ("getfs".equals(function)){}
     if ("rmfs".equals(function)){}
     if ("lsfs".equals(function)){}
-    if ("dfrgfs".equals(function)){}
+    if ("dfrgfs".equals(function)){
+        dfrgfs(fileSystemName);
+        return;
+    }
     if ("catfs".equals(function)){}
 
 
