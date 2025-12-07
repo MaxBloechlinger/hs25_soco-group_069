@@ -41,24 +41,13 @@ public class zvfs {
         return;
     }
     if ("getfs".equals(function)){}
-    if ("rmfs".equals(function)){
-        if (fileName == null){
-            System.out.println("file name missing");
-            System.out.println(usage);
-            return;
-        }
-        rmfs(fileSystemName, fileName);
+    if ("rmfs".equals(function)){}
+    if ("lsfs".equals(function)){}
+    if ("dfrgfs".equals(function)){
+        dfrgfs(fileSystemName);
         return;
     }
-    if ("lsfs".equals(function)){
-        lsfs(fileSystemName);
-        return; 
-    }
-    if ("dfrgfs".equals(function)){}
-    if ("catfs".equals(function)){
-        catfs(fileSystemName, fileName);
-        return;
-    }
+    if ("catfs".equals(function)){}
 
 
     }
@@ -340,8 +329,123 @@ static void addfs(String fileSystemName, String fileName){
     }
 
     static void dfrgfs(String fileSystemName){
-        
+    try {
+        // load full fs into memory
+        FileSystem fs = loadfs(fileSystemName);
+        if (fs == null){
+            System.out.println("Error: Can't load filesystem: " + fileSystemName);
+            return;
+        }
+
+        Header header = fs.header;
+        Entry[] entries = fs.entries;
+        byte[] oldData = fs.data;
+        int dataStartOffset = header.dataStartOffset;
+
+        // count active files + total size needed (with 64 byte padding)
+        int activeCount = 0;
+        int totalDataLen = 0;
+        for (Entry e : entries) {
+            if (e.flag == 0 && e.length > 0) {
+                int padding = (64 - (e.length % 64)) % 64;
+                totalDataLen += e.length + padding;
+                activeCount++;
+            }
+        }
+
+        byte[] newData = new byte[totalDataLen];
+        Entry[] newEntries = new Entry[header.fileCapacity];
+
+        int currentOffset = dataStartOffset;
+        int dataPos = 0;
+        int idx = 0;
+
+        // copy active files in compact form
+        for (Entry e : entries) {
+            if (e.flag == 0 && e.length > 0) {
+                int oldOff = e.start - dataStartOffset;
+                System.arraycopy(oldData, oldOff, newData, dataPos, e.length);
+                dataPos += e.length;
+
+                int padding = (64 - (e.length % 64)) % 64;
+                dataPos += padding;  // padding bytes stay 0 (newData is zero-initialized)
+
+                Entry ne = new Entry();
+                ne.name = e.name.clone();
+                ne.start = currentOffset;
+                ne.length = e.length;
+                ne.type = e.type;
+                ne.flag = 0;
+                ne.reserved0 = 0;
+                ne.created = e.created;
+                ne.reserved1 = new byte[12];
+
+                newEntries[idx++] = ne;
+                currentOffset += e.length + padding;
+            }
+        }
+
+        // fill remaining entries with empty slots
+        while (idx < header.fileCapacity) {
+            Entry emp = new Entry();
+            emp.name = new byte[32];
+            emp.start = 0;
+            emp.length = 0;
+            emp.type = 0;
+            emp.flag = 0;
+            emp.reserved0 = 0;
+            emp.created = 0;
+            emp.reserved1 = new byte[12];
+            newEntries[idx++] = emp;
+        }
+
+        int oldDeleted = header.deletedFiles;
+
+        // update header like python version
+        header.fileCount = activeCount;
+        header.nextFreeOffset = currentOffset;
+        header.freeEntryOffset = 0;
+        header.deletedFiles = 0;
+
+        int headerSize = 64;
+        int entrySize = header.fileEntrySize;
+        int fileCapacity = header.fileCapacity;
+        int tableOffset = header.fileTableOffset;
+        int totalSize = header.dataStartOffset + newData.length;
+
+        byte[] out = new byte[totalSize];
+
+        // header
+        byte[] headerBytes = packHeader(header);
+        System.arraycopy(headerBytes, 0, out, 0, headerSize);
+
+        // entries
+        for (int i = 0; i < fileCapacity; i++) {
+            byte[] eBytes = packEntry(newEntries[i]);
+            int off = tableOffset + i * entrySize;
+            System.arraycopy(eBytes, 0, out, off, entrySize);
+        }
+
+        // data region
+        System.arraycopy(newData, 0, out, header.dataStartOffset, newData.length);
+
+        // write back filesystem
+        Files.write(Paths.get(fileSystemName), out);
+
+        String fileWord = (activeCount == 1) ? "file" : "files";
+        String byteWord = (oldDeleted == 1) ? "byte" : "bytes";
+        System.out.println(
+            "Defragmentation complete: defragmented " +
+            activeCount + " " + fileWord +
+            " and freed " + oldDeleted + " " + byteWord
+        );
+
+    } catch (Exception e) {
+        System.out.println("Error: Could not defragment: " + e.getMessage());
     }
+}
+
+
 
     static void catfs(String fileSystemName, String fileName) {
         FileSystem fileSystem = loadfs(fileSystemName);
