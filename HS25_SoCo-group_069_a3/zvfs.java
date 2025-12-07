@@ -403,7 +403,7 @@ static void addfs(String fileSystemName, String fileName){
             //Date() needs millisecs
             long milliSeconds = seconds *1000;
             Date date = new Date(milliSeconds);
-            System.out.println("-"+ name + "[size: " + entry.length + " bytes; created: " + date.toString()+ "]");
+            System.out.println("-"+ name + " [size: " + entry.length + " bytes; created: " + date.toString()+ "]");
         }
     }
 
