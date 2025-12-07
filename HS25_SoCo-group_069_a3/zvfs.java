@@ -229,9 +229,60 @@ static void addfs(String fileSystemName, String fileName){
 
 
 
-    static void getfs(String fileSystemName, String fileName){
+    static void getfs(String fileSystemName, String fileName){ 
+        FileSystem fileSystem = loadfs(fileSystemName);
+        if (fileSystem == null) {
+            System.out.println("Could not open file system");
+            return;
         
+        }
+         
+        Header header = fileSystem.header;
+        Entry[] entries = fileSystem.entries;
+        byte[] data = fileSystem.data;
+        int dataStart = header.dataStartOffset;
+
+        for (int i = 0; i < entries.length; i++) {
+        Entry entry = entries[i];
+
+        // skip empty
+        if (entry.type == 0 && entry.length == 0) {
+            continue;
+        }
+        // skip deleted
+        if (entry.flag != 0) {
+            continue;
+        }
+        String entryName = new String(entry.name).split("\0")[0];
+
+        if (entryName.equals(fileName)) {
+            int offset = entry.start - dataStart;
+            int end = offset + entry.length;
+
+            if (offset < 0 || end > data.length) {
+                System.out.println("Error: invalid offsets");
+                return;
+            }
+
+            byte[] outputBytes = new byte[entry.length];
+            System.arraycopy(data, offset, outputBytes, 0, entry.length);
+
+            try {
+                // write to disk
+                Files.write(Paths.get(fileName), outputBytes);
+                System.out.println("Extracted '" + fileName + "' (" + entry.length +
+                                   " bytes) from " + fileSystemName);
+            } catch (Exception e) {
+                System.out.println("Error: could not write file: " + e.getMessage());
+            }
+            return;
+        }
     }
+
+    System.out.println("File not found in filesystem: " + fileName);
+}
+    
+
 
     static void rmfs(String fileSystemName, String fileName){
         try{
@@ -298,6 +349,7 @@ static void addfs(String fileSystemName, String fileName){
             System.out.println("Could not delete file");
         }
     }
+
 
     static void lsfs(String fileSystemName){
         FileSystem fileSystem = loadfs(fileSystemName);
