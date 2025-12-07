@@ -229,8 +229,13 @@ static void addfs(String fileSystemName, String fileName){
 
 
 
-    static void getfs(String fileSystemName, String fileName){
+    static void getfs(String fileSystemName, String fileName){ 
+        FileSystem fileSystem = loadfs(fileSystemName);
+        if (fileSystem == null) {
+            System.out.println("Could not open file system");
+            return;
         
+        }
     }
 
     static void rmfs(String fileSystemName, String fileName){
@@ -298,6 +303,7 @@ static void addfs(String fileSystemName, String fileName){
             System.out.println("Could not delete file");
         }
     }
+
 
     static void lsfs(String fileSystemName){
         FileSystem fileSystem = loadfs(fileSystemName);
