@@ -1,7 +1,10 @@
+import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.channels.FileChannel;
+import java.util.Date;
 
 
 public class zvfs {
@@ -231,11 +234,98 @@ static void addfs(String fileSystemName, String fileName){
     }
 
     static void rmfs(String fileSystemName, String fileName){
+        try{
+            FileSystem filesystem = loadfs(fileSystemName);
+        
+            int idx = -1;
+            Entry target = null;
+            
+            for (int i = 0; i < filesystem.entries.length; i++){
+                Entry entry = filesystem.entries[i];
 
+                if (entry.length == 0 && entry.type == 0)
+                    continue;
+                
+
+                // Check ending for null bytes
+                int prefix = 0;
+                for (int x = 0; x < entry.name.length; x++){
+                    if(entry.name[x] == 0){
+                        break;
+                    } prefix++;
+                }
+                
+                String entryname = new String(entry.name, 0, prefix, "UTF-8");
+
+ 
+                if (entryname.equals(fileName) && entry.flag == 0) {
+                    idx = i;
+                    target = entry;
+                    break;
+                }
+            }
+
+            if (idx == -1){
+                System.out.println("File couln't be found");
+                return;
+            }
+
+            try (RandomAccessFile raf = new RandomAccessFile(fileSystemName, "rw"); 
+                FileChannel channel = raf.getChannel()) {
+
+                    target.flag = 1;
+
+                    long position = 64 + (idx * 64);
+
+                    byte[] eb = packEntry(target);
+                    ByteBuffer b = ByteBuffer.wrap(eb);
+
+                    channel.position(position);
+                    channel.write(b);
+
+                    filesystem.header.fileCount = filesystem.header.fileCount - 1;
+                    filesystem.header.deletedFiles = filesystem.header.deletedFiles + 1;
+
+                    byte[] hb = packHeader(filesystem.header);
+                    ByteBuffer bb = ByteBuffer.wrap(hb);
+
+                    channel.position(0);
+                    channel.write(bb);
+
+                }
+                System.out.println("This file has been deleted successfully: " + fileName);
+        } catch (Exception e) {
+            System.out.println("Could not delete file");
+        }
     }
 
     static void lsfs(String fileSystemName){
+        FileSystem fileSystem = loadfs(fileSystemName);
+        if (fileSystem == null) {
+            System.out.println("Error: Can't list filesystem");
+            return;
+        }
         
+        Entry[] entries = fileSystem.entries;
+
+        System.out.println(fileSystemName + ":");
+
+        for (int i = 0; i< entries.length; i++){
+            Entry entry = entries[i];
+            if (entry.type == 0 && entry.length == 0){
+                continue;
+            }
+            if (entry.flag != 0){
+                continue;
+            }
+            String name = new String(entry.name).split("\0")[0];
+            //extract timestamp (in seconds)
+            long seconds = entry.created ;
+            //Date() needs millisecs
+            long milliSeconds = seconds *1000;
+            Date date = new Date(milliSeconds);
+            System.out.println("-"+ name + "[size: " + entry.length +"created: " + date.toString()+ "]");
+        }
     }
 
     static void dfrgfs(String fileSystemName){
@@ -357,9 +447,48 @@ static void addfs(String fileSystemName, String fileName){
 
 
 
-    static void catfs(String fileSystemName, String fileName){
-        
+    static void catfs(String fileSystemName, String fileName) {
+        FileSystem fileSystem = loadfs(fileSystemName);
+        if (fileSystem == null) {
+            System.out.println("Could not open filesystem.");
+            return;
+        }
+
+        Header header = fileSystem.header;
+        Entry[] entries = fileSystem.entries;
+
+        int dataStart = header.dataStartOffset;
+        byte[] data = fileSystem.data;
+
+        for (int i = 0; i < entries.length; i++) {
+            Entry entry = entries[i];
+
+            //skip empty file
+            if (entry.type == 0 && entry.length == 0){
+                continue;}
+            //skip deleted file
+            if (entry.flag != 0){
+                continue;}
+
+            String entryName = new String(entry.name).split("\0")[0];
+
+            if (entryName.equals(fileName)){
+                int offset = entry.start-dataStart;
+                int end = offset+entry.length;
+
+                if (offset < 0 || end > data.length){
+                    System.out.println("Error: invalid file offsets");
+                    return; 
+                }
+                String res = new String(data, offset, entry.length);
+                System.out.println(res);
+                return;
+            }
+        }
+
+        System.out.println("File not found in filesystem: " + fileName);
     }
+
 
     private static FileSystem loadfs(String fileSystemName) {
         FileSystem fileSystem = new FileSystem();
