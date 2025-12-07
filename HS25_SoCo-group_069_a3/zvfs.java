@@ -4,7 +4,7 @@ import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.channels.FileChannel;
-import java.io.RandomAccessFile;
+import java.util.Date;
 
 
 public class zvfs {
@@ -50,7 +50,10 @@ public class zvfs {
         rmfs(fileSystemName, fileName);
         return;
     }
-    if ("lsfs".equals(function)){}
+    if ("lsfs".equals(function)){
+        lsfs(fileSystemName);
+        return; 
+    }
     if ("dfrgfs".equals(function)){}
     if ("catfs".equals(function)){
         catfs(fileSystemName, fileName);
@@ -308,7 +311,32 @@ static void addfs(String fileSystemName, String fileName){
     }
 
     static void lsfs(String fileSystemName){
+        FileSystem fileSystem = loadfs(fileSystemName);
+        if (fileSystem == null) {
+            System.out.println("Error: Can't list filesystem");
+            return;
+        }
         
+        Entry[] entries = fileSystem.entries;
+
+        System.out.println(fileSystemName + ":");
+
+        for (int i = 0; i< entries.length; i++){
+            Entry entry = entries[i];
+            if (entry.type == 0 && entry.length == 0){
+                continue;
+            }
+            if (entry.flag != 0){
+                continue;
+            }
+            String name = new String(entry.name).split("\0")[0];
+            //extract timestamp (in seconds)
+            long seconds = entry.created ;
+            //Date() needs millisecs
+            long milliSeconds = seconds *1000;
+            Date date = new Date(milliSeconds);
+            System.out.println("-"+ name + "[size: " + entry.length +"created: " + date.toString()+ "]");
+        }
     }
 
     static void dfrgfs(String fileSystemName){
@@ -329,26 +357,26 @@ static void addfs(String fileSystemName, String fileName){
         byte[] data = fileSystem.data;
 
         for (int i = 0; i < entries.length; i++) {
-            Entry e = entries[i];
+            Entry entry = entries[i];
 
             //skip empty file
-            if (e.type == 0 && e.length == 0){
+            if (entry.type == 0 && entry.length == 0){
                 continue;}
             //skip deleted file
-            if (e.flag != 0){
+            if (entry.flag != 0){
                 continue;}
 
-            String entryName = new String(e.name).split("\0")[0];
+            String entryName = new String(entry.name).split("\0")[0];
 
             if (entryName.equals(fileName)){
-                int offset = e.start-dataStart;
-                int end = offset+e.length;
+                int offset = entry.start-dataStart;
+                int end = offset+entry.length;
 
                 if (offset < 0 || end > data.length){
                     System.out.println("Error: invalid file offsets");
                     return; 
                 }
-                String res = new String(data, offset, e.length);
+                String res = new String(data, offset, entry.length);
                 System.out.println(res);
                 return;
             }
