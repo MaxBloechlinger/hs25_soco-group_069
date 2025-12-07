@@ -434,6 +434,8 @@ Socratically explain concepts an questions and what needs to be considered about
 - "Can you summarise this: https://docs.python.org/3/library/struct.html"
 - "Summarise and explain thuroughly this chapter of the source material: **Chapter 17, Software design by example**
 - "Explain the difference between rb and r"
+- "Summarise this: 
+- "Summarise this: 
 - "Explaint the format my friend used and explain it: **pasted a snipped of the code**
 - "Explain rb and wb, explain thuroughly"
 - "How do I open a file in Java in read and write mode"
