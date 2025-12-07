@@ -40,14 +40,41 @@ public class zvfs {
         addfs(fileSystemName, fileName);
         return;
     }
-    if ("getfs".equals(function)){}
-    if ("rmfs".equals(function)){}
-    if ("lsfs".equals(function)){}
+    if ("getfs".equals(function)){
+        if (fileName == null){
+            System.out.println("file name missing");
+            System.out.println(usage);
+            return;
+        }
+        getfs(fileSystemName, fileName);
+        return;
+    }
+    if ("rmfs".equals(function)){
+        if (fileName == null){
+            System.out.println("file name missing");
+            System.out.println(usage);
+            return;
+        }
+        rmfs(fileSystemName, fileName);
+        return;
+    }
+    if ("lsfs".equals(function)){
+        lsfs(fileSystemName);
+        return;
+    }
     if ("dfrgfs".equals(function)){
         dfrgfs(fileSystemName);
         return;
     }
-    if ("catfs".equals(function)){}
+    if ("catfs".equals(function)){
+        if (fileName == null){
+            System.out.println("file name missing");
+            System.out.println(usage);
+            return;
+        }
+        catfs(fileSystemName, fileName);
+        return;
+    }
 
 
     }
@@ -376,7 +403,7 @@ static void addfs(String fileSystemName, String fileName){
             //Date() needs millisecs
             long milliSeconds = seconds *1000;
             Date date = new Date(milliSeconds);
-            System.out.println("-"+ name + "[size: " + entry.length +"created: " + date.toString()+ "]");
+            System.out.println("-"+ name + "[size: " + entry.length + " bytes; created: " + date.toString()+ "]");
         }
     }
 
