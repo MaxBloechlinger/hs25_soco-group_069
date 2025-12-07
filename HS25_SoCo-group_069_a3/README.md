@@ -228,15 +228,26 @@ Showcase of catfs:
 
 ## zvfs.java
 
+### Challenges coming from Python
+
+Starting off, translating our implementation from python to java was not as straightforward as we initially assumed it would be.
+
+The biggest obstacle was coding in a completely new language. Java not being dynamically typed meant we had to refamiliarize ourselves with its strict syntax in a short time, read a lot of documentations to understand the key differences to python and truly understand the contrast. Learning the binary packing logic of java `ByteBuffer` and the `java.nio` package being among them. 
+
+Knowing C made this drawback bearable since C also is statically typed meaning there was less confusion when it came to defining and initializing variables. 
+
+All in all, the time and effort it took was larger by a significant margin. Since in Python, once the idea was understood, we could start coding more immediate than with Java. It still required understanding and research, however, with Java this time investment was compounded by us needing to invest more time into properly understanding Java as a language and reading/ summarizing its documentations.
+
 ### Design Decision for zvfs.java
 
-For the Java Implentation we mostly adhered to our python decisions. We used similar Helper Functions and implementd 3 classes for FileSystem, Header &Entry.
+For the Java implementation we mostly adhered to our python decisions. We used similar Helper Functions and implementd 3 classes for FileSystem, Header & Entry.
 
 **Helper Classes**
 
 **private static class FileSystem{...}**
 
 - stores all the entries for the FileSystem Object
+- Holds and decodes header data
 
 **private static class Header{...}**
 
@@ -245,6 +256,8 @@ For the Java Implentation we mostly adhered to our python decisions. We used sim
 **private static class Entry{...}**
 
 - stores all the entries for the Entry Object
+
+*For these classes we used `byte[]` for strings and typical value declaration for numerical values `int`, `long`, `short`*
 
 Filesystem Class for Example:
 
@@ -256,9 +269,13 @@ private static class FileSystem {
     }
 ```
 
+
 **Helper Functions**
 
-**private static byte[] packHeader(Header header)**
-**private static byte[] packEntry(Header header)**
-**private static Header unpackHeader(byte[] data)**
-**private static Entry unpackEntry(byte[] data)**
+- **private static byte[] packHeader(Header header)**
+
+- **private static byte[] packEntry(Header header)**
+
+- **private static Header unpackHeader(byte[] data)**
+
+- **private static Entry unpackEntry(byte[] data)**
