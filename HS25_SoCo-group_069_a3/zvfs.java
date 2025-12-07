@@ -253,9 +253,36 @@ static void addfs(String fileSystemName, String fileName){
         if (entry.flag != 0) {
             continue;
         }
+        String entryName = new String(entry.name).split("\0")[0];
+
+        if (entryName.equals(fileName)) {
+            int offset = entry.start - dataStart;
+            int end = offset + entry.length;
+
+            if (offset < 0 || end > data.length) {
+                System.out.println("Error: invalid offsets");
+                return;
+            }
+
+            byte[] outputBytes = new byte[entry.length];
+            System.arraycopy(data, offset, outputBytes, 0, entry.length);
+
+            try {
+                // write to disk
+                Files.write(Paths.get(fileName), outputBytes);
+                System.out.println("Extracted '" + fileName + "' (" + entry.length +
+                                   " bytes) from " + fileSystemName);
+            } catch (Exception e) {
+                System.out.println("Error: could not write file: " + e.getMessage());
+            }
+            return;
+        }
     }
 
-    }
+    System.out.println("File not found in filesystem: " + fileName);
+}
+    
+
 
     static void rmfs(String fileSystemName, String fileName){
         try{
