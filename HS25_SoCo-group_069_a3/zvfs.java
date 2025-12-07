@@ -236,6 +236,25 @@ static void addfs(String fileSystemName, String fileName){
             return;
         
         }
+         
+        Header header = fileSystem.header;
+        Entry[] entries = fileSystem.entries;
+        byte[] data = fileSystem.data;
+        int dataStart = header.dataStartOffset;
+
+        for (int i = 0; i < entries.length; i++) {
+        Entry entry = entries[i];
+
+        // skip empty
+        if (entry.type == 0 && entry.length == 0) {
+            continue;
+        }
+        // skip deleted
+        if (entry.flag != 0) {
+            continue;
+        }
+    }
+
     }
 
     static void rmfs(String fileSystemName, String fileName){
