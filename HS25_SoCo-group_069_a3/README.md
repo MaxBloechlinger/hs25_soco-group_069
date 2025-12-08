@@ -730,3 +730,68 @@ Socratically explain concepts an questions and what needs to be considered about
 - "what does seek() do"
 - "how can i test the addfs and getfs with a txt file"
 - "how can we go about this in java ? i want to implement it as simple as possible should we do ojbects? or purely funcs like in python ? lets discuss options"
+
+
+**Luiz Prompts**:
+
+*Files*
+- "How do I read a binary file into a byte[] in Java"
+- "How do I write a byte[] back to a file"
+- "Should I use RandomAccessFile or Files.write"
+
+*Byte Arrays*
+- "Simplest way to work with byte buffers"
+- "Is .clone() correct to copy a byte[]"
+- "Java equivalent of Python [:32] slicing"
+- "How to data[start:end] slicing in java"
+- "Convert byte[] with trailing zeros to String"
+- "Does new byte[32] reserve fixed size"
+
+*Structs & Packing*
+- "How to do little endian packing in Java"
+- "Is ByteBuffer right for fixed-size structs"
+- "Java alternative to struct.unpack"
+- "Does ByteBuffer behave like struct < little endian"
+- "Any alignment issues with long after short"
+- "Is Short.toUnsignedInt(buffer.getShort()) correct"
+- "Does ByteBuffer auto increment pointer"
+- "Should I call buffer.flip() or is array() enough"
+
+*Entry Layout*
+- "Does packEntry(ByteBuffer) write fields in correct order"
+- "Is 64 bytes struct size correct"
+- "Is ENTRY_FORMAT ordering identical in Java"
+- "Logic to find first free entry ok"
+- "Does skip logic skip deleted files correctly"
+
+*Offsets & Padding*
+- "Is fileStart = header.dataStartOffset + oldData.length math correct"
+- "Check overflow when newData = oldData.length + fileSize"
+- "Is System.arraycopy(oldData,0,newData,0,oldData.length) right"
+- "Update header.nextFreeOffset with padding or not"
+- "Is padding calc (64 - (len % 64)) % 64 correct"
+- "Does e.length + padding for totalDataLen look right"
+- "Is System.currentTimeMillis()/1000 ok for timestamps"
+- "Debug if entry.start offsets accumulate correctly"
+- "Check offset+length stays inside data[]"
+
+*Defrag*
+- "Does dataStartOffset stay constant during defrag"
+- "Is oldOff = e.start - dataStartOffset consistent with Python"
+- "Off-by-one bug when incrementing dataPos after padding"
+- "Reset deletedFiles=0 after defrag ok"
+- "Recompute freeEntryOffset"
+- "Verify newEntries written in same order"
+- "Sort entries by start or leave as-is"
+- "Debug offsets monotonic increasing and aligned"
+- "Is offset math same as Python version"
+
+*Extraction*
+- "Is getfs offset = entry.start - dataStartOffset logic correct"
+- "Avoid overwriting existing file when extracting"
+- "Is new String(entry.name).split(\"\\0\")[0] ok"
+
+*General*
+- "Is this correct Java syntax"
+- "Does nameBytes.length > 32 cause issues"
+- "Is newData = oldData + fileBytes reasonable in Java"
