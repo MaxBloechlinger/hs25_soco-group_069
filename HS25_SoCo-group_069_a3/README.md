@@ -28,7 +28,7 @@ python zvfs.py mkfs filesystem1.zvfs
 
 **Output:**
 ```
-
+New file system 'filesystem1.zvfs' created.
 ```
 
 ---
@@ -53,7 +53,8 @@ python zvfs.py addfs filesystem1.zvfs test_file2.txt
 
 **Output:**
 ```
-
+Added 'test_file1.txt' (14 bytes) to filesystem1.zvfs
+Added 'test_file2.txt' (26 bytes) to filesystem1.zvfs
 ```
 
 ---
@@ -66,7 +67,9 @@ python zvfs.py lsfs filesystem1.zvfs
 
 **Output:**
 ```
-
+filesystem1.zvfs:
+-test_file1.txt [size: 14 bytes; created: 08.12.2025 12:45]
+-test_file2.txt [size: 26 bytes; created: 08.12.2025 12:45]
 ```
 
 ---
@@ -79,7 +82,7 @@ python zvfs.py catfs filesystem1.zvfs test_file1.txt
 
 **Output:**
 ```
-
+Hello, world!
 ```
 
 ---
@@ -93,7 +96,7 @@ python zvfs.py getfs filesystem1.zvfs test_file1.txt
 
 **Output:**
 ```
-
+test_file1.txt restored to HARD DISK
 ```
 
 ---
@@ -106,7 +109,16 @@ python zvfs.py gifs filesystem1.zvfs
 
 **Output:**
 ```
-
+The file system name is: filesystem1.zvfs
+-------------------------------------
+The number of files present is: 2 
+-------------------------------------
+The remaining free entries are: 30 
+-------------------------------------
+Number of files marked as deleted: 0 
+-------------------------------------
+The total size of the file is: 2152 
+-------------------------------------
 ```
 
 ---
@@ -121,7 +133,18 @@ python zvfs.py lsfs filesystem1.zvfs
 
 **Output:**
 ```
-
+The file system name is: filesystem1.zvfs
+-------------------------------------
+The number of files present is: 1 
+-------------------------------------
+The remaining free entries are: 30 
+-------------------------------------
+Number of files marked as deleted: 1 
+-------------------------------------
+The total size of the file is: 2152 
+-------------------------------------
+filesystem1.zvfs:
+-test_file2.txt [size: 26 bytes; created: 08.12.2025 12:45]
 ```
 
 ---
@@ -136,7 +159,19 @@ python zvfs.py lsfs filesystem1.zvfs
 
 **Output:**
 ```
-
+Defragmentation complete: defragmented 1 file and freed 1 byte
+The file system name is: filesystem1.zvfs
+-------------------------------------
+The number of files present is: 1 
+-------------------------------------
+The remaining free entries are: 31 
+-------------------------------------
+Number of files marked as deleted: 0 
+-------------------------------------
+The total size of the file is: 2176 
+-------------------------------------
+filesystem1.zvfs:
+-test_file2.txt [size: 26 bytes; created: 08.12.2025 12:45]
 ```
 
 Note, if you want to run these operations in java you simply have to replace the python command in the beginning and omit the .py suffix:
@@ -678,3 +713,20 @@ Socratically explain concepts an questions and what needs to be considered about
 - "Is this ok"
 - "Explain this to me like I am 5"
 - "In total, is this ok now"
+
+
+**Max Prompts**:
+
+- creates new filesystem, populates header, fills out file entries with 0s for 32 entries and includes values for header metadata
+- "please explain what they exactly want from us give a few steps to stategically conquer this complex task"
+- "put the steps in a pdf i can share with the team"
+- "the file structure graph is confusing me, is this supposed to be a single file or is the graph showing the system?"
+- "so it means there's 32 entries with 64 bytes each to describe the file? whats the header for then"
+- "but whats the exact structure the graph is so unclear. explain like im an idiot"
+- "https://docs.python.org/3/library/struct.html explain to me briefly what struct does in context to the zvfs asg i shared"
+- "which format chars can i choose for file offset and why?"
+- "what are the next steps tell me socratically)"
+- "how can we store the fs in the most simple way, please no classes"
+- "what does seek() do"
+- "how can i test the addfs and getfs with a txt file"
+- "how can we go about this in java ? i want to implement it as simple as possible should we do ojbects? or purely funcs like in python ? lets discuss options"
