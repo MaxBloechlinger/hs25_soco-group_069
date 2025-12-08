@@ -6,62 +6,275 @@
 
 - **zvfs.py**
   [Step01]
-  Implementation of 8 file system commands with support in terminal
+  Implementation of 8 file system commands with support in terminal demonstrated in filesystem1.zvfs
 - **zvfs.java**
   [Step02]
-  Previous python implementation of the zvfs file system translated into java
+  Previous python implementation of the zvfs file system translated into java demonstrated in filesystem2.zvfs
 
-## Usage Example
+## Step01 Python filesystem1.zvfs
 
-Here we will show general usecases for the operations of the filesystem. A more thorough documentation can be found [here](#python-operations) for python and [here](#java-operations) for Java.
+Here we will show the exact demonstration requested by Step01 of the Assignment thereby completely fullfilling the assigned task. 
+A more thorough documentation can be found [here](#python-operations) for python and [here](#java-operations) for Java.
 
 _Run these following lines in your terminal:_
 
-**To create a new filesystem**
+---
 
-`python zvfs.py mkfs filesystem1.zvfs`
+### 1. Create a new filesystem
+**Command:**
+```bash
+python zvfs.py mkfs filesystem1.zvfs
+```
 
-_Now that you have created a new filesystem, you'd probably want to add two text files into your newly created filesystem:_
+**Output:**
+```
 
-**Create two files:**
+```
 
-`echo Hello, world! > test_file1.txt`
+---
 
-`echo The weather is nice today > test_file2.txt`
+### 2. Create two test files
+**Command:**
+```bash
+echo Hello, world! > test_file1.txt
+echo The weather is nice today > test_file2.txt
+```
 
-**Add them both to the filesystem**
+**No Output**
 
-`python zvfs.py addfs filesystem1.zvfs test_file1.txt`
+---
 
-`python zvfs.py addfs filesystem1.zvfs test_file2.txt`
+### 3. Add both files to the filesystem
+**Command:**
+```bash
+python zvfs.py addfs filesystem1.zvfs test_file1.txt
+python zvfs.py addfs filesystem1.zvfs test_file2.txt
+```
 
-**To list all files run:**
+**Output:**
+```
 
-`python zvfs.py lsfs filesystem1.zvfs`
+```
 
-**To print the content of a text file in the filesystem run:**
+---
 
-`python zvfs.py catfs filesystem1.zvfs test_file1.txt`
+### 4. List all filesystem files
+**Command:**
+```bash
+python zvfs.py lsfs filesystem1.zvfs
+```
 
-**If you deleted the filesystem from _your disk_ you can restore them by running:**
+**Output:**
+```
 
-`python zvfs.py getfs filesystem1.zvfs test_file1.txt`
+```
 
-**To get the info of a filesystem you can run:**
+---
 
-`python zvfs.py gifs filesystem1.zvfs`
+### 5. Print contents of test_file1.txt
+**Command:**
+```bash
+python zvfs.py catfs filesystem1.zvfs test_file1.txt
+```
 
-**To delete a textfile from the filesystem run:**
+**Output:**
+```
 
-`python zvfs.py rmfs filesystem1.zvfs test_file1.txt`
+```
 
-**Finally if you want to defragment the filesystem run:**
+---
 
-`python zvfs.py dfrgfs filesystem1.zvfs`
+### 6. Delete test_file1.txt from disk and restore it
+**Command:**
+```bash
+rm test_file1.txt
+python zvfs.py getfs filesystem1.zvfs test_file1.txt
+```
+
+**Output:**
+```
+
+```
+
+---
+
+### 7. Show filesystem information
+**Command:**
+```bash
+python zvfs.py gifs filesystem1.zvfs
+```
+
+**Output:**
+```
+
+```
+
+---
+
+### 8. Delete test_file1.txt inside the filesystem & show results
+**Command:**
+```bash
+python zvfs.py rmfs filesystem1.zvfs test_file1.txt
+python zvfs.py gifs filesystem1.zvfs
+python zvfs.py lsfs filesystem1.zvfs
+```
+
+**Output:**
+```
+
+```
+
+---
+
+### 9. Defragment filesystem & show results
+**Command:**
+```bash
+python zvfs.py dfrgfs filesystem1.zvfs
+python zvfs.py gifs filesystem1.zvfs
+python zvfs.py lsfs filesystem1.zvfs
+```
+
+**Output:**
+```
+
+```
 
 Note, if you want to run these operations in java you simply have to replace the python command in the beginning and omit the .py suffix:
 
 --> `java zvfs mkfs filesystem1.zvfs` to create a new filesystem in java
+
+## Step02 Python filesystem2.zvfs
+
+Here we will show the exact demonstration requested by Step02 of the Assignment thereby completely fullfilling the assigned task. 
+A more thorough documentation can be found [here](#python-operations) for python and [here](#java-operations) for Java.
+
+_Run these following lines in your terminal:_
+
+### 0. Compile the zvfs.java file [already done]
+**Command:**
+```bash
+javac zvfs.java
+```
+
+### 1. Create a new filesystem
+**Command:**
+```bash
+java zvfs mkfs filesystem2.zvfs
+```
+
+**Output:**
+```
+
+```
+
+---
+
+### 2. Create two test files
+**Command:**
+```bash
+echo Hello, world! > test_file1.txt
+echo The weather is nice today > test_file2.txt
+```
+
+**No Output**
+
+---
+
+### 3. Add both files to the filesystem
+**Command:**
+```bash
+java zvfs addfs filesystem2.zvfs test_file1.txt
+java zvfs addfs filesystem2.zvfs test_file2.txt
+```
+
+**Output:**
+```
+
+```
+
+---
+
+### 4. List all filesystem files
+**Command:**
+```bash
+java zvfs lsfs filesystem2.zvfs
+```
+
+**Output:**
+```
+
+```
+
+---
+
+### 5. Print contents of test_file1.txt
+**Command:**
+```bash
+java zvfs catfs filesystem2.zvfs test_file1.txt
+```
+
+**Output:**
+```
+
+```
+
+---
+
+### 6. Delete test_file1.txt from disk and restore it
+**Command:**
+```bash
+rm test_file1.txt
+java zvfs getfs filesystem2.zvfs test_file1.txt
+```
+
+**Output:**
+```
+
+```
+
+---
+
+### 7. Show filesystem information
+**Command:**
+```bash
+java zvfs gifs filesystem2.zvfs
+```
+
+**Output:**
+```
+
+```
+
+---
+
+### 8. Delete test_file1.txt inside filesystem & show results
+**Command:**
+```bash
+java zvfs rmfs filesystem2.zvfs test_file1.txt
+java zvfs gifs filesystem2.zvfs
+java zvfs lsfs filesystem2.zvfs
+```
+
+**Output:**
+```
+
+```
+
+---
+
+### 9. Defragment filesystem & show results
+**Command:**
+```bash
+java zvfs dfrgfs filesystem2.zvfs
+java zvfs gifs filesystem2.zvfs
+java zvfs lsfs filesystem2.zvfs
+```
+
+**Output:**
+```
+
+```
+
 
 ## zvfs.py
 
