@@ -13,7 +13,7 @@
 
 ## Step01 Python filesystem1.zvfs
 
-Here we will show the exact demonstration requested by Step01 of the Assignment thereby completely fullfilling the assigned task. 
+Here we will show the exact demonstration requested by Step01 of the Assignment thereby completely fullfilling the assigned task.
 A more thorough documentation can be found [here](#python-operations) for python and [here](#java-operations) for Java.
 
 _Run these following lines in your terminal:_
@@ -21,12 +21,15 @@ _Run these following lines in your terminal:_
 ---
 
 ### 1. Create a new filesystem
+
 **Command:**
+
 ```bash
 python zvfs.py mkfs filesystem1.zvfs
 ```
 
 **Output:**
+
 ```
 New file system 'filesystem1.zvfs' created.
 ```
@@ -34,7 +37,9 @@ New file system 'filesystem1.zvfs' created.
 ---
 
 ### 2. Create two test files
+
 **Command:**
+
 ```bash
 echo Hello, world! > test_file1.txt
 echo The weather is nice today > test_file2.txt
@@ -45,13 +50,16 @@ echo The weather is nice today > test_file2.txt
 ---
 
 ### 3. Add both files to the filesystem
+
 **Command:**
+
 ```bash
 python zvfs.py addfs filesystem1.zvfs test_file1.txt
 python zvfs.py addfs filesystem1.zvfs test_file2.txt
 ```
 
 **Output:**
+
 ```
 Added 'test_file1.txt' (14 bytes) to filesystem1.zvfs
 Added 'test_file2.txt' (26 bytes) to filesystem1.zvfs
@@ -60,12 +68,15 @@ Added 'test_file2.txt' (26 bytes) to filesystem1.zvfs
 ---
 
 ### 4. List all filesystem files
+
 **Command:**
+
 ```bash
 python zvfs.py lsfs filesystem1.zvfs
 ```
 
 **Output:**
+
 ```
 filesystem1.zvfs:
 -test_file1.txt [size: 14 bytes; created: 08.12.2025 12:45]
@@ -75,12 +86,15 @@ filesystem1.zvfs:
 ---
 
 ### 5. Print contents of test_file1.txt
+
 **Command:**
+
 ```bash
 python zvfs.py catfs filesystem1.zvfs test_file1.txt
 ```
 
 **Output:**
+
 ```
 Hello, world!
 ```
@@ -88,13 +102,16 @@ Hello, world!
 ---
 
 ### 6. Delete test_file1.txt from disk and restore it
+
 **Command:**
+
 ```bash
 rm test_file1.txt
 python zvfs.py getfs filesystem1.zvfs test_file1.txt
 ```
 
 **Output:**
+
 ```
 test_file1.txt restored to HARD DISK
 ```
@@ -102,29 +119,34 @@ test_file1.txt restored to HARD DISK
 ---
 
 ### 7. Show filesystem information
+
 **Command:**
+
 ```bash
 python zvfs.py gifs filesystem1.zvfs
 ```
 
 **Output:**
+
 ```
 The file system name is: filesystem1.zvfs
 -------------------------------------
-The number of files present is: 2 
+The number of files present is: 2
 -------------------------------------
-The remaining free entries are: 30 
+The remaining free entries are: 30
 -------------------------------------
-Number of files marked as deleted: 0 
+Number of files marked as deleted: 0
 -------------------------------------
-The total size of the file is: 2152 
+The total size of the file is: 2152
 -------------------------------------
 ```
 
 ---
 
 ### 8. Delete test_file1.txt inside the filesystem & show results
+
 **Command:**
+
 ```bash
 python zvfs.py rmfs filesystem1.zvfs test_file1.txt
 python zvfs.py gifs filesystem1.zvfs
@@ -132,16 +154,17 @@ python zvfs.py lsfs filesystem1.zvfs
 ```
 
 **Output:**
+
 ```
 The file system name is: filesystem1.zvfs
 -------------------------------------
-The number of files present is: 1 
+The number of files present is: 1
 -------------------------------------
-The remaining free entries are: 30 
+The remaining free entries are: 30
 -------------------------------------
-Number of files marked as deleted: 1 
+Number of files marked as deleted: 1
 -------------------------------------
-The total size of the file is: 2152 
+The total size of the file is: 2152
 -------------------------------------
 filesystem1.zvfs:
 -test_file2.txt [size: 26 bytes; created: 08.12.2025 12:45]
@@ -150,7 +173,9 @@ filesystem1.zvfs:
 ---
 
 ### 9. Defragment filesystem & show results
+
 **Command:**
+
 ```bash
 python zvfs.py dfrgfs filesystem1.zvfs
 python zvfs.py gifs filesystem1.zvfs
@@ -158,17 +183,18 @@ python zvfs.py lsfs filesystem1.zvfs
 ```
 
 **Output:**
+
 ```
 Defragmentation complete: defragmented 1 file and freed 1 byte
 The file system name is: filesystem1.zvfs
 -------------------------------------
-The number of files present is: 1 
+The number of files present is: 1
 -------------------------------------
-The remaining free entries are: 31 
+The remaining free entries are: 31
 -------------------------------------
-Number of files marked as deleted: 0 
+Number of files marked as deleted: 0
 -------------------------------------
-The total size of the file is: 2176 
+The total size of the file is: 2176
 -------------------------------------
 filesystem1.zvfs:
 -test_file2.txt [size: 26 bytes; created: 08.12.2025 12:45]
@@ -180,32 +206,39 @@ Note, if you want to run these operations in java you simply have to replace the
 
 ## Step02 Python filesystem2.zvfs
 
-Here we will show the exact demonstration requested by Step02 of the Assignment thereby completely fullfilling the assigned task. 
+Here we will show the exact demonstration requested by Step02 of the Assignment thereby completely fullfilling the assigned task.
 A more thorough documentation can be found [here](#python-operations) for python and [here](#java-operations) for Java.
 
 _Run these following lines in your terminal:_
 
 ### 0. Compile the zvfs.java file [already done]
+
 **Command:**
+
 ```bash
 javac zvfs.java
 ```
 
 ### 1. Create a new filesystem
+
 **Command:**
+
 ```bash
 java zvfs mkfs filesystem2.zvfs
 ```
 
 **Output:**
-```
 
+```
+New file system filesystem2.zvfs created.
 ```
 
 ---
 
 ### 2. Create two test files
+
 **Command:**
+
 ```bash
 echo Hello, world! > test_file1.txt
 echo The weather is nice today > test_file2.txt
@@ -216,74 +249,103 @@ echo The weather is nice today > test_file2.txt
 ---
 
 ### 3. Add both files to the filesystem
+
 **Command:**
+
 ```bash
 java zvfs addfs filesystem2.zvfs test_file1.txt
 java zvfs addfs filesystem2.zvfs test_file2.txt
 ```
 
 **Output:**
-```
 
+```
+Added 'test_file1.txt' (14 bytes) to filesystem2.zvfs
+Added 'test_file2.txt' (26 bytes) to filesystem2.zvfs
 ```
 
 ---
 
 ### 4. List all filesystem files
+
 **Command:**
+
 ```bash
 java zvfs lsfs filesystem2.zvfs
 ```
 
 **Output:**
-```
 
+```
+filesystem2.zvfs:
+-test_file1.txt [size: 14 bytes; created: Tue Dec 09 10:57:45 CET 2025]
+-test_file2.txt [size: 26 bytes; created: Tue Dec 09 10:57:45 CET 2025]
 ```
 
 ---
 
 ### 5. Print contents of test_file1.txt
+
 **Command:**
+
 ```bash
 java zvfs catfs filesystem2.zvfs test_file1.txt
 ```
 
 **Output:**
-```
 
+```
+Hello, world!
 ```
 
 ---
 
 ### 6. Delete test_file1.txt from disk and restore it
+
 **Command:**
+
 ```bash
 rm test_file1.txt
 java zvfs getfs filesystem2.zvfs test_file1.txt
 ```
 
 **Output:**
-```
 
+```
+Extracted 'test_file1.txt' (14 bytes) from filesystem2.zvfs
 ```
 
 ---
 
 ### 7. Show filesystem information
+
 **Command:**
+
 ```bash
 java zvfs gifs filesystem2.zvfs
 ```
 
 **Output:**
-```
 
+```
+The file system name is: filesystem2.zvfs
+-------------------------------------
+The number of files present is: 2
+-------------------------------------
+The remaining entries are: 30
+-------------------------------------
+Number of deleted files marked as deleted: 0
+-------------------------------------
+The total size of the file is: 2152
+-------------------------------------
 ```
 
 ---
 
 ### 8. Delete test_file1.txt inside filesystem & show results
+
 **Command:**
+
 ```bash
 java zvfs rmfs filesystem2.zvfs test_file1.txt
 java zvfs gifs filesystem2.zvfs
@@ -291,14 +353,29 @@ java zvfs lsfs filesystem2.zvfs
 ```
 
 **Output:**
-```
 
+```
+This file has been deleted successfully: test_file1.txt
+The file system name is: filesystem2.zvfs
+-------------------------------------
+The number of files present is: 1
+-------------------------------------
+The remaining entries are: 30
+-------------------------------------
+Number of deleted files marked as deleted: 1
+-------------------------------------
+The total size of the file is: 2152
+-------------------------------------
+filesystem2.zvfs:
+-test_file2.txt [size: 26 bytes; created: Tue Dec 09 10:57:45 CET 2025]
 ```
 
 ---
 
 ### 9. Defragment filesystem & show results
+
 **Command:**
+
 ```bash
 java zvfs dfrgfs filesystem2.zvfs
 java zvfs gifs filesystem2.zvfs
@@ -306,10 +383,22 @@ java zvfs lsfs filesystem2.zvfs
 ```
 
 **Output:**
-```
 
 ```
-
+Defragmentation complete: defragmented 1 file and freed 1 byte
+The file system name is: filesystem2.zvfs
+-------------------------------------
+The number of files present is: 1
+-------------------------------------
+The remaining entries are: 31
+-------------------------------------
+Number of deleted files marked as deleted: 0
+-------------------------------------
+The total size of the file is: 2176
+-------------------------------------
+filesystem2.zvfs:
+-test_file2.txt [size: 26 bytes; created: Tue Dec 09 10:57:45 CET 2025]
+```
 
 ## zvfs.py
 
@@ -480,9 +569,9 @@ Showcase of catfs:
 
 Starting off, translating our implementation from python to java was not as straightforward as we initially assumed it would be.
 
-The biggest obstacle was coding in a completely new language. Java not being dynamically typed meant we had to refamiliarize ourselves with its strict syntax in a short time, read a lot of documentations to understand the key differences to python and truly understand the contrast. Learning the binary packing logic of java `ByteBuffer` and the `java.nio` package being among them. 
+The biggest obstacle was coding in a completely new language. Java not being dynamically typed meant we had to refamiliarize ourselves with its strict syntax in a short time, read a lot of documentations to understand the key differences to python and truly understand the contrast. Learning the binary packing logic of java `ByteBuffer` and the `java.nio` package being among them.
 
-Knowing C made this drawback bearable since C also is statically typed meaning there was less confusion when it came to defining and initializing variables. 
+Knowing C made this drawback bearable since C also is statically typed meaning there was less confusion when it came to defining and initializing variables.
 
 All in all, the time and effort it took was larger by a significant margin. Since in Python, once the idea was understood, we could start coding more immediate than with Java. It still required understanding and research, however, with Java this time investment was compounded by us needing to invest more time into properly understanding Java as a language and reading/ summarizing its documentations.
 
@@ -505,7 +594,7 @@ For the Java implementation we mostly adhered to our python decisions. We used s
 
 - stores all the entries for the Entry Object
 
-*For these classes we used `byte[]` for strings and typical value declaration for numerical values `int`, `long`, `short`*
+_For these classes we used `byte[]` for strings and typical value declaration for numerical values `int`, `long`, `short`_
 
 Filesystem Class for Example:
 
@@ -517,10 +606,9 @@ private static class FileSystem {
     }
 ```
 
-
 **Helper Functions**
 
-These act as specific packers and unpackers, stemming from the NIO *requirements*
+These act as specific packers and unpackers, stemming from the NIO _requirements_
 
 - **private static byte[] packHeader(Header header)**
 - Allocates 64 byte ByteBuffer
@@ -546,7 +634,7 @@ As a preface, to run these commands the user first has to compile the java code 
 - Creates a new filesystem
 - Populates the header and fills out file entries with zero bytes for 32 entries
 - Packs the header into byte format
-- Allocates an array of size 2112 bytes --> 64 (header) + 32 * 64 (entries)
+- Allocates an array of size 2112 bytes --> 64 (header) + 32 \* 64 (entries)
 
 Showcase of mkfs:
 
@@ -605,7 +693,7 @@ java zvfs addfs filesystem2.zvfs test_file4.txt
 
 _Now both .txt files should be present in your newly created filesystem2.zvfs_
 
-**static void getfs(...):** 
+**static void getfs(...):**
 
 - Extracts a file from the filesystem to the users disk
 - Locates the specified file by name
@@ -622,11 +710,11 @@ _And the you should be able to extract it from the created filesystem:_
 
 _It should now have appeared back into your directory_
 
-**static void rmfs(...):** 
+**static void rmfs(...):**
 
 - Locates the file it wants to delete in the filesystem
 - Changes its flag byte from 0 to 1, however, the data is not deleted
-- Uses **FileChannel** to *seek* only the specified file
+- Uses **FileChannel** to _seek_ only the specified file
 
 Showcase of rmfs:
 
@@ -650,7 +738,7 @@ filesystem2.zvfs:
 -test_file4.txt[size: 26 bytes; created: Sun Dec 07 16:45:19 CET 2025]
 ```
 
-**static void dfrgfs(...):** 
+**static void dfrgfs(...):**
 
 - Defragments the file system. This operation removes all files marked from deletion from the system, along with their respective file entries. Afterwards, it compacts the file entries and the file data (moves everything up to fill up the available space, so that no 64 byte block gaps exist)
 - Loads all non-deleted files into memory and overwrites the filesystem with only relevant files
@@ -668,7 +756,6 @@ Showcase of catfs:
 
 `java zvfs catfs filesystem2.zvfs test_file3.txt` --> **Hello, world!**
 
-
 ### LLM Declaration
 
 **Abraham Prompts**:
@@ -682,8 +769,8 @@ Socratically explain concepts an questions and what needs to be considered about
 - "Can you summarise this: https://docs.python.org/3/library/struct.html"
 - "Summarise and explain thuroughly this chapter of the source material: **Chapter 17, Software design by example**
 - "Explain the difference between rb and r"
-- "Summarise this: 
-- "Summarise this: 
+- "Summarise this:
+- "Summarise this:
 - "Explaint the format my friend used and explain it: **pasted a snipped of the code**
 - "Explain rb and wb, explain thuroughly"
 - "How do I open a file in Java in read and write mode"
@@ -694,7 +781,7 @@ Socratically explain concepts an questions and what needs to be considered about
 - "What is the difference between Files.size() and calculating the size based on the file header offsets?"
 - "In python I was able to use loadfs to access the data I needed, why does this not work here"
 
-*Where I pasted a snippet of code:*
+_Where I pasted a snippet of code:_
 
 - "Why is there no output here"
 - "Why does this code not work"
@@ -714,7 +801,6 @@ Socratically explain concepts an questions and what needs to be considered about
 - "Explain this to me like I am 5"
 - "In total, is this ok now"
 
-
 **Max Prompts**:
 
 - creates new filesystem, populates header, fills out file entries with 0s for 32 entries and includes values for header metadata
@@ -730,16 +816,42 @@ Socratically explain concepts an questions and what needs to be considered about
 - "what does seek() do"
 - "how can i test the addfs and getfs with a txt file"
 - "how can we go about this in java ? i want to implement it as simple as possible should we do ojbects? or purely funcs like in python ? lets discuss options"
-
+- "should be use classes in the java version"
+- "what are the most important java features i msut consider"
+- "whats the difference between bytebuffer in java and struct in python"
+- "So it's okay if we implement a loadfs again?"
+- "does everything have to be in a class?"
+- "can we put the main things liek entry and header in a helper class"
+- "is this code good so far"
+- "here's what my friend made is it compatible with mine"
+- "does this work? "
+- "are these theonly helper classes and funcs needed"
+- "why does the readme look so bad here"
+- "can i pack everything with this ?"
+- "summarize all the relevant parts of these libraries, all i have to know to implement the same style as in the python file"
+- "is byte[] the same as a binary literal in python"
+- "whats the java equivalent to time.time() in pyhton"
+- "is this correct so far"
+- "getfs is now right?"
+- "how can i display this timestamp"
+- "why are milliseconds needed"
+- "is this lsfs equivalent to the python func"
+- "can this .java file doe the same as .py file"
+- "can they both operate on the same .zvfs fiiles?"
+- "do we have to recompile with javac every time?"
+- "is this demonstration of our functionality good?"
+- "have we fullfilled the entire assignment?"
 
 **Luiz Prompts**:
 
-*Files*
+_Files_
+
 - "How do I read a binary file into a byte[] in Java"
 - "How do I write a byte[] back to a file"
 - "Should I use RandomAccessFile or Files.write"
 
-*Byte Arrays*
+_Byte Arrays_
+
 - "Simplest way to work with byte buffers"
 - "Is .clone() correct to copy a byte[]"
 - "Java equivalent of Python [:32] slicing"
@@ -747,7 +859,8 @@ Socratically explain concepts an questions and what needs to be considered about
 - "Convert byte[] with trailing zeros to String"
 - "Does new byte[32] reserve fixed size"
 
-*Structs & Packing*
+_Structs & Packing_
+
 - "How to do little endian packing in Java"
 - "Is ByteBuffer right for fixed-size structs"
 - "Java alternative to struct.unpack"
@@ -757,14 +870,16 @@ Socratically explain concepts an questions and what needs to be considered about
 - "Does ByteBuffer auto increment pointer"
 - "Should I call buffer.flip() or is array() enough"
 
-*Entry Layout*
+_Entry Layout_
+
 - "Does packEntry(ByteBuffer) write fields in correct order"
 - "Is 64 bytes struct size correct"
 - "Is ENTRY_FORMAT ordering identical in Java"
 - "Logic to find first free entry ok"
 - "Does skip logic skip deleted files correctly"
 
-*Offsets & Padding*
+_Offsets & Padding_
+
 - "Is fileStart = header.dataStartOffset + oldData.length math correct"
 - "Check overflow when newData = oldData.length + fileSize"
 - "Is System.arraycopy(oldData,0,newData,0,oldData.length) right"
@@ -775,7 +890,8 @@ Socratically explain concepts an questions and what needs to be considered about
 - "Debug if entry.start offsets accumulate correctly"
 - "Check offset+length stays inside data[]"
 
-*Defrag*
+_Defrag_
+
 - "Does dataStartOffset stay constant during defrag"
 - "Is oldOff = e.start - dataStartOffset consistent with Python"
 - "Off-by-one bug when incrementing dataPos after padding"
@@ -786,12 +902,14 @@ Socratically explain concepts an questions and what needs to be considered about
 - "Debug offsets monotonic increasing and aligned"
 - "Is offset math same as Python version"
 
-*Extraction*
+_Extraction_
+
 - "Is getfs offset = entry.start - dataStartOffset logic correct"
 - "Avoid overwriting existing file when extracting"
 - "Is new String(entry.name).split(\"\\0\")[0] ok"
 
-*General*
+_General_
+
 - "Is this correct Java syntax"
 - "Does nameBytes.length > 32 cause issues"
 - "Is newData = oldData + fileBytes reasonable in Java"
