@@ -1,7 +1,9 @@
 # Software Construction – Assignments Overview
 
 This repository contains my **Software Construction (SoCo)** coursework, showcasing progressively more complex system design, abstraction, and implementation techniques in Python and Java.
-**Grade awarded: (5.5/6.0)** 
+
+**Final Grade: (5.5/6.0)**
+
 The assignments are explicitly designed around the principles and patterns from  
 **Dr. Greg Wilson – *Software Design by Example***  
 https://third-bit.com/sdxpy/
